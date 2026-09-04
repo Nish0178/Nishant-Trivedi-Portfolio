@@ -6,27 +6,42 @@ import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 const NAV_LINKS = [
-  { id: "work", label: "Selected Work", index: "01" },
-  { id: "products", label: "Delivered Products", index: "02" },
-  { id: "experience", label: "Experience", index: "03" },
-  { id: "stack", label: "Tech Matrix", index: "04" },
-  { id: "dsa", label: "DSA & Systems", index: "05" },
-  { id: "about", label: "About", index: "06" },
-  { id: "contact", label: "Contact", index: "07" },
+  { id: "work", label: "Work" },
+  { id: "products", label: "Products" },
+  { id: "experience", label: "Experience" },
+  { id: "stack", label: "Stack" },
+  { id: "dsa", label: "DSA" },
+  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState<string>("hero");
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      const currentY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      
+      setScrollProgress(docHeight > 0 ? (currentY / docHeight) * 100 : 0);
+      setScrolled(currentY > 60);
+      
+      // Hide on scroll down, show on scroll up
+      if (currentY > lastScrollY && currentY > 200) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+      setLastScrollY(currentY);
 
+      // Active section detection
       const sections = ["work", "products", "experience", "stack", "dsa", "about", "contact"];
-      const scrollPos = window.scrollY + 200;
-
+      const scrollPos = currentY + 250;
       for (const sectionId of sections) {
         const el = document.getElementById(sectionId);
         if (el) {
@@ -42,54 +57,64 @@ export default function Header() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <>
+      {/* Scroll Progress Bar */}
+      <div
+        className="scroll-progress"
+        style={{ width: `${scrollProgress}%` }}
+      />
+
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          hidden && !mobileOpen ? "-translate-y-full" : "translate-y-0"
+        } ${
           scrolled
-            ? "bg-[#070707]/90 backdrop-blur-md border-b border-white/[0.08] py-3.5 shadow-2xl"
-            : "bg-transparent py-4 sm:py-6 border-b border-transparent"
+            ? "bg-[#050505]/80 backdrop-blur-xl border-b border-white/[0.06] py-3"
+            : "bg-transparent py-5 border-b border-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Authentic Brand Banner Logo */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between">
+          {/* Full Banner Logo */}
           <a
             href="#"
-            className="flex items-center group focus:outline-none rounded-lg p-1"
+            className="flex items-center group focus:outline-none rounded-lg"
             aria-label="Nishant Trivedi home"
           >
-            <div className="relative h-8 sm:h-9 w-auto">
+            <div className="relative h-7 sm:h-8 w-auto">
               <Image
                 src="/images/nt-banner-logo.png"
                 alt="Nishant Trivedi — Software Engineer"
-                width={210}
-                height={70}
+                width={200}
+                height={64}
                 priority
-                className="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_2px_8px_rgba(213,184,120,0.2)]"
+                className="h-7 sm:h-8 w-auto object-contain transition-all duration-300 group-hover:brightness-110"
               />
             </div>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-6 text-[11px] font-mono tracking-widest text-[#8A8780]">
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const isActive = activeSection === link.id;
               return (
                 <a
                   key={link.id}
                   href={`#${link.id}`}
-                  className={`transition-all duration-200 hover:text-[#EDE9E1] flex items-center gap-1.5 py-1 ${
-                    isActive ? "text-[#D5B878] font-medium" : ""
+                  className={`relative px-3 py-1.5 text-[11px] font-mono tracking-wider transition-all duration-200 rounded-full ${
+                    isActive
+                      ? "text-[#c9a84c]"
+                      : "text-[#6b6862] hover:text-[#f0ece4]"
                   }`}
                 >
-                  <span className="text-white/30 text-[9px]">{link.index}</span>
-                  <span>{link.label.toUpperCase()}</span>
+                  {link.label.toUpperCase()}
                   {isActive && (
-                    <motion.span
-                      layoutId="nav-dot"
-                      className="w-1 h-1 rounded-full bg-[#D5B878]"
+                    <motion.div
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-full bg-[#c9a84c]/[0.08] border border-[#c9a84c]/20"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
                 </a>
@@ -97,85 +122,75 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right Action Rail */}
-          <div className="hidden sm:flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-[10px] font-mono tracking-wider text-[#A3A09A]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
+            {/* Status Badge (Desktop) */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono tracking-wider text-[#6b6862]">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
               </span>
-              <span>OPEN TO OPPORTUNITIES</span>
+              <span>AVAILABLE</span>
             </div>
 
+            {/* Connect CTA (Desktop) */}
             <a
               href="#contact"
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3.5 py-1.5 rounded-md border border-[#D5B878]/30 bg-[#D5B878]/10 text-[#EDE9E1] hover:bg-[#D5B878]/20 hover:border-[#D5B878] transition-all duration-200"
+              className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono px-4 py-2 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] hover:bg-[#c9a84c]/20 hover:border-[#c9a84c]/50 transition-all duration-200"
             >
-              <span>CONNECT</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-[#D5B878]" />
+              <span>LET'S TALK</span>
+              <ArrowUpRight className="w-3 h-3" />
             </a>
-          </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="xl:hidden p-2 rounded-lg border border-white/10 text-[#EDE9E1] hover:bg-white/5 transition-colors focus:outline-none"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden p-2 rounded-full border border-white/10 text-[#f0ece4] hover:bg-white/5 transition-colors focus:outline-none"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Mobile Navigation Overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed inset-x-0 top-[60px] z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/10 p-6 xl:hidden shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-[#050505]/95 backdrop-blur-2xl lg:hidden flex flex-col justify-center px-8"
           >
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
-              <div className="flex items-center gap-2 text-xs font-mono text-[#A3A09A]">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>OPEN TO OPPORTUNITIES</span>
-              </div>
-              <span className="text-[11px] font-mono text-white/40">2026 IDENTITY</span>
-            </div>
-
-            <nav className="flex flex-col gap-4 font-mono text-sm">
-              {NAV_LINKS.map((link) => (
-                <a
+            <nav className="flex flex-col gap-1">
+              {NAV_LINKS.map((link, idx) => (
+                <motion.a
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between py-2 text-[#C5C2BB] hover:text-[#D5B878] transition-colors border-b border-white/[0.04]"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05, duration: 0.3 }}
+                  className="text-3xl sm:text-4xl font-display font-bold text-[#f0ece4] hover:text-[#c9a84c] transition-colors py-3 border-b border-white/[0.04]"
                 >
-                  <span className="flex items-center gap-3">
-                    <span className="text-xs text-white/30">{link.index}</span>
-                    <span className="tracking-wider">{link.label}</span>
-                  </span>
-                  <ArrowUpRight className="w-4 h-4 text-white/30" />
-                </a>
+                  {link.label}
+                </motion.a>
               ))}
             </nav>
 
-            <div className="mt-6 pt-4 border-t border-white/10 flex flex-col gap-3">
+            <div className="mt-12 space-y-4">
               <a
                 href="#contact"
                 onClick={() => setMobileOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-[#D5B878] text-[#070707] font-mono text-xs font-semibold tracking-wider hover:bg-[#E5C378] transition-colors"
+                className="block w-full text-center py-3 rounded-full bg-[#c9a84c] text-[#050505] font-mono text-xs font-semibold tracking-wider"
               >
-                LET'S TALK / GET IN TOUCH
+                GET IN TOUCH
               </a>
-              <a
-                href="mailto:trivedinishant880@gmail.com"
-                className="text-center font-mono text-xs text-[#8A8780] hover:text-[#EDE9E1] transition-colors"
-              >
+              <p className="text-center font-mono text-xs text-[#6b6862]">
                 trivedinishant880@gmail.com
-              </a>
+              </p>
             </div>
           </motion.div>
         )}

@@ -1,182 +1,157 @@
 "use client";
 
 import React from "react";
+import { motion } from "motion/react";
 import {
   CheckSquare,
-  Shield,
-  Database,
   BarChart3,
-  Server,
+  Database,
   KeyRound,
-  Layers,
-  ArrowUpRight,
+  Server,
   Activity,
-  LineChart,
-  HardDrive,
 } from "lucide-react";
 
 export default function TodoProWork() {
   return (
-    <section className="relative py-20 bg-[#070707] text-[#EDE9E1]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Project 02 Card Header */}
-        <div className="rounded-2xl bg-gradient-to-b from-[#0C0C0C] to-[#080808] border border-white/[0.08] p-6 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden">
-          {/* Subtle Ambient Accent */}
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#D5B878]/[0.03] rounded-full blur-[100px] pointer-events-none" />
+    <section className="relative py-16 sm:py-20 bg-[#050505]">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Section Tag */}
+        <div className="flex items-center gap-3 mb-8">
+          <span className="w-8 h-[1px] bg-[#c9a84c]" />
+          <span className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c] uppercase">
+            Case Study 02
+          </span>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            {/* Left: Product Overview & Core Architecture */}
-            <div className="lg:col-span-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-[#D5B878] tracking-widest uppercase mb-3">
-                  <span>02 / FULL-STACK APPLICATION</span>
-                  <span className="text-white/20">·</span>
-                  <span>PRODUCTION ARCHITECTURE</span>
-                </div>
+        <div className="rounded-3xl bg-gradient-to-br from-[#0d0d0d] via-[#0a0a0a] to-[#070707] border border-white/[0.07] p-6 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden">
+          {/* Accent Glow */}
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/[0.02] rounded-full blur-[150px] pointer-events-none" />
 
-                <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
-                  TodoPro — Smart Task & Productivity Engine
-                </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            {/* Left: Product Overview */}
+            <div className="lg:col-span-6">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white tracking-tight mb-3">
+                TodoPro
+              </h3>
+              <p className="text-xs font-mono text-[#c9a84c] mb-4 tracking-wider">
+                SMART TASK & PRODUCTIVITY ENGINE
+              </p>
 
-                <p className="text-[#A3A09A] text-sm leading-relaxed mb-6 font-sans">
-                  A high-resilience task management web platform engineered with persistent MongoDB storage, stateless JWT authentication, and real-time Chart.js productivity telemetry.
-                </p>
+              <p className="text-sm text-[#a8a49c] leading-relaxed mb-6">
+                High-resilience task management platform with persistent MongoDB storage, stateless JWT authentication, and real-time Chart.js productivity telemetry.
+              </p>
 
-                {/* Tech Pills */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["Node.js", "Express.js", "MongoDB", "JWT Auth", "Chart.js", "Vanilla JavaScript", "Render Cloud"].map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-[11px] font-mono text-[#EDE9E1]"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+              {/* Tech Pills */}
+              <div className="flex flex-wrap gap-2 mb-8">
+                {["Node.js", "Express.js", "MongoDB", "JWT Auth", "Chart.js", "Vanilla JS", "Render Cloud"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono text-[#a8a49c]"
+                  >
+                    {tech}
+                  </span>
+                ))}
               </div>
 
-              {/* Technical Feature Matrix */}
-              <div className="grid grid-cols-2 gap-3 pt-6 border-t border-white/[0.06]">
-                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-[#D5B878] mb-1">
-                    <KeyRound className="w-3.5 h-3.5" />
-                    <span>JWT SECURITY</span>
-                  </div>
-                  <p className="text-[11px] text-[#8A8780]">
-                    Stateless token auth with secure HTTP-only cookies and bcrypt password hashing.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-[#D5B878] mb-1">
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span>PRODUCTIVITY TELEMETRY</span>
-                  </div>
-                  <p className="text-[11px] text-[#8A8780]">
-                    Interactive Chart.js visualizations for task completion velocity and weekly trends.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-[#D5B878] mb-1">
-                    <Database className="w-3.5 h-3.5" />
-                    <span>MONGODB CRUD</span>
-                  </div>
-                  <p className="text-[11px] text-[#8A8780]">
-                    Indexed document schemas with relational user-task associations and rapid lookup.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-[#D5B878] mb-1">
-                    <Server className="w-3.5 h-3.5" />
-                    <span>RENDER CLOUD</span>
-                  </div>
-                  <p className="text-[11px] text-[#8A8780]">
-                    Environment-based configuration with automated cloud pipeline deployments.
-                  </p>
-                </div>
+              {/* Feature Matrix */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { icon: KeyRound, label: "JWT Security", desc: "Stateless token auth with bcrypt hashing" },
+                  { icon: BarChart3, label: "Productivity Telemetry", desc: "Chart.js completion velocity tracking" },
+                  { icon: Database, label: "MongoDB CRUD", desc: "Indexed schemas with rapid lookups" },
+                  { icon: Server, label: "Render Cloud", desc: "Automated pipeline deployments" },
+                ].map((feat, idx) => {
+                  const Icon = feat.icon;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-[#c9a84c]/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#c9a84c] mb-1.5">
+                        <Icon className="w-3 h-3" />
+                        <span className="tracking-wider">{feat.label.toUpperCase()}</span>
+                      </div>
+                      <p className="text-[10px] text-[#6b6862] leading-relaxed">{feat.desc}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Right: Interactive Analytics UI Mockup / Telemetry Dashboard */}
+            {/* Right: Dashboard Mockup */}
             <div className="lg:col-span-6">
-              <div className="rounded-xl bg-[#050505] border border-white/10 p-5 shadow-2xl relative overflow-hidden">
-                {/* Simulated Header Bar */}
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+              <div className="rounded-2xl bg-[#0a0a0a] border border-white/[0.08] p-5 shadow-2xl">
+                {/* Browser Chrome */}
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.06]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                    <span className="ml-2 font-mono text-[11px] text-[#8A8780]">todopro.app/dashboard</span>
+                    <span className="w-2 h-2 rounded-full bg-red-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-yellow-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-green-500/60" />
+                    <span className="ml-2 font-mono text-[10px] text-[#6b6862]">todopro.app/dashboard</span>
                   </div>
-                  <span className="font-mono text-[10px] text-[#D5B878] bg-[#D5B878]/10 px-2 py-0.5 rounded">
-                    REST API 200 OK
+                  <span className="font-mono text-[9px] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    200 OK
                   </span>
                 </div>
 
-                {/* Simulated Telemetry Stats Grid */}
-                <div className="grid grid-cols-3 gap-3 mb-4 font-mono text-center">
-                  <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] text-[#8A8780] block">COMPLETION</span>
-                    <span className="text-base font-bold text-emerald-400">94.2%</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] text-[#8A8780] block">VELOCITY</span>
-                    <span className="text-base font-bold text-[#D5B878]">18 tasks/d</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] text-[#8A8780] block">DB LATENCY</span>
-                    <span className="text-base font-bold text-[#EDE9E1]">14ms</span>
-                  </div>
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 mb-4 font-mono text-center">
+                  {[
+                    { label: "COMPLETION", value: "94.2%", color: "text-emerald-400" },
+                    { label: "VELOCITY", value: "18/day", color: "text-[#c9a84c]" },
+                    { label: "LATENCY", value: "14ms", color: "text-white" },
+                  ].map((stat, i) => (
+                    <div key={i} className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                      <span className="text-[9px] text-[#6b6862] block">{stat.label}</span>
+                      <span className={`text-sm font-bold ${stat.color}`}>{stat.value}</span>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Simulated Visual Graph / Bars */}
-                <div className="p-4 rounded-lg bg-white/[0.01] border border-white/[0.05] mb-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#8A8780] mb-3">
+                {/* Weekly Chart */}
+                <div className="p-4 rounded-lg bg-white/[0.01] border border-white/[0.04] mb-4">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[#6b6862] mb-3">
                     <span className="flex items-center gap-1.5">
-                      <Activity className="w-3.5 h-3.5 text-[#D5B878]" />
-                      WEEKLY PRODUCTIVITY FLOW (CHART.JS)
+                      <Activity className="w-3 h-3 text-[#c9a84c]" />
+                      WEEKLY FLOW
                     </span>
-                    <span className="text-[10px] text-emerald-400">+12% vs last week</span>
+                    <span className="text-emerald-500">+12%</span>
                   </div>
-                  <div className="h-24 flex items-end justify-between gap-2 pt-2">
+                  <div className="h-20 flex items-end justify-between gap-1.5">
                     {[
-                      { day: "MON", h: "60%", count: 12 },
-                      { day: "TUE", h: "85%", count: 17 },
-                      { day: "WED", h: "70%", count: 14 },
-                      { day: "THU", h: "95%", count: 21 },
-                      { day: "FRI", h: "90%", count: 19 },
-                      { day: "SAT", h: "45%", count: 8 },
-                      { day: "SUN", h: "35%", count: 6 },
+                      { day: "M", h: "60%" },
+                      { day: "T", h: "85%" },
+                      { day: "W", h: "70%" },
+                      { day: "T", h: "95%" },
+                      { day: "F", h: "90%" },
+                      { day: "S", h: "45%" },
+                      { day: "S", h: "35%" },
                     ].map((item, i) => (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                      <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
                         <div
-                          className="w-full rounded-t-sm bg-gradient-to-t from-[#D5B878]/30 to-[#D5B878] hover:brightness-125 transition-all"
+                          className="w-full rounded-t bg-gradient-to-t from-[#c9a84c]/30 to-[#c9a84c] hover:brightness-125 transition-all"
                           style={{ height: item.h }}
                         />
-                        <span className="font-mono text-[9px] text-[#8A8780]">{item.day}</span>
+                        <span className="font-mono text-[8px] text-[#6b6862]">{item.day}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Simulated Live Task Ingestion Stream */}
-                <div className="space-y-2 font-mono text-[11px]">
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/[0.04]">
-                    <span className="flex items-center gap-2 text-[#EDE9E1]">
-                      <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Implement JWT refresh rotation strategy</span>
-                    </span>
-                    <span className="text-[9px] text-[#8A8780]">DONE</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/[0.04]">
-                    <span className="flex items-center gap-2 text-[#EDE9E1]">
-                      <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Optimize MongoDB compound indexes for user query</span>
-                    </span>
-                    <span className="text-[9px] text-[#8A8780]">DONE</span>
-                  </div>
+                {/* Task Stream */}
+                <div className="space-y-1.5 font-mono text-[10px]">
+                  {[
+                    "Implement JWT refresh rotation",
+                    "Optimize MongoDB compound indexes",
+                  ].map((task, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+                      <span className="flex items-center gap-2 text-[#a8a49c]">
+                        <CheckSquare className="w-3 h-3 text-emerald-500" />
+                        {task}
+                      </span>
+                      <span className="text-[8px] text-[#6b6862]">DONE</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

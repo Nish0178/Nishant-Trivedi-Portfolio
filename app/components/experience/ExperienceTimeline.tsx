@@ -2,20 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  Briefcase,
-  GitBranch,
-  Video,
-  Code,
-  Users,
-  Award,
-  Calendar,
-  ChevronRight,
-  ExternalLink,
-  Sparkles,
-  Layers,
-  Terminal,
-} from "lucide-react";
+import { Calendar, ChevronRight } from "lucide-react";
 
 type ExperienceCategory = "all" | "internships" | "opensource";
 
@@ -43,7 +30,7 @@ const EXPERIENCES: ExperienceItem[] = [
     responsibilities: [
       "Engineered generative AI video pipelines utilizing state-of-the-art vision models including Google Veo and Flow.",
       "Designed domain-specific prompt engineering frameworks across Claude and ChatGPT for production multimedia synthesis.",
-      "Managed, tracked, and stored high-resolution project video assets using Google Cloud Platform infrastructure.",
+      "Managed high-resolution project video assets using Google Cloud Platform infrastructure.",
       "Established systematic production workflow tracking to increase multimodal delivery throughput.",
     ],
     highlight: "Generative AI Video Workflows & GCP Asset Infrastructure",
@@ -53,14 +40,14 @@ const EXPERIENCES: ExperienceItem[] = [
     category: "internships",
     company: "StaxTech",
     role: "Full-Stack Developer Intern",
-    period: "January 2026 – April 2026",
+    period: "Jan 2026 – Apr 2026",
     type: "Full-Stack Engineering (MERN)",
     tech: ["MongoDB", "Express.js", "Node.js", "JavaScript", "JWT Auth", "REST APIs"],
     responsibilities: [
-      "Architected full-stack modules using the MERN ecosystem with focus on secure Node.js REST services.",
-      "Implemented robust JWT token-based authentication and role authorization checks for application endpoints.",
-      "Engineered third-party API integrations, robust error middleware, and database index optimizations.",
-      "Conducted thorough code reviews, resolved production bugs, and authored comprehensive technical documentation.",
+      "Architected full-stack modules using the MERN ecosystem with secure Node.js REST services.",
+      "Implemented robust JWT token-based authentication and role authorization for endpoints.",
+      "Engineered third-party API integrations, error middleware, and database index optimizations.",
+      "Conducted code reviews, resolved production bugs, and authored technical documentation.",
     ],
     highlight: "MERN Stack, JWT Security & Third-Party API Architecture",
   },
@@ -69,31 +56,31 @@ const EXPERIENCES: ExperienceItem[] = [
     category: "internships",
     company: "Astrospacious",
     role: "Web Development Intern",
-    period: "November 2025 – August 2026",
+    period: "Nov 2025 – Aug 2026",
     type: "Web Engineering",
     tech: ["HTML5", "CSS3", "JavaScript", "Node.js", "REST APIs", "Agile"],
     responsibilities: [
-      "Developed and maintained responsive web features and reusable UI modules for commercial platforms.",
-      "Integrated backend REST APIs with client-side views ensuring clean asynchronous state management.",
-      "Boosted frontend speed and responsiveness across mobile, tablet, and desktop screens.",
-      "Collaborated in agile sprint cycles, standups, code reviews, and Git version control workflows.",
+      "Developed responsive web features and reusable UI modules for commercial platforms.",
+      "Integrated backend REST APIs with client-side views and clean async state management.",
+      "Boosted frontend speed and responsiveness across all screen sizes.",
+      "Collaborated in agile sprint cycles, standups, and Git version control workflows.",
     ],
     highlight: "Commercial Web Features & Frontend Performance Tuning",
   },
   {
     id: "osc-lead",
     category: "opensource",
-    company: "Open Source Connect Global 2026",
+    company: "Open Source Connect Global",
     role: "Campus Lead / Contributor",
     period: "2026",
     type: "Leadership & Community",
-    tech: ["Git", "GitHub", "Community Leadership", "Technical Mentoring", "Open Source Workflows"],
+    tech: ["Git", "GitHub", "Community Leadership", "Technical Mentoring"],
     responsibilities: [
-      "Spearheaded campus-level open source initiatives, successfully onboarding and mentoring 50+ engineering students.",
-      "Organized and led technical workshops on Git workflows, pull requests, issue triaging, and collaborative development.",
-      "Mentored peers on open source best practices, repository hygiene, and code review etiquette.",
+      "Spearheaded campus-level open source initiatives, onboarding 50+ engineering students.",
+      "Organized technical workshops on Git workflows, pull requests, and collaborative development.",
+      "Mentored peers on open source best practices and code review etiquette.",
     ],
-    highlight: "Onboarded 50+ Students & Led Campus Open-Source Initiatives",
+    highlight: "Onboarded 50+ Students & Led Campus Initiatives",
   },
   {
     id: "osc-contributor",
@@ -102,12 +89,12 @@ const EXPERIENCES: ExperienceItem[] = [
     role: "Official Contributor",
     period: "2026",
     type: "Open Source Engineering",
-    tech: ["Git", "GitHub", "Code Reviews", "Issue Resolution", "Collaborative PRs"],
+    tech: ["Git", "GitHub", "Code Reviews", "Collaborative PRs"],
     responsibilities: [
-      "Contributed to production-grade repositories by identifying bugs, fixing issues, and shipping feature improvements.",
-      "Participated actively in peer code reviews and collaborated directly with maintainers and international contributors.",
+      "Contributed to production-grade repositories by fixing bugs and shipping feature improvements.",
+      "Participated in peer code reviews and collaborated with international contributors.",
     ],
-    highlight: "Direct Contributions to Production-Grade Open Source Repositories",
+    highlight: "Direct Contributions to Production OSS Repositories",
   },
   {
     id: "elite-coders",
@@ -118,10 +105,10 @@ const EXPERIENCES: ExperienceItem[] = [
     type: "Open Source Program",
     tech: ["JavaScript", "Python", "Data Structures", "Open Source"],
     responsibilities: [
-      "Contributed code to open source software repositories as an official Winter of Code 2026 participant.",
-      "Engineered algorithms and documentation improvements to enhance developer usability across program projects.",
+      "Contributed code to open source repositories as Winter of Code 2026 participant.",
+      "Engineered algorithms and documentation improvements for developer usability.",
     ],
-    highlight: "Winter of Code 2026 Engineering Participant",
+    highlight: "Winter of Code 2026 Participant",
   },
 ];
 
@@ -137,154 +124,122 @@ export default function ExperienceTimeline() {
   const activeExp = EXPERIENCES.find((e) => e.id === selectedId) || EXPERIENCES[0];
 
   return (
-    <section id="experience" className="relative py-28 bg-[#070707] text-[#EDE9E1] border-t border-white/[0.08]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="experience" className="relative py-24 sm:py-32 bg-[#050505]">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-8 border-b border-white/[0.06]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16">
           <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-[#D5B878] tracking-widest uppercase mb-3">
-              <span>03 / CAREER & IMPACT</span>
-              <span className="text-white/20">·</span>
-              <span>ENGINEERING TIMELINE</span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-8 h-[1px] bg-[#c9a84c]" />
+              <span className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c] uppercase">
+                Career & Impact
+              </span>
             </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
-              Experience<span className="text-[#D5B878]">.</span>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white">
+              Experience<span className="text-[#c9a84c]">.</span>
             </h2>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2 mt-6 md:mt-0 font-mono text-xs">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-3 py-1.5 rounded-lg border transition-colors ${
-                filter === "all"
-                  ? "bg-[#D5B878] text-black border-[#D5B878] font-semibold"
-                  : "bg-white/[0.02] border-white/10 text-[#8A8780] hover:text-[#EDE9E1]"
-              }`}
-            >
-              ALL TRACKS ({EXPERIENCES.length})
-            </button>
-            <button
-              onClick={() => setFilter("internships")}
-              className={`px-3 py-1.5 rounded-lg border transition-colors ${
-                filter === "internships"
-                  ? "bg-[#D5B878] text-black border-[#D5B878] font-semibold"
-                  : "bg-white/[0.02] border-white/10 text-[#8A8780] hover:text-[#EDE9E1]"
-              }`}
-            >
-              INTERNSHIPS (3)
-            </button>
-            <button
-              onClick={() => setFilter("opensource")}
-              className={`px-3 py-1.5 rounded-lg border transition-colors ${
-                filter === "opensource"
-                  ? "bg-[#D5B878] text-black border-[#D5B878] font-semibold"
-                  : "bg-white/[0.02] border-white/10 text-[#8A8780] hover:text-[#EDE9E1]"
-              }`}
-            >
-              OPEN SOURCE (3)
-            </button>
+          <div className="flex items-center gap-2 mt-6 md:mt-0 font-mono text-[10px]">
+            {(["all", "internships", "opensource"] as ExperienceCategory[]).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 rounded-full border transition-all ${
+                  filter === f
+                    ? "bg-[#c9a84c] text-[#050505] border-[#c9a84c] font-semibold"
+                    : "bg-transparent border-white/10 text-[#6b6862] hover:text-[#a8a49c] hover:border-white/20"
+                }`}
+              >
+                {f === "all" ? `ALL (${EXPERIENCES.length})` : f === "internships" ? "INTERNSHIPS" : "OPEN SOURCE"}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Master Timeline & Detail Inspector Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Interactive Timeline List */}
-          <div className="lg:col-span-5 space-y-3">
+        {/* Timeline + Detail Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left: Timeline List */}
+          <div className="lg:col-span-5 space-y-2">
             {filtered.map((exp) => {
               const isSelected = exp.id === activeExp.id;
               return (
                 <div
                   key={exp.id}
                   onClick={() => setSelectedId(exp.id)}
-                  className={`p-5 rounded-xl border transition-all cursor-pointer text-left relative ${
+                  className={`relative p-4 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? "bg-[#0E0E0E] border-[#D5B878]/60 shadow-lg"
-                      : "bg-[#0A0A0A]/60 border-white/[0.06] hover:border-white/20 hover:bg-[#0C0C0C]"
+                      ? "bg-[#0d0d0d] border-[#c9a84c]/40 shadow-lg"
+                      : "bg-transparent border-white/[0.04] hover:border-white/10 hover:bg-white/[0.01]"
                   }`}
                 >
-                  {/* Active Indicator Bar */}
                   {isSelected && (
                     <motion.div
-                      layoutId="exp-bar"
-                      className="absolute left-0 top-3 bottom-3 w-1 bg-[#D5B878] rounded-r"
+                      layoutId="exp-indicator"
+                      className="absolute left-0 top-3 bottom-3 w-[2px] bg-[#c9a84c] rounded-r"
                     />
                   )}
 
-                  <div className="flex items-center justify-between text-xs font-mono text-[#8A8780] mb-2">
-                    <span className="text-[#D5B878]">{exp.period}</span>
-                    <span className="uppercase text-[10px] px-2 py-0.5 rounded bg-white/[0.04] text-[#A3A09A]">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[#6b6862] mb-1.5">
+                    <span className={isSelected ? "text-[#c9a84c]" : ""}>{exp.period}</span>
+                    <span className="uppercase px-2 py-0.5 rounded-full bg-white/[0.03] text-[9px]">
                       {exp.category}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white font-sans">{exp.company}</h3>
-                  <p className="text-xs font-mono text-[#C5C2BB] mt-0.5">{exp.role}</p>
-
-                  <p className="text-xs text-[#8A8780] mt-2 line-clamp-2 font-sans">
-                    {exp.highlight}
-                  </p>
+                  <h3 className="text-base font-bold text-white font-display">{exp.company}</h3>
+                  <p className="text-[11px] font-mono text-[#a8a49c] mt-0.5">{exp.role}</p>
                 </div>
               );
             })}
           </div>
 
-          {/* Right Column: Detailed Deep-Dive Inspector */}
+          {/* Right: Detail Inspector */}
           <div className="lg:col-span-7">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeExp.id}
-                initial={{ opacity: 0, x: 15 }}
+                initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                transition={{ duration: 0.25 }}
-                className="rounded-2xl bg-[#0B0B0B] border border-white/[0.09] p-6 sm:p-8 shadow-2xl relative overflow-hidden"
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-2xl bg-[#0a0a0a] border border-white/[0.07] p-6 sm:p-8 shadow-2xl"
               >
-                {/* Header of Active Item */}
-                <div className="pb-6 mb-6 border-b border-white/[0.08]">
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2 font-mono text-xs">
-                    <span className="text-[#D5B878] tracking-widest uppercase">
-                      {activeExp.type}
-                    </span>
-                    <span className="text-[#8A8780] flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
+                <div className="pb-5 mb-5 border-b border-white/[0.06]">
+                  <div className="flex items-center justify-between mb-2 font-mono text-[10px]">
+                    <span className="text-[#c9a84c] tracking-[0.2em] uppercase">{activeExp.type}</span>
+                    <span className="text-[#6b6862] flex items-center gap-1.5">
+                      <Calendar className="w-3 h-3" />
                       {activeExp.period}
                     </span>
                   </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-bold text-white font-sans">
-                    {activeExp.company}
-                  </h3>
-                  <p className="text-sm font-mono text-[#EDE9E1] mt-1">
-                    {activeExp.role}
-                  </p>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white font-display">{activeExp.company}</h3>
+                  <p className="text-xs font-mono text-[#a8a49c] mt-1">{activeExp.role}</p>
                 </div>
 
-                {/* Verified Responsibilities & Contributions */}
-                <div className="space-y-4 mb-8">
-                  <h4 className="font-mono text-xs text-[#8A8780] tracking-wider uppercase">
-                    Key Engineering Contributions
+                <div className="space-y-3 mb-6">
+                  <h4 className="font-mono text-[9px] text-[#6b6862] tracking-[0.2em] uppercase">
+                    Key Contributions
                   </h4>
-                  <ul className="space-y-3 font-sans text-sm text-[#C5C2BB]">
+                  <ul className="space-y-2.5 text-sm text-[#a8a49c]">
                     {activeExp.responsibilities.map((resp, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D5B878] mt-2 shrink-0" />
-                        <span className="leading-relaxed">{resp}</span>
+                        <span className="w-1 h-1 rounded-full bg-[#c9a84c] mt-2 shrink-0" />
+                        <span className="leading-relaxed text-[13px]">{resp}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Tech Stack Employed */}
-                <div className="pt-6 border-t border-white/[0.06]">
-                  <h4 className="font-mono text-xs text-[#8A8780] tracking-wider uppercase mb-3">
-                    Technologies & Ecosystem
+                <div className="pt-5 border-t border-white/[0.05]">
+                  <h4 className="font-mono text-[9px] text-[#6b6862] tracking-[0.2em] uppercase mb-3">
+                    Technologies
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {activeExp.tech.map((t) => (
                       <span
                         key={t}
-                        className="px-3 py-1 rounded-lg bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-[#EDE9E1]"
+                        className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.05] text-[10px] font-mono text-[#a8a49c]"
                       >
                         {t}
                       </span>

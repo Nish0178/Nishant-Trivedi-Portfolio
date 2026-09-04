@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const viewport: Viewport = {
-  themeColor: "#070707",
+  themeColor: "#050505",
   width: "device-width",
   initialScale: 1,
 };
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Nishant Trivedi", url: "https://www.linkedin.com/in/nishant-trivedi-363ba3249" }],
   icons: {
-    icon: "/images/nt-emblem.png",
-    apple: "/images/nt-emblem.png",
+    icon: "/images/nt-logo-raw.png",
+    apple: "/images/nt-logo-raw.png",
   },
   openGraph: {
     title: "Nishant Trivedi — Software Engineer",
@@ -69,11 +69,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="bg-[#070707] text-[#EDE9E1] antialiased selection:bg-[#D5B878] selection:text-black min-h-screen">
+      <body className="noise-overlay bg-[#050505] text-[#f0ece4] antialiased min-h-screen">
         {children}
       </body>
     </html>

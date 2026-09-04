@@ -16,49 +16,61 @@ import ContactSection from "./components/contact/ContactSection";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[#070707] text-[#EDE9E1] selection:bg-[#D5B878] selection:text-black">
-      {/* Interactive Custom Desktop Cursor */}
+    <div className="relative min-h-screen bg-[#050505] text-[#f0ece4]">
+      {/* Interactive Custom Cursor (Desktop) */}
       <CustomCursor />
 
-      {/* Subtle Mathematical Particle Canvas */}
+      {/* Subtle Ambient Glow Backdrop */}
       <AmbientBackdrop />
 
-      {/* Fixed Luxury Navigation Header */}
+      {/* Fixed Navigation */}
       <Header />
 
-      {/* Main Interactive Storytelling Flow */}
+      {/* Main Content Flow */}
       <main className="relative z-10">
-        {/* 01: ME — Cinematic Hero with Real Nishant Walking Video & Authentic Identity */}
+        {/* 01: Cinematic Full-Viewport Hero with Walking Video */}
         <Hero />
 
-        {/* 02: HOW I THINK — Engineering Manifesto & Philosophy */}
+        {/* Gradient divider between hero and manifesto */}
+        <div className="gradient-divider" />
+
+        {/* 02: Engineering Manifesto & Philosophy */}
         <Manifesto />
 
-        {/* 03: WHAT I BUILD — Case Study 01: LaunchPilot AI (Interactive Pipeline Engine) */}
+        {/* 03: Case Study 01 — LaunchPilot AI */}
         <SelectedWork />
 
-        {/* 03b: WHAT I BUILD — Case Study 02: TodoPro (Interactive Architecture Engine) */}
+        {/* 03b: Case Study 02 — TodoPro */}
         <TodoProWork />
 
-        {/* 04: WHAT I HAVE SHIPPED — Delivered Products / Team Engineering (Astrospacious) */}
+        {/* Gradient divider */}
+        <div className="gradient-divider" />
+
+        {/* 04: Delivered Products / Team Work */}
         <DeliveredProducts />
 
-        {/* 05: WHERE I HAVE WORKED — Interactive Engineering Experience Timeline */}
+        {/* 05: Experience Timeline */}
         <ExperienceTimeline />
 
-        {/* 06: WHAT I USE — Layered Technical Stack Ecosystem */}
+        {/* Gradient divider */}
+        <div className="gradient-divider" />
+
+        {/* 06: Tech Stack Matrix */}
         <TechStackMatrix />
 
-        {/* 07: HOW I SOLVE — Algorithmic Rigor & DSA Mindset (LeetCode Telemetry) */}
+        {/* 07: DSA & Systems */}
         <ProblemSolving />
 
-        {/* 08: WHO I AM — Authentic Narrative & Academic Education (AKTU Lucknow) */}
+        {/* Gradient divider */}
+        <div className="gradient-divider" />
+
+        {/* 08: About & Background */}
         <AboutStory />
 
-        {/* 08b: WHAT I HAVE ACHIEVED — Verified Hackathons & Industry Certifications */}
+        {/* 08b: Achievements & Certifications */}
         <Achievements />
 
-        {/* 09: LET'S BUILD — Interactive Contact Hub & Footer */}
+        {/* 09: Contact & Footer */}
         <ContactSection />
       </main>
     </div>
