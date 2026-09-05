@@ -31,20 +31,14 @@ This document is the **Single Source of Truth (SSOT)** for Nishant Trivedi's per
 
 # 02. DESIGN NORTH STAR
 
-$$\text{Warm White Editorial Canvas} + \text{Oversized Typography} + \text{Asymmetric Compositions} + \text{Chapter-Based Storytelling}$$
+$$\text{Cinematic Dark Slate Canvas} + \text{Metallic Gold / Amber Aura} + \text{System Architecture Cards} + \text{Interactive Transmission Dispatch}$$
 
-- **Identity Feel**: Bespoke, human-designed, cinematic, confident, restrained, and deeply technical.
-- **What it is NOT**:
-  - NOT an AI-generated template or Dribbble card mockup
-  - NOT a dark cyberpunk dashboard with glowing borders
-  - NOT a rainbow gradient or glassmorphism showcase
-  - NOT a generic SaaS landing page
-- **Dominant Palette Rhythm**:
-  - Predominantly `#fafaf9` / `#ffffff`
-  - High-contrast `#111110` near-black typography
-  - Neutral `#52525b` secondary text
-  - Subtle `#e4e4e7` / `border-black/[0.08]` borders
-  - One restrained accent per major project chapter (e.g. emerald verification pills, clean monochrome contrasts)
+- **Identity & Aesthetic Grounding**: Directly inspired by `public/video/Reference video.mp4`.
+- **Palette Rhythm**:
+  - Deep dark canvas `#08090d` with ambient warm gold aura backlights (`rgba(245, 158, 11, 0.1)`)
+  - Crisp metallic gold gradient typography (`.text-gold-gradient`) and gold pill accents
+  - Integrated native 9:16 portrait video canvas (`hero-walking.mp4`) with golden crosshair indicators and handwritten signature badge (`Nishant`)
+  - Domain architecture telemetry matrices and interactive encrypted transmission terminal (`05 / CONTACT`)
 
 ---
 
