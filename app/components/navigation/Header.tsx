@@ -1,200 +1,131 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, ArrowUpRight } from "lucide-react";
 
-const NAV_LINKS = [
-  { id: "work", label: "Work" },
-  { id: "products", label: "Products" },
-  { id: "experience", label: "Experience" },
-  { id: "stack", label: "Stack" },
-  { id: "dsa", label: "DSA" },
-  { id: "about", label: "About" },
-  { id: "contact", label: "Contact" },
+const NAV_ITEMS = [
+  { label: "ABOUT", href: "#about" },
+  { label: "PROJECTS", href: "#work" },
+  { label: "SKILLS", href: "#skills" },
+  { label: "EXPERIENCE", href: "#experience" },
+  { label: "CONTACT", href: "#contact" },
 ];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeSection, setActiveSection] = useState<string>("hero");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      
-      setScrollProgress(docHeight > 0 ? (currentY / docHeight) * 100 : 0);
-      setScrolled(currentY > 60);
-      
-      // Hide on scroll down, show on scroll up
-      if (currentY > lastScrollY && currentY > 200) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
-      setLastScrollY(currentY);
-
-      // Active section detection
-      const sections = ["work", "products", "experience", "stack", "dsa", "about", "contact"];
-      const scrollPos = currentY + 250;
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            setActiveSection(sectionId);
-            break;
-          }
-        }
-      }
+      setScrolled(window.scrollY > 30);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   return (
-    <>
-      {/* Scroll Progress Bar */}
-      <div
-        className="scroll-progress"
-        style={{ width: `${scrollProgress}%` }}
-      />
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#08090d]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.5)] py-3.5"
+          : "bg-transparent py-5"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
+        {/* Brand Logo */}
+        <Link
+          href="/"
+          className="group flex items-center gap-2 text-white font-display text-xl sm:text-2xl font-bold tracking-tight"
+        >
+          <span className="text-white group-hover:text-amber-400 transition-colors">
+            NISHANT
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
+        </Link>
 
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          hidden && !mobileOpen ? "-translate-y-full" : "translate-y-0"
-        } ${
-          scrolled
-            ? "bg-[#050505]/80 backdrop-blur-xl border-b border-white/[0.06] py-3"
-            : "bg-transparent py-5 border-b border-transparent"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between">
-          {/* Full Banner Logo */}
-          <a
-            href="#"
-            className="flex items-center group focus:outline-none rounded-lg"
-            aria-label="Nishant Trivedi home"
+        {/* Center Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8 lg:gap-10">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-xs font-mono tracking-widest text-slate-300 hover:text-amber-400 transition-colors duration-200 relative group py-1"
+            >
+              {item.label}
+              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-amber-400 transition-all duration-300 group-hover:w-full shadow-[0_0_8px_#f59e0b]" />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Right CTA & Mobile Toggle */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="#contact"
+            className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-mono font-semibold tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-200 transition-all duration-300 shadow-[0_0_15px_-3px_rgba(245,158,11,0.25)]"
           >
-            <div className="relative h-7 sm:h-8 w-auto">
-              <Image
-                src="/images/nt-banner-logo.png"
-                alt="Nishant Trivedi — Software Engineer"
-                width={200}
-                height={64}
-                priority
-                className="h-7 sm:h-8 w-auto object-contain transition-all duration-300 group-hover:brightness-110"
+            <span>LET&apos;S TALK</span>
+            <span className="text-sm">↗</span>
+          </Link>
+
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-slate-300 hover:text-white focus:outline-none"
+            aria-label="Toggle Navigation Menu"
+          >
+            <div className="w-6 h-4 relative flex flex-col justify-between">
+              <span
+                className={`w-full h-0.5 bg-white transition-all duration-300 ${
+                  mobileMenuOpen ? "rotate-45 translate-y-1.5 bg-amber-400" : ""
+                }`}
+              />
+              <span
+                className={`w-full h-0.5 bg-white transition-opacity duration-300 ${
+                  mobileMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`w-full h-0.5 bg-white transition-all duration-300 ${
+                  mobileMenuOpen ? "-rotate-45 -translate-y-1.5 bg-amber-400" : ""
+                }`}
               />
             </div>
-          </a>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const isActive = activeSection === link.id;
-              return (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  className={`relative px-3 py-1.5 text-[11px] font-mono tracking-wider transition-all duration-200 rounded-full ${
-                    isActive
-                      ? "text-[#c9a84c]"
-                      : "text-[#6b6862] hover:text-[#f0ece4]"
-                  }`}
-                >
-                  {link.label.toUpperCase()}
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-active"
-                      className="absolute inset-0 rounded-full bg-[#c9a84c]/[0.08] border border-[#c9a84c]/20"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                </a>
-              );
-            })}
-          </nav>
-
-          {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            {/* Status Badge (Desktop) */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono tracking-wider text-[#6b6862]">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-              </span>
-              <span>AVAILABLE</span>
-            </div>
-
-            {/* Connect CTA (Desktop) */}
-            <a
-              href="#contact"
-              className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono px-4 py-2 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] hover:bg-[#c9a84c]/20 hover:border-[#c9a84c]/50 transition-all duration-200"
-            >
-              <span>LET'S TALK</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </a>
-
-            {/* Mobile Toggle */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-full border border-white/10 text-[#f0ece4] hover:bg-white/5 transition-colors focus:outline-none"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
+          </button>
         </div>
-      </header>
+      </div>
 
-      {/* Mobile Navigation Overlay */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
-        {mobileOpen && (
+        {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-[#050505]/95 backdrop-blur-2xl lg:hidden flex flex-col justify-center px-8"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-[#0a0c14]/98 border-b border-white/10 px-6 py-6"
           >
-            <nav className="flex flex-col gap-1">
-              {NAV_LINKS.map((link, idx) => (
-                <motion.a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={() => setMobileOpen(false)}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05, duration: 0.3 }}
-                  className="text-3xl sm:text-4xl font-display font-bold text-[#f0ece4] hover:text-[#c9a84c] transition-colors py-3 border-b border-white/[0.04]"
+            <nav className="flex flex-col gap-4">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm font-mono tracking-widest text-slate-300 hover:text-amber-400 py-2 border-b border-white/5"
                 >
-                  {link.label}
-                </motion.a>
+                  {item.label}
+                </Link>
               ))}
-            </nav>
-
-            <div className="mt-12 space-y-4">
-              <a
+              <Link
                 href="#contact"
-                onClick={() => setMobileOpen(false)}
-                className="block w-full text-center py-3 rounded-full bg-[#c9a84c] text-[#050505] font-mono text-xs font-semibold tracking-wider"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-2 text-center py-2.5 rounded-full text-xs font-mono font-bold tracking-wider text-black bg-amber-400"
               >
-                GET IN TOUCH
-              </a>
-              <p className="text-center font-mono text-xs text-[#6b6862]">
-                trivedinishant880@gmail.com
-              </p>
-            </div>
+                LET&apos;S TALK ↗
+              </Link>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </header>
   );
 }

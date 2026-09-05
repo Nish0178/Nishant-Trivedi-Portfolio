@@ -1,281 +1,415 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  Award,
-  ArrowUpRight,
-  Cpu,
-  Zap,
-  FileCode2,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
-
-const ARCHITECTURE_STEPS = [
-  {
-    step: "01",
-    title: "Idea Intake & Constraint Matrix",
-    desc: "Structured schema capturing domain parameters, audience, monetization models, and competitive assumptions.",
-  },
-  {
-    step: "02",
-    title: "Multi-Pass Gemini Pipeline",
-    desc: "Hierarchical prompt chaining for market validation, SWOT analysis, competitor gap detection, and risk modeling.",
-  },
-  {
-    step: "03",
-    title: "Co-Founder Simulation",
-    desc: "Persona-driven synthetic simulations questioning unit economics, TAM/SAM/SOM, and go-to-market resilience.",
-  },
-  {
-    step: "04",
-    title: "Persistence & Telemetry",
-    desc: "Relational persistence storing versioned reports, investor readiness metrics, pitch decks, and brand playbooks.",
-  },
-];
-
-const CAPABILITIES = [
-  "Algorithmic Startup Idea Validation",
-  "Automated Market Research & SWOT Engine",
-  "Competitor Intelligence & Defensibility Matrix",
-  "Investor-Readiness Assessment Scoring",
-  "AI Co-Founder Persona Simulation",
-  "Automated Pitch Deck & Business Plan Synthesis",
-  "Branding & Value Proposition Directives",
-  "Secure Authentication & Interactive Analytics",
-];
-
-const CODE_PREVIEW = `// LaunchPilot AI: Deterministic Gemini Prompt Pipeline
-export async function generateValidationReport(
-  input: StartupPayload
-): Promise<ValidationReport> {
-  const systemPrompt = buildSystemConstraintPrompt({
-    domain: input.industry,
-    targetAudience: input.targetPersona,
-    monetization: input.pricingModel
-  });
-
-  const [market, swot, competitors, score] =
-    await Promise.all([
-      geminiClient.generateStructuredJSON<MarketReport>(
-        systemPrompt, input.problemStatement
-      ),
-      geminiClient.generateStructuredJSON<SWOTReport>(
-        systemPrompt, input.valueProposition
-      ),
-      geminiClient.generateStructuredJSON<CompetitorAnalysis>(
-        systemPrompt, input.competitors
-      ),
-      evaluateInvestorReadiness(input)
-    ]);
-
-  return prisma.validationReport.create({
-    data: {
-      userId: input.userId,
-      projectName: input.name,
-      investorReadinessScore: score.score,
-      metrics: { market, swot, competitors },
-      simulatedNotes: await runDigitalTwin(input)
-    }
-  });
-}`;
+import Link from "next/link";
+import { motion } from "motion/react";
+import { PROJECTS } from "@/lib/portfolio-data";
 
 export default function SelectedWork() {
-  const [activeTab, setActiveTab] = useState<"system" | "code" | "capabilities">("system");
+  const [activeTab, setActiveTab] = useState<Record<string, "overview" | "schema">>({
+    "launchpilot-ai": "overview",
+  });
 
-  const tabs = [
-    { id: "system" as const, label: "Architecture", icon: Cpu },
-    { id: "capabilities" as const, label: "Capabilities", icon: Zap },
-    { id: "code" as const, label: "Implementation", icon: FileCode2 },
-  ];
+  const toggleTab = (id: string, tab: "overview" | "schema") => {
+    setActiveTab((prev) => ({ ...prev, [id]: tab }));
+  };
 
   return (
-    <section id="work" className="relative py-24 sm:py-32 bg-[#050505]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+    <section id="work" className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#08090d]">
+      {/* Background glow */}
+      <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[160px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-[1px] bg-[#c9a84c]" />
-              <span className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c] uppercase">
-                Case Study 01
-              </span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white">
-              Selected Work<span className="text-[#c9a84c]">.</span>
-            </h2>
+        <div className="mb-16">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-amber-400 font-mono text-xs font-bold tracking-widest uppercase">
+              02 / FEATURED WORK
+            </span>
+            <span className="w-8 h-[1px] bg-amber-500/40" />
           </div>
-          <p className="mt-4 md:mt-0 font-mono text-xs text-[#6b6862] max-w-sm">
-            In-depth engineering case studies with architectural decisions, AI pipelines, and production systems.
+
+          <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white uppercase leading-[0.95] max-w-4xl">
+            <span className="block text-slate-100">SELECTED WORKS.</span>
+            <span className="block text-gold-gradient">ENGINEERED VALUE.</span>
+          </h2>
+
+          <p className="text-sm sm:text-base text-slate-400 font-mono mt-4 max-w-2xl">
+            Scroll down to inspect the system architecture cards. Each platform was built to solve complex operational challenges with rigorous engineering.
           </p>
         </div>
 
-        {/* Featured Case Study Card */}
-        <div className="rounded-3xl bg-gradient-to-br from-[#0d0d0d] via-[#0a0a0a] to-[#080808] border border-white/[0.07] overflow-hidden shadow-2xl">
-          {/* Project Header with Gradient Accent */}
-          <div className="relative p-6 sm:p-10 pb-0">
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-bl from-[#c9a84c]/[0.05] via-transparent to-transparent rounded-full pointer-events-none" />
-
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] text-[10px] font-mono tracking-wider mb-4">
-                  <Award className="w-3.5 h-3.5" />
-                  <span>TOP 10 RUNNER-UP · QBX ARENA 2026</span>
-                </div>
-                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-tight">
-                  LaunchPilot AI
-                </h3>
-                <p className="text-[#a8a49c] text-sm mt-3 max-w-2xl">
-                  AI-powered startup validation platform that simulates digital twin co-founders, models market viability, and synthesizes investor-ready dossiers.
-                </p>
-              </div>
-            </div>
-
-            {/* Tech Pills */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {["Next.js", "TypeScript", "Node.js", "Express.js", "Prisma", "SQLite", "Google Gemini"].map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono text-[#a8a49c]"
-                >
-                  {tech}
+        {/* Project Architecture Cards Stack */}
+        <div className="space-y-12">
+          
+          {/* PROJECT 01: LAUNCHPILOT AI */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl aura-card p-6 sm:p-10 relative overflow-hidden border border-amber-500/25 bg-[#0d101c]/90"
+          >
+            {/* Top Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs font-bold">
+                  01 // AI + PRODUCT VALIDATION
                 </span>
-              ))}
+                <span className="text-xs font-mono text-slate-400">FLAGSHIP SYSTEM</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">PRODUCTION READY</span>
+              </div>
             </div>
-          </div>
 
-          {/* Tab Bar */}
-          <div className="px-6 sm:px-10 border-b border-white/[0.06]">
-            <div className="flex items-center gap-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`relative flex items-center gap-2 px-4 py-3 font-mono text-[10px] tracking-wider transition-colors ${
-                      isActive ? "text-[#c9a84c]" : "text-[#6b6862] hover:text-[#a8a49c]"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{tab.label.toUpperCase()}</span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="work-tab"
-                        className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#c9a84c]"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+            {/* Content & Telemetry Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Project Description */}
+              <div className="lg:col-span-7 space-y-6">
+                <div>
+                  <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight mb-3">
+                    LAUNCHPILOT AI
+                  </h3>
+                  <p className="text-base text-slate-300 leading-relaxed">
+                    AI-powered startup validation and product engineering engine. Orchestrates multi-stage idea analysis, market feasibility scoring, and automated tech stack generation via structured multimodal AI workflows.
+                  </p>
+                </div>
 
-          {/* Tab Content */}
-          <div className="p-6 sm:p-10">
-            <AnimatePresence mode="wait">
-              {activeTab === "system" && (
-                <motion.div
-                  key="system"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
-                >
-                  {ARCHITECTURE_STEPS.map((step, idx) => (
-                    <div
-                      key={idx}
-                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-[#c9a84c]/20 transition-all group"
+                {/* Tech Pills */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {["Next.js", "TypeScript", "Express.js", "Prisma", "SQLite", "Gemini 2.5 Flash", "Zod", "REST API"].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-md text-xs font-mono text-slate-200 bg-white/[0.04] border border-white/10"
                     >
-                      <span className="font-mono text-[9px] text-[#c9a84c] tracking-[0.3em] block mb-3">
-                        STAGE {step.step}
-                      </span>
-                      <h4 className="text-sm font-semibold text-white mb-2 font-display">
-                        {step.title}
-                      </h4>
-                      <p className="text-[11px] text-[#6b6862] leading-relaxed">
-                        {step.desc}
-                      </p>
-                      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between text-[9px] font-mono text-[#6b6862]">
-                        <span>VERIFIED</span>
-                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                      </div>
-                    </div>
+                      {tech}
+                    </span>
                   ))}
-                </motion.div>
-              )}
+                </div>
 
-              {activeTab === "capabilities" && (
-                <motion.div
-                  key="capabilities"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
-                >
-                  {CAPABILITIES.map((cap, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-3"
-                    >
-                      <div className="p-1.5 rounded-md bg-[#c9a84c]/10 text-[#c9a84c] mt-0.5 shrink-0">
-                        <Sparkles className="w-3 h-3" />
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-medium text-[#f0ece4]">{cap}</p>
-                        <span className="text-[9px] font-mono text-[#6b6862] mt-1 block">
-                          Production feature
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-
-              {activeTab === "code" && (
-                <motion.div
-                  key="code"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="rounded-xl bg-[#0a0a0a] border border-white/[0.08] p-5 font-mono text-xs overflow-x-auto"
-                >
-                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06] text-[10px] text-[#6b6862]">
-                    <span className="text-[#c9a84c]">lib/gemini-validation-engine.ts</span>
-                    <span>TYPESCRIPT · GEMINI SDK</span>
+                {/* Architectural highlights list */}
+                <div className="space-y-2.5 pt-2 text-xs text-slate-300 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Multi-stage prompt pipelines generating deterministic, schema-validated JSON.</span>
                   </div>
-                  <pre className="text-[#a8a49c] leading-relaxed text-[11px]">
-                    <code>{CODE_PREVIEW}</code>
-                  </pre>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Decoupled Express backend orchestrating Gemini inference and Prisma ORM data storage.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Sub-2.5s end-to-end report generation with full TypeScript type safety across boundaries.</span>
+                  </div>
+                </div>
 
-          {/* Bottom Narrative Strip */}
-          <div className="px-6 sm:px-10 pb-8 pt-4 border-t border-white/[0.04]">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] text-[#6b6862]">
-              <div>
-                <span className="font-mono text-[9px] text-[#c9a84c] tracking-[0.2em] block mb-1 uppercase">The Problem</span>
-                <p className="leading-relaxed">Founders face unstructured market discovery and cognitive bias, burning capital on unvalidated ideas.</p>
+                {/* Actions */}
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <a
+                    href="https://launch-pilot-eta.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase"
+                  >
+                    <span>LIVE PLATFORM</span>
+                    <span className="text-sm">↗</span>
+                  </a>
+                  <a
+                    href="https://github.com/Nish0178/Launch-pilot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-mono font-semibold tracking-wider uppercase"
+                  >
+                    <span>VIEW ON GITHUB</span>
+                    <span className="text-sm">↗</span>
+                  </a>
+                </div>
               </div>
-              <div>
-                <span className="font-mono text-[9px] text-[#c9a84c] tracking-[0.2em] block mb-1 uppercase">The Decision</span>
-                <p className="leading-relaxed">Multi-turn Gemini prompt chaining, structured JSON schema parsing, and Prisma ORM persistence.</p>
+
+              {/* Right Column: Architecture Telemetry Table */}
+              <div className="lg:col-span-5 bg-[#090b14] rounded-xl border border-white/10 p-5 font-mono text-xs shadow-inner">
+                <div className="text-[10px] uppercase tracking-widest text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
+                  <span>ARCHITECTURE TELEMETRY</span>
+                  <span className="text-amber-400">NODE // 01</span>
+                </div>
+
+                <div className="space-y-3.5">
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">ARCHITECTURE:</span>
+                    <span className="text-white font-medium text-right">Next.js + Express Pipeline</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">AI CORE:</span>
+                    <span className="text-amber-300 font-semibold text-right">Gemini 2.5 Flash</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">DATABASE:</span>
+                    <span className="text-white font-medium text-right">SQLite via Prisma ORM</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">VALIDATION:</span>
+                    <span className="text-emerald-400 font-medium text-right">Strict Zod Type Schemas</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">DATAFLOW:</span>
+                    <span className="text-slate-200 font-medium text-right">Client → Express → AI → DB</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-slate-400">DEPLOYMENT:</span>
+                    <span className="text-white font-medium text-right">Vercel (Production)</span>
+                  </div>
+                </div>
+
+                {/* Code contract snippet preview */}
+                <div className="mt-4 pt-3 border-t border-white/[0.08] bg-black/40 p-3 rounded text-[11px] text-amber-300/90 font-mono leading-tight overflow-x-auto">
+                  <code>
+                    export const ValidationSchema = z.object({`{`}<br />
+                    &nbsp;&nbsp;viabilityScore: z.number().min(0).max(100),<br />
+                    &nbsp;&nbsp;marketFit: z.enum([&quot;HIGH&quot;, &quot;MODERATE&quot;, &quot;LOW&quot;]),<br />
+                    &nbsp;&nbsp;techStack: z.array(z.string()),<br />
+                    {`}`});
+                  </code>
+                </div>
               </div>
-              <div>
-                <span className="font-mono text-[9px] text-[#c9a84c] tracking-[0.2em] block mb-1 uppercase">The Outcome</span>
-                <p className="leading-relaxed text-[#a8a49c]">Top 10 Runner-Up at QBX Arena Hackathon 2026 for architectural completeness and product intelligence.</p>
+
+            </div>
+          </motion.div>
+
+          {/* PROJECT 02: TODOPRO */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl aura-card p-6 sm:p-10 relative overflow-hidden border border-white/10 bg-[#0d101c]/90"
+          >
+            {/* Top Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono text-xs font-bold">
+                  02 // FULL-STACK TASK ENGINE
+                </span>
+                <span className="text-xs font-mono text-slate-400">CRUD + ANALYTICS PLATFORM</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">DEPLOYED ON RENDER</span>
               </div>
             </div>
-          </div>
+
+            {/* Content & Telemetry Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Project Description */}
+              <div className="lg:col-span-7 space-y-6">
+                <div>
+                  <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight mb-3">
+                    TODOPRO ENGINE
+                  </h3>
+                  <p className="text-base text-slate-300 leading-relaxed">
+                    Full-stack task management application featuring stateless JWT authentication, MongoDB indexing, priority scheduling, dynamic Chart.js productivity telemetry, and client-side jsPDF/CSV report generation.
+                  </p>
+                </div>
+
+                {/* Tech Pills */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {["JavaScript", "Node.js", "Express.js", "MongoDB Atlas", "Mongoose", "Chart.js", "jsPDF", "JWT Auth"].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-md text-xs font-mono text-slate-200 bg-white/[0.04] border border-white/10"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Architectural highlights list */}
+                <div className="space-y-2.5 pt-2 text-xs text-slate-300 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Stateless authentication with bcrypt password hashing and secure HTTP cookies.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Visual completion metrics and velocity graphing powered by Chart.js.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Client-side PDF compilation and CSV exports for full task data portability.</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <a
+                    href="https://todo-pro-web-frontend.onrender.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase"
+                  >
+                    <span>LIVE APP</span>
+                    <span className="text-sm">↗</span>
+                  </a>
+                  <a
+                    href="https://github.com/Nish0178/todo-pro-web"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-mono font-semibold tracking-wider uppercase"
+                  >
+                    <span>VIEW ON GITHUB</span>
+                    <span className="text-sm">↗</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Right Column: Architecture Telemetry Table */}
+              <div className="lg:col-span-5 bg-[#090b14] rounded-xl border border-white/10 p-5 font-mono text-xs shadow-inner">
+                <div className="text-[10px] uppercase tracking-widest text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
+                  <span>ARCHITECTURE TELEMETRY</span>
+                  <span className="text-blue-400">NODE // 02</span>
+                </div>
+
+                <div className="space-y-3.5">
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">AUTH PROTOCOL:</span>
+                    <span className="text-white font-medium text-right">Stateless JWT + Bcrypt</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">DATABASE:</span>
+                    <span className="text-blue-300 font-semibold text-right">MongoDB Atlas + Mongoose</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">VISUALIZATION:</span>
+                    <span className="text-white font-medium text-right">Chart.js Velocity Engine</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">DATA EXPORT:</span>
+                    <span className="text-emerald-400 font-medium text-right">jsPDF + Dynamic CSV</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-slate-400">HOSTING:</span>
+                    <span className="text-white font-medium text-right">Render Cloud Deployment</span>
+                  </div>
+                </div>
+
+                {/* Telemetry Indicator */}
+                <div className="mt-4 pt-3 border-t border-white/[0.08] bg-black/40 p-3 rounded flex items-center justify-between text-[11px] text-slate-300">
+                  <span>API Response P95:</span>
+                  <span className="text-emerald-400 font-mono font-bold">&lt; 120ms</span>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+
+          {/* PROJECT 03: ASTROSPACIOUS */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl aura-card p-6 sm:p-10 relative overflow-hidden border border-white/10 bg-[#0d101c]/90"
+          >
+            {/* Top Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded bg-purple-500/10 border border-purple-500/30 text-purple-400 font-mono text-xs font-bold">
+                  03 // ENTERPRISE FRONTEND
+                </span>
+                <span className="text-xs font-mono text-slate-400">COMMERCIAL INTERNSHIP PROJECT</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
+                <span className="text-xs font-mono text-amber-400 font-semibold tracking-wider">NOV 2025 – AUG 2026</span>
+              </div>
+            </div>
+
+            {/* Content & Telemetry Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Project Description */}
+              <div className="lg:col-span-7 space-y-6">
+                <div>
+                  <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight mb-3">
+                    ASTROSPACIOUS
+                  </h3>
+                  <p className="text-base text-slate-300 leading-relaxed">
+                    Commercial web application interfaces and frontend modules built as a Web Development Intern, delivering high-performance UI components, seamless mobile responsiveness, and clean Git collaboration.
+                  </p>
+                </div>
+
+                {/* Tech Pills */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {["React.js", "Tailwind CSS", "JavaScript", "HTML5", "CSS3", "Responsive UI", "Git Workflow"].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-md text-xs font-mono text-slate-200 bg-white/[0.04] border border-white/10"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Architectural highlights list */}
+                <div className="space-y-2.5 pt-2 text-xs text-slate-300 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Engineered modular UI components with zero layout shift across 320px–1920px viewports.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Collaborated within agile sprint cycles with strict code reviews and Git branching strategies.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">▸</span>
+                    <span>Optimized DOM rendering performance and client bundle size for fast initial load.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Architecture Telemetry Table */}
+              <div className="lg:col-span-5 bg-[#090b14] rounded-xl border border-white/10 p-5 font-mono text-xs shadow-inner">
+                <div className="text-[10px] uppercase tracking-widest text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
+                  <span>DELIVERABLE TELEMETRY</span>
+                  <span className="text-purple-400">NODE // 03</span>
+                </div>
+
+                <div className="space-y-3.5">
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">ORGANIZATION:</span>
+                    <span className="text-white font-medium text-right">ASTROSPACIOUS</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">ROLE:</span>
+                    <span className="text-purple-300 font-semibold text-right">Web Development Intern</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">DURATION:</span>
+                    <span className="text-white font-medium text-right">Nov 2025 – Aug 2026</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-white/5">
+                    <span className="text-slate-400">FOCUS:</span>
+                    <span className="text-emerald-400 font-medium text-right">Commercial UI Architecture</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-slate-400">CONTRIBUTION:</span>
+                    <span className="text-slate-200 font-medium text-right">Verified Internship Engineering</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+
         </div>
+
       </div>
     </section>
   );

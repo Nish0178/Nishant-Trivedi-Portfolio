@@ -1,76 +1,70 @@
+"use client";
+
 import React from "react";
 import Header from "./components/navigation/Header";
-import CustomCursor from "./components/navigation/CustomCursor";
-import AmbientBackdrop from "./components/3d/AmbientBackdrop";
 import Hero from "./components/hero/Hero";
-import Manifesto from "./components/intro/Manifesto";
+import AboutSection from "./components/about/AboutSection";
 import SelectedWork from "./components/work/SelectedWork";
-import TodoProWork from "./components/work/TodoProWork";
-import DeliveredProducts from "./components/delivered/DeliveredProducts";
-import ExperienceTimeline from "./components/experience/ExperienceTimeline";
 import TechStackMatrix from "./components/stack/TechStackMatrix";
+import ExperienceTimeline from "./components/experience/ExperienceTimeline";
 import ProblemSolving from "./components/dsa/ProblemSolving";
-import AboutStory from "./components/about/AboutStory";
 import Achievements from "./components/achievements/Achievements";
 import ContactSection from "./components/contact/ContactSection";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[#050505] text-[#f0ece4]">
-      {/* Interactive Custom Cursor (Desktop) */}
-      <CustomCursor />
+    <div className="relative min-h-screen bg-[#08090d] text-[#f8fafc] aura-grid-bg selection:bg-amber-400 selection:text-black">
+      {/* Top Floating Glow Backdrop */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-amber-500/10 via-amber-500/2 to-transparent blur-[140px] pointer-events-none -z-10" />
 
-      {/* Subtle Ambient Glow Backdrop */}
-      <AmbientBackdrop />
-
-      {/* Fixed Navigation */}
+      {/* Fixed Cinematic Navigation */}
       <Header />
 
-      {/* Main Content Flow */}
+      {/* Main Content Sections */}
       <main className="relative z-10">
-        {/* 01: Cinematic Full-Viewport Hero with Walking Video */}
+        {/* HERO SECTION */}
         <Hero />
 
-        {/* Gradient divider between hero and manifesto */}
-        <div className="gradient-divider" />
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
 
-        {/* 02: Engineering Manifesto & Philosophy */}
-        <Manifesto />
+        {/* 01: ABOUT ME */}
+        <AboutSection />
 
-        {/* 03: Case Study 01 — LaunchPilot AI */}
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
+
+        {/* 02: SELECTED WORK */}
         <SelectedWork />
 
-        {/* 03b: Case Study 02 — TodoPro */}
-        <TodoProWork />
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
 
-        {/* Gradient divider */}
-        <div className="gradient-divider" />
-
-        {/* 04: Delivered Products / Team Work */}
-        <DeliveredProducts />
-
-        {/* 05: Experience Timeline */}
-        <ExperienceTimeline />
-
-        {/* Gradient divider */}
-        <div className="gradient-divider" />
-
-        {/* 06: Tech Stack Matrix */}
+        {/* 03: TECH MATRIX / SKILLS */}
         <TechStackMatrix />
 
-        {/* 07: DSA & Systems */}
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
+
+        {/* 04: EXPERIENCE & MILESTONES */}
+        <ExperienceTimeline />
+
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
+
+        {/* ALGORITHMIC RIGOR / PROBLEM SOLVING */}
         <ProblemSolving />
 
-        {/* Gradient divider */}
-        <div className="gradient-divider" />
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
 
-        {/* 08: About & Background */}
-        <AboutStory />
-
-        {/* 08b: Achievements & Certifications */}
+        {/* ACHIEVEMENTS & CERTIFICATIONS */}
         <Achievements />
 
-        {/* 09: Contact & Footer */}
+        {/* Cinematic Divider */}
+        <div className="aura-divider" />
+
+        {/* 05: CONTACT / INITIALIZE TRANSMISSION */}
         <ContactSection />
       </main>
     </div>

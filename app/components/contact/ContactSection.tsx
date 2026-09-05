@@ -1,267 +1,224 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { motion } from "motion/react";
-import {
-  Mail,
-  Send,
-  CheckCircle2,
-  Copy,
-  ExternalLink,
-  ArrowUp,
-  Sparkles,
-} from "lucide-react";
+import { PERSONAL_INFO } from "@/lib/portfolio-data";
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [copied, setCopied] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("trivedinishant880@gmail.com");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill in all required fields.");
-      return;
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(PERSONAL_INFO.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback
     }
-    setStatus("loading");
-    setTimeout(() => setStatus("success"), 1000);
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleDispatch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Transmission from ${formData.name || "Engineering Partner"}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nPayload:\n${formData.message}`
+    );
+    window.location.href = `mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`;
   };
+
+  const socialLinks = [
+    { name: "GitHub", url: PERSONAL_INFO.socials.github },
+    { name: "LinkedIn", url: PERSONAL_INFO.socials.linkedin },
+    { name: "LeetCode", url: PERSONAL_INFO.socials.leetcode },
+    { name: "Instagram", url: PERSONAL_INFO.socials.instagram },
+    { name: "HackerRank", url: PERSONAL_INFO.socials.hackerrank },
+  ];
 
   return (
-    <footer id="contact" className="relative pt-24 sm:pt-32 pb-8 bg-[#050505]">
-      {/* Gradient Divider */}
-      <div className="gradient-divider mb-24 sm:mb-32" />
+    <section id="contact" className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#08090d]">
+      {/* Glow Effects */}
+      <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        {/* Hero CTA */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Section Header */}
+        <div className="mb-16">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-amber-400 font-mono text-xs font-bold tracking-widest uppercase">
+              05 / CONTACT
+            </span>
+            <span className="w-8 h-[1px] bg-amber-500/40" />
+          </div>
+
+          <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white uppercase leading-[0.95] max-w-4xl">
+            <span className="block text-slate-100">INITIALIZE</span>
+            <span className="block text-gold-gradient">TRANSMISSION.</span>
+          </h2>
+
+          <p className="text-sm sm:text-base text-slate-300 font-mono mt-4 max-w-2xl">
+            Have an ambitious system to architect, an engineering opportunity, or a collaborative inquiry? Send a direct dispatch below.
+          </p>
+        </div>
+
+        {/* Transmission Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
+          
+          {/* Left Column: Interactive Dispatch Terminal Form */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[10px] font-mono tracking-widest text-[#c9a84c] mb-6"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>OPEN FOR OPPORTUNITIES</span>
-          </motion.div>
-
-          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6"
+            className="lg:col-span-7 rounded-2xl aura-card p-6 sm:p-10 border border-amber-500/30 bg-[#0d101c]/95"
           >
-            <span className="text-gradient-gold">Let&apos;s Build</span>
-            <span className="text-[#c9a84c]">.</span>
-          </motion.h2>
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between pb-6 mb-6 border-b border-white/[0.08] font-mono text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                <span className="text-emerald-400 font-bold">STATUS: READY_FOR_DISPATCH</span>
+              </div>
+              <span className="text-slate-400">CHANNEL: ENCRYPTED // TLS</span>
+            </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            <form onSubmit={handleDispatch} className="space-y-6 font-mono">
+              <div>
+                <label className="block text-xs font-bold tracking-wider text-slate-300 uppercase mb-2">
+                  01 // SENDER IDENTITY (NAME / COMPANY)
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Alex Reed / Engineering Lead"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold tracking-wider text-slate-300 uppercase mb-2">
+                  02 // RETURN DISPATCH EMAIL
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. alex@company.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold tracking-wider text-slate-300 uppercase mb-2">
+                  03 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY)
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="Detail your engineering requirements, project scope, or opportunity..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn-gold w-full py-4 rounded-xl text-xs font-mono font-bold tracking-widest uppercase flex items-center justify-center gap-2"
+              >
+                <span>EXECUTE DISPATCH</span>
+                <span className="text-base">↗</span>
+              </button>
+            </form>
+          </motion.div>
+
+          {/* Right Column: Direct Channels & Verified Details */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-sm sm:text-base text-[#6b6862] leading-relaxed"
+            transition={{ delay: 0.15 }}
+            className="lg:col-span-5 space-y-6"
           >
-            Have an engineering challenge, product build, or team opportunity? Let&apos;s discuss how we can build resilient systems together.
-          </motion.p>
-        </div>
+            {/* Email Card with Copy Feature */}
+            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/90">
+              <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
+                DIRECT INBOX
+              </div>
+              <div className="font-mono text-base sm:text-lg text-white font-bold tracking-tight mb-4 break-all">
+                {PERSONAL_INFO.email}
+              </div>
 
-        {/* Form & Contact Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
-          {/* Left: Direct Connect */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] shadow-2xl">
-              <h3 className="font-display font-bold text-lg text-white mb-2">Direct Connect</h3>
-              <p className="text-[11px] text-[#6b6862] mb-6">Reach out anytime. Response within 24 hours.</p>
-
-              {/* Email Pill */}
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between gap-3 mb-6">
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="p-2 rounded-lg bg-[#c9a84c]/10 text-[#c9a84c] shrink-0">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <div className="overflow-hidden">
-                    <span className="text-[9px] font-mono text-[#6b6862] block">PRIMARY</span>
-                    <span className="text-[11px] font-mono text-[#f0ece4] truncate block">trivedinishant880@gmail.com</span>
-                  </div>
-                </div>
+              <div className="flex flex-wrap gap-3">
                 <button
                   onClick={handleCopyEmail}
-                  className="px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-[#c9a84c] hover:text-[#050505] border border-white/10 text-[10px] font-mono transition-all shrink-0 flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-lg text-xs font-mono font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-amber-300 border border-amber-500/30 transition-colors flex items-center gap-1.5"
                 >
-                  {copied ? (
-                    <>
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span className="text-emerald-400">COPIED</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3 h-3" />
-                      <span>COPY</span>
-                    </>
-                  )}
+                  <span>{copied ? "COPIED TO CLIPBOARD ✓" : "COPY EMAIL"}</span>
                 </button>
-              </div>
-
-              {/* Links */}
-              <div className="space-y-2">
                 <a
-                  href="https://www.linkedin.com/in/nishant-trivedi-363ba3249"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-[#c9a84c]/30 text-[11px] font-mono transition-all group"
+                  href={`mailto:${PERSONAL_INFO.email}`}
+                  className="px-4 py-2 rounded-lg text-xs font-mono font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-white border border-white/10 transition-colors"
                 >
-                  <span className="text-[#a8a49c] group-hover:text-[#c9a84c]">LinkedIn</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#6b6862] group-hover:text-[#c9a84c]" />
-                </a>
-                <a
-                  href="mailto:trivedinishant880@gmail.com"
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-[#c9a84c]/30 text-[11px] font-mono transition-all group"
-                >
-                  <span className="text-[#a8a49c] group-hover:text-[#c9a84c]">Email Client</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#6b6862] group-hover:text-[#c9a84c]" />
+                  OPEN EMAIL CLIENT ↗
                 </a>
               </div>
             </div>
+
+            {/* Canonical Social Channels */}
+            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/90">
+              <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-4">
+                CANONICAL CHANNELS
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/30 hover:bg-white/[0.06] transition-all flex items-center justify-between font-mono text-xs text-slate-200"
+                  >
+                    <span>{link.name}</span>
+                    <span className="text-amber-400">↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Location & Availability Note */}
+            <div className="p-6 rounded-2xl bg-[#090b14] border border-white/[0.06] font-mono text-xs text-slate-400 space-y-2">
+              <div className="flex justify-between">
+                <span>LOCATION:</span>
+                <span className="text-white">Lucknow, India (UTC +05:30)</span>
+              </div>
+              <div className="flex justify-between">
+                <span>AVAILABILITY:</span>
+                <span className="text-emerald-400 font-bold">OPEN FOR ROLES &amp; PROJECTS</span>
+              </div>
+            </div>
+
+          </motion.div>
+
+        </div>
+
+        {/* Footer */}
+        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
+            <span className="text-white font-semibold">NISHANT TRIVEDI</span>
+            <span>·</span>
+            <span>SOFTWARE ENGINEER</span>
           </div>
 
-          {/* Right: Contact Form */}
-          <div className="lg:col-span-7">
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] shadow-2xl">
-              {status === "success" ? (
-                <div className="py-12 text-center space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white font-display">Message Sent</h3>
-                  <p className="text-[11px] text-[#6b6862] font-mono max-w-sm mx-auto">
-                    Thank you, {formData.name}. Nishant will get in touch shortly.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setStatus("idle");
-                      setFormData({ name: "", email: "", subject: "", message: "" });
-                    }}
-                    className="mt-4 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono text-[#c9a84c] hover:bg-white/[0.08] transition-colors"
-                  >
-                    SEND ANOTHER
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[9px] font-mono text-[#6b6862] tracking-[0.2em] uppercase mb-1.5">Name *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#050505] border border-white/[0.08] text-[11px] font-mono text-[#f0ece4] placeholder-[#6b6862] focus:outline-none focus:border-[#c9a84c]/50 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-mono text-[#6b6862] tracking-[0.2em] uppercase mb-1.5">Email *</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#050505] border border-white/[0.08] text-[11px] font-mono text-[#f0ece4] placeholder-[#6b6862] focus:outline-none focus:border-[#c9a84c]/50 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[9px] font-mono text-[#6b6862] tracking-[0.2em] uppercase mb-1.5">Subject</label>
-                    <input
-                      type="text"
-                      placeholder="Project Inquiry / Role Discussion"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#050505] border border-white/[0.08] text-[11px] font-mono text-[#f0ece4] placeholder-[#6b6862] focus:outline-none focus:border-[#c9a84c]/50 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[9px] font-mono text-[#6b6862] tracking-[0.2em] uppercase mb-1.5">Message *</label>
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Tell me about your project or opportunity..."
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#050505] border border-white/[0.08] text-[11px] font-mono text-[#f0ece4] placeholder-[#6b6862] focus:outline-none focus:border-[#c9a84c]/50 resize-none transition-colors"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="w-full py-3 rounded-full bg-[#c9a84c] text-[#050505] font-mono text-xs font-semibold tracking-wider hover:bg-[#dfc06a] transition-all flex items-center justify-center gap-2 disabled:opacity-50 glow-gold"
-                  >
-                    {status === "loading" ? (
-                      <span>SENDING...</span>
-                    ) : (
-                      <>
-                        <span>SEND MESSAGE</span>
-                        <Send className="w-3.5 h-3.5" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </div>
+          <div>
+            © {new Date().getFullYear()} NISHANT TRIVEDI. ALL RIGHTS RESERVED.
           </div>
         </div>
 
-        {/* Footer Bar */}
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-6 text-[10px] font-mono text-[#6b6862]">
-          <div className="flex items-center gap-3">
-            <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#c9a84c]/20">
-              <Image
-                src="/images/nt-logo-raw.png"
-                alt="NT"
-                fill
-                sizes="20px"
-                className="object-cover"
-              />
-            </div>
-            <span>© 2026 NISHANT TRIVEDI</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <span className="text-[#6b6862]">BUILT WITH PRECISION</span>
-            <button
-              onClick={scrollToTop}
-              className="flex items-center gap-1.5 text-[#c9a84c] hover:text-white transition-colors"
-            >
-              <span>TOP</span>
-              <ArrowUp className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
       </div>
-    </footer>
+    </section>
   );
 }

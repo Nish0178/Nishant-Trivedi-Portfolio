@@ -2,28 +2,27 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: "#0b0d13",
   width: "device-width",
   initialScale: 1,
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nishanttrivedi.dev"),
-  title: "Nishant Trivedi — Software Engineer & Builder",
+  title: "Nishant Trivedi — Software Engineer & Systems Builder",
   description:
-    "Personal engineering portfolio and digital identity of Nishant Trivedi — Full-Stack Developer, AI Engineer, Open Source Contributor, and Problem Solver. Explore production case studies, delivered products, and algorithmic depth.",
+    "Software engineer building products, systems, and AI-powered experiences. Based in Lucknow, India.",
   keywords: [
     "Nishant Trivedi",
     "Software Engineer",
     "Full-Stack Developer",
     "LaunchPilot AI",
+    "TodoPro",
     "Astrospacious",
-    "MERN Stack",
     "Next.js",
     "TypeScript",
     "Java",
     "Google Gemini",
-    "Open Source Contributor",
     "LeetCode",
     "AKTU Lucknow",
   ],
@@ -35,9 +34,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nishant Trivedi — Software Engineer",
     description:
-      "Crafting resilient systems and intelligent digital products — from first interaction to production.",
+      "Software engineer building products, systems, and AI-powered experiences.",
     url: "https://nishanttrivedi.dev",
-    siteName: "Nishant Trivedi Portfolio",
+    siteName: "Nishant Trivedi",
     images: [
       {
         url: "/images/nt-banner-logo.png",
@@ -53,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nishant Trivedi — Software Engineer",
     description:
-      "Full-stack engineering, AI product architecture, delivered products, and problem solving.",
+      "Software engineer building products, systems, and AI-powered experiences.",
     images: ["/images/nt-banner-logo.png"],
   },
 };
@@ -64,16 +63,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
+    <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="noise-overlay bg-[#050505] text-[#f0ece4] antialiased min-h-screen">
+      <body className="bg-[#08090d] text-[#e2e8f0] antialiased min-h-screen selection:bg-[#f59e0b] selection:text-[#090a0f]">
         {children}
       </body>
     </html>
