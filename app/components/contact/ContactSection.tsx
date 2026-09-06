@@ -255,7 +255,7 @@ export default function ContactSection() {
           </div>
 
           <div className="tracking-wider">
-            © {new Date().getFullYear()} NISHANT TRIVEDI. ALL RIGHTS RESERVED.
+            © 2026 NISHANT TRIVEDI. ALL RIGHTS RESERVED.
           </div>
         </motion.div>
 

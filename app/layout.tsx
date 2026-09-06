@@ -63,8 +63,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="bg-[#08090d] text-[#e2e8f0] antialiased min-h-screen selection:bg-[#f59e0b] selection:text-[#090a0f]">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body
+        className="bg-[#08090d] text-[#e2e8f0] antialiased min-h-screen selection:bg-[#f59e0b] selection:text-[#090a0f] overflow-x-clip max-w-full"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

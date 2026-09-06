@@ -13,15 +13,15 @@ import ContactSection from "./components/contact/ContactSection";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[#08090d] text-[#f8fafc] aura-grid-bg selection:bg-amber-400 selection:text-black">
+    <div className="relative min-h-screen bg-[#08090d] text-[#f8fafc] aura-grid-bg selection:bg-amber-400 selection:text-black overflow-x-clip max-w-full">
       {/* Top Floating Glow Backdrop */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-amber-500/10 via-amber-500/2 to-transparent blur-[140px] pointer-events-none -z-10" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[400px] bg-gradient-to-b from-amber-500/10 via-amber-500/2 to-transparent blur-[140px] pointer-events-none -z-10" />
 
       {/* Fixed Cinematic Navigation */}
       <Header />
 
       {/* Main Content Sections */}
-      <main className="relative z-10">
+      <main className="relative z-10 overflow-x-clip max-w-full">
         {/* HERO SECTION */}
         <Hero />
 

@@ -26,7 +26,7 @@ export default function Hero() {
       ref={sectionRef}
       className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 sm:px-8 overflow-hidden"
     >
-      {/* STEP 1: Ambient background aura appears quietly */}
+      {/* Ambient background aura glow */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -44,24 +44,25 @@ export default function Hero() {
 
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
         
-        {/* Left Column: Bold Editorial Typography & Narrative */}
+        {/* Left Column: Bold Editorial Typography, CTAs, Signature & Metrics */}
         <motion.div
           style={{ y: heroHeadlineY, opacity: heroTextOpacity }}
           className="lg:col-span-7 flex flex-col justify-center"
         >
-          {/* STEP 2: Small "NISHANT." identity reveals */}
+          {/* Top Identifier */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: EASING.cinematic }}
-            className="flex items-center gap-2 mb-6"
+            className="flex items-center gap-1.5 mb-6"
           >
-            <span className="text-sm font-bold tracking-[0.24em] text-white uppercase">
-              NISHANT<span className="text-amber-400">.</span>
+            <span className="text-xs sm:text-sm font-bold tracking-[0.24em] text-white uppercase">
+              NISHANT
             </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
           </motion.div>
 
-          {/* STEP 3 & 4: Main headline reveals line-by-line + Highlighted word */}
+          {/* Main Headline (3 Lines) */}
           <h1 className="serif-headline text-5xl sm:text-7xl lg:text-[5.5rem] font-bold tracking-tight leading-[0.92] text-white uppercase mb-8">
             <motion.span
               initial={{ opacity: 0, y: 22 }}
@@ -83,30 +84,30 @@ export default function Hero() {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.85, delay: 0.58, ease: EASING.cinematic }}
-              className="block text-gold-gradient serif-italic"
+              className="block text-[#f59e0b]"
             >
               EXPERIENCES
             </motion.span>
           </h1>
 
-          {/* STEP 6: Sub-roles Tag Strip & Supporting narrative */}
+          {/* Sub-roles Tag Strip */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.72, ease: EASING.cinematic }}
-            className="flex flex-wrap items-center gap-2.5 sm:gap-3.5 mb-8"
+            className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-8"
           >
             {["FULL STACK DEVELOPER", "UI/UX DESIGNER", "DATA SCIENCE"].map((role) => (
               <span
                 key={role}
-                className="px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-[0.16em] uppercase text-slate-200 bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-sm"
+                className="px-4 py-2 rounded-full text-xs font-semibold tracking-wider text-slate-300 bg-white/[0.04] border border-white/15 backdrop-blur-md shadow-sm uppercase"
               >
                 {role}
               </span>
             ))}
           </motion.div>
 
-          {/* Supporting paragraph */}
+          {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,71 +117,102 @@ export default function Hero() {
             I turn bold ideas into seamless digital experiences, where frontend meets powerful backend, and code transforms vision into impact.
           </motion.p>
 
-          {/* STEP 7: Action CTAs appear last */}
+          {/* Actions & Signature Row */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.0, ease: EASING.cinematic }}
-            className="flex flex-wrap items-center gap-4 sm:gap-5"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12"
           >
-            <Link
-              href="#work"
-              className="btn-gold inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs tracking-[0.18em] uppercase font-bold"
-            >
-              <span>EXPLORE MY WORK</span>
-              <span className="text-base">↗</span>
-            </Link>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="#work"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase text-black bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:brightness-110 hover:-translate-y-0.5 transition-all"
+              >
+                <span>EXPLORE MY WORK</span>
+                <span className="text-sm">↗</span>
+              </Link>
 
-            <a
-              href="mailto:trivedinishant880@gmail.com?subject=Inquiry%20-%20Nishant%20Trivedi"
-              className="btn-outline-gold inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs tracking-[0.18em] uppercase font-semibold"
-            >
-              <span>DOWNLOAD RESUME</span>
-              <span className="text-base">↓</span>
-            </a>
+              <a
+                href="mailto:trivedinishant880@gmail.com?subject=Inquiry%20-%20Nishant%20Trivedi"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-black/50 border border-white/20 hover:border-amber-400 hover:text-amber-300 hover:-translate-y-0.5 transition-all"
+              >
+                <span>DOWNLOAD RESUME</span>
+                <span className="text-sm">↓</span>
+              </a>
+            </div>
+
+            {/* Handwritten Signature & Tagline Block */}
+            <div className="flex flex-col items-start sm:items-end">
+              <div className="font-signature text-4xl sm:text-5xl text-white font-normal tracking-wide -rotate-3 select-none">
+                Nishant Trivedi
+              </div>
+              <svg
+                width="180"
+                height="16"
+                viewBox="0 0 180 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="-mt-1.5"
+              >
+                <path
+                  d="M 2 4 Q 90 18 178 3 Q 90 22 2 4"
+                  fill="#f59e0b"
+                />
+              </svg>
+              <div className="text-[10px] font-mono font-bold tracking-[0.22em] text-amber-400 uppercase mt-1">
+                CODE &times; CREATE &times; IMPACT
+              </div>
+            </div>
           </motion.div>
 
-          {/* Bottom Quick Metric Strip */}
+          {/* Bottom Quick Metric Strip with Vertical Dividers */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.15, ease: EASING.cinematic }}
-            className="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/[0.08] max-w-lg"
+            className="grid grid-cols-3 gap-6 pt-8 border-t border-white/[0.08] max-w-xl"
           >
-            <div>
-              <div className="serif-metric text-2xl sm:text-3xl font-bold text-white">400+</div>
-              <div className="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase mt-1">LeetCode Solved</div>
+            <div className="pr-4 border-r border-white/10">
+              <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">400+</div>
+              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                LEETCODE SOLVED
+              </div>
             </div>
-            <div>
-              <div className="serif-metric text-2xl sm:text-3xl font-bold text-amber-400">B.Tech</div>
-              <div className="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase mt-1">AKTU CS &apos;28</div>
+            <div className="px-4 border-r border-white/10">
+              <div className="serif-metric text-3xl sm:text-4xl font-bold text-amber-400">B.Tech</div>
+              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                AKTU CS &apos;28
+              </div>
             </div>
-            <div>
-              <div className="serif-metric text-2xl sm:text-3xl font-bold text-white">Top 10</div>
-              <div className="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase mt-1">Hackathon Runner-Up</div>
+            <div className="pl-4">
+              <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">Top 10</div>
+              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                HACKATHON RUNNER-UP
+              </div>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* STEP 5: Right Column: Visual Stage with Walking Video & Mask Reveal */}
+        {/* Right Column: Visual Stage with Walking Video, ESTD Seal, & Quote Box */}
         <motion.div
           initial={{ opacity: 0, clipPath: "inset(10% 0% 0% 0%)", scale: 0.95 }}
           animate={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)", scale: 1 }}
           style={{ scale: heroVideoScale, y: heroVideoY }}
           transition={{ duration: 1.0, delay: 0.48, ease: EASING.cinematic }}
-          className="lg:col-span-5 flex justify-center lg:justify-end relative"
+          className="lg:col-span-5 flex flex-col items-center lg:items-end relative"
         >
-          {/* Subtle Ambient Behind Media */}
+          {/* Subtle Ambient Glow Behind Media */}
           <div className="absolute inset-0 bg-gradient-to-t from-amber-500/25 via-amber-500/5 to-transparent rounded-3xl blur-3xl -z-10" />
 
-          {/* Video Container in 9:16 Aspect Ratio - Video remains 100% untouched */}
-          <div className="relative w-full max-w-[340px] sm:max-w-[380px] rounded-2xl overflow-hidden border border-amber-500/30 bg-[#0e111d] shadow-[0_25px_65px_-15px_rgba(0,0,0,0.85),0_0_40px_-5px_rgba(245,158,11,0.25)]">
+          {/* Video Container in 9:16 Aspect Ratio */}
+          <div className="relative w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[420px] rounded-2xl overflow-hidden border border-amber-500/40 bg-[#0e111d] shadow-[0_25px_65px_-15px_rgba(0,0,0,0.9),0_0_40px_-5px_rgba(245,158,11,0.25)]">
             
             {/* Top Corner Crosshair Indicators */}
-            <div className="absolute top-3 left-3 z-20 text-[9px] tracking-[0.2em] text-amber-400 font-bold bg-black/70 px-2 py-0.5 rounded backdrop-blur-md border border-amber-500/40 uppercase">
+            <div className="absolute top-3.5 left-3.5 z-20 font-mono text-[10px] tracking-[0.2em] text-amber-400 font-bold bg-black/80 px-2.5 py-1 rounded backdrop-blur-md border border-amber-500/50 uppercase">
               SYS // ACTIVE_FRAME
             </div>
-            <div className="absolute top-3 right-3 z-20 w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
 
             {/* Native Video */}
             <div className="relative aspect-[9/16] w-full bg-black/50">
@@ -206,36 +238,30 @@ export default function Hero() {
             {/* Bottom Meta Bar inside video container */}
             <div className="p-4 bg-[#0a0d18]/95 backdrop-blur-md border-t border-white/10 flex items-center justify-between">
               <div>
-                <div className="text-xs font-bold text-white tracking-wide">Nishant Trivedi</div>
-                <div className="text-[10px] tracking-wider text-slate-400">Software Engineer · Lucknow, IN</div>
+                <div className="text-sm font-bold text-white tracking-wide">Nishant Trivedi</div>
+                <div className="text-[11px] text-slate-400">Full Stack Developer · Lucknow, IN</div>
               </div>
-              <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-[10px] font-bold text-amber-400">
+              <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-[10px] font-bold text-amber-400 font-mono">
                 NT
+              </div>
+            </div>
+
+            {/* Floating Golden Seal Emblem overlapping top-right */}
+            <div className="absolute top-2 right-2 sm:-top-1 sm:-right-1 z-30 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 p-[1.5px] shadow-[0_0_25px_rgba(245,158,11,0.6)]">
+              <div className="w-full h-full rounded-full bg-[#07080c] flex flex-col items-center justify-center text-center">
+                <span className="text-[9px] font-mono font-bold text-amber-400 tracking-wider">ESTD</span>
+                <span className="text-[11px] font-mono font-bold text-white tracking-tight">2026</span>
               </div>
             </div>
           </div>
 
-          {/* Floating Signature Badge on Right */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.85, ease: EASING.cinematic }}
-            className="absolute -bottom-6 -left-6 sm:-left-10 z-30 max-w-[240px] p-4 rounded-xl bg-[#0f1322]/98 backdrop-blur-xl border border-amber-500/40 shadow-[0_15px_35px_rgba(0,0,0,0.7),0_0_25px_-5px_rgba(245,158,11,0.3)]"
-          >
-            <p className="text-[11px] tracking-wider text-amber-300 font-semibold uppercase leading-tight mb-1.5 serif-italic">
-              &ldquo;Code is my craft, impact is my goal.&rdquo;
-            </p>
-            <div className="font-signature text-2xl text-white font-bold tracking-wider">
-              Nishant
+          {/* Horizontal Quote Card Directly Below Video */}
+          <div className="w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[420px] rounded-2xl border border-amber-500/40 bg-[#0b0e18]/90 p-5 mt-4 flex items-center justify-between shadow-[0_15px_35px_rgba(0,0,0,0.7),0_0_25px_-5px_rgba(245,158,11,0.2)]">
+            <div className="font-mono text-xs sm:text-sm font-bold tracking-wider text-amber-400 uppercase leading-relaxed">
+              <div>&ldquo;CODE IS MY CRAFT,</div>
+              <div>IMPACT IS MY GOAL.&rdquo;</div>
             </div>
-          </motion.div>
-
-          {/* Golden Seal Emblem */}
-          <div className="absolute -top-4 -right-4 sm:-right-6 z-30 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 p-[1px] shadow-[0_0_25px_rgba(245,158,11,0.5)]">
-            <div className="w-full h-full rounded-full bg-[#07080c] flex flex-col items-center justify-center text-center">
-              <span className="text-[9px] font-bold text-amber-400 tracking-wider">ESTD</span>
-              <span className="text-[11px] font-bold text-white tracking-tight">2026</span>
-            </div>
+            <div className="w-10 sm:w-14 h-0.5 bg-amber-400 rounded-full ml-4" />
           </div>
 
         </motion.div>

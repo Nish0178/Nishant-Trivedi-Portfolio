@@ -167,13 +167,16 @@ Grounded in `lib/portfolio-data.ts`:
 - **ADR-008**: Algorithmic rigor presentation grounded in verified LeetCode canonical profile.
 - **ADR-009**: White editorial contact section with honest mailto client drafting and one-click copy.
 - **ADR-010**: Centralized `lib/portfolio-data.ts` SSOT and complete white editorial system harmonization.
+- **ADR-011**: Art-Directed Times New Roman Typography & Global Cinematic Motion System (`app/lib/motion.ts`, 7-step hero choreography, scroll-coupled headline transforms).
+- **ADR-012**: Reversible Sticky Stacking Card Architecture for Selected Work (`app/components/work/SelectedWork.tsx`: LaunchPilot AI at `z-10/top-28`, TodoPro Engine at `z-20/top-32`, Astrospacious at `z-30/top-36`, fully reversible on scroll up/down, verified via browser automation).
 
 ---
 
 # 08. BUILD & QUALITY STATUS
 
-- **Production Build (`npm run build`)**: `PASSING` (Exit code 0, clean static page generation in ~7s)
+- **Production Build (`npm run build`)**: `PASSING` (Exit code 0, clean static page generation in ~4s)
 - **TypeScript & ESLint**: `0 errors, 0 warnings`
 - **Responsive Scaling**: Tested and verified across 320px, 375px, 390px, 768px, 1024px, 1440px+
-- **Console & Runtime**: 0 hydration mismatches, 0 unhandled promise rejections
+- **Console & Runtime**: Clean runtime, zero horizontal overflow (`scrollWidth <= clientWidth + 1` is true)
 - **Git Safety**: `.gitignore` strictly protects `.next/`, `node_modules/`, `.env*`, and logs.
+
