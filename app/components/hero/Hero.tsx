@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { EASING } from "@/app/lib/motion";
 
@@ -24,8 +25,11 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 sm:px-8 overflow-hidden"
+      className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-16 px-6 sm:px-8 overflow-hidden"
     >
+      {/* Dynamic Background Technical Grid */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,#000_60%,transparent_100%)]" />
+
       {/* Ambient background aura glow */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -54,7 +58,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: EASING.cinematic }}
-            className="flex items-center gap-1.5 mb-6"
+            className="flex items-center gap-1.5 mb-6 font-sans"
           >
             <span className="text-xs sm:text-sm font-bold tracking-[0.24em] text-white uppercase">
               NISHANT
@@ -95,7 +99,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.72, ease: EASING.cinematic }}
-            className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-8"
+            className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-8 font-sans"
           >
             {["FULL STACK DEVELOPER", "UI/UX DESIGNER", "DATA SCIENCE"].map((role) => (
               <span
@@ -117,80 +121,69 @@ export default function Hero() {
             I turn bold ideas into seamless digital experiences, where frontend meets powerful backend, and code transforms vision into impact.
           </motion.p>
 
-          {/* Actions & Signature Row */}
+          {/* Action Buttons Row */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.0, ease: EASING.cinematic }}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12"
+            className="flex flex-wrap items-center gap-4 mb-12 font-sans"
           >
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4">
-              <Link
-                href="#work"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase text-black bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:brightness-110 hover:-translate-y-0.5 transition-all"
-              >
-                <span>EXPLORE MY WORK</span>
-                <span className="text-sm">↗</span>
-              </Link>
+            <Link
+              href="#work"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase text-black bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:brightness-110 hover:-translate-y-0.5 transition-all"
+            >
+              <span>EXPLORE MY WORK</span>
+              <span className="text-sm">↗</span>
+            </Link>
 
-              <a
-                href="mailto:trivedinishant880@gmail.com?subject=Inquiry%20-%20Nishant%20Trivedi"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-black/50 border border-white/20 hover:border-amber-400 hover:text-amber-300 hover:-translate-y-0.5 transition-all"
-              >
-                <span>DOWNLOAD RESUME</span>
-                <span className="text-sm">↓</span>
-              </a>
-            </div>
-
-            {/* Handwritten Signature & Tagline Block */}
-            <div className="flex flex-col items-start sm:items-end">
-              <div className="font-signature text-4xl sm:text-5xl text-white font-normal tracking-wide -rotate-3 select-none">
-                Nishant Trivedi
-              </div>
-              <svg
-                width="180"
-                height="16"
-                viewBox="0 0 180 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="-mt-1.5"
-              >
-                <path
-                  d="M 2 4 Q 90 18 178 3 Q 90 22 2 4"
-                  fill="#f59e0b"
-                />
-              </svg>
-              <div className="text-[10px] font-mono font-bold tracking-[0.22em] text-amber-400 uppercase mt-1">
-                CODE &times; CREATE &times; IMPACT
-              </div>
-            </div>
+            <a
+              href="mailto:trivedinishant880@gmail.com?subject=Inquiry%20-%20Nishant%20Trivedi"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-black/50 border border-white/20 hover:border-amber-400 hover:text-amber-300 hover:-translate-y-0.5 transition-all"
+            >
+              <span>DOWNLOAD RESUME</span>
+              <span className="text-sm">↓</span>
+            </a>
           </motion.div>
 
-          {/* Bottom Quick Metric Strip with Vertical Dividers */}
+          {/* Bottom Quick Metric Strip & Authentic Handwritten Signature Block */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.15, ease: EASING.cinematic }}
-            className="grid grid-cols-3 gap-6 pt-8 border-t border-white/[0.08] max-w-xl"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 pt-8 border-t border-white/[0.08]"
           >
-            <div className="pr-4 border-r border-white/10">
-              <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">400+</div>
-              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
-                LEETCODE SOLVED
+            {/* 3 Metric Columns with Dividers */}
+            <div className="flex items-center gap-5 sm:gap-7">
+              <div className="pr-5 sm:pr-7 border-r border-white/10">
+                <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">400+</div>
+                <div className="text-[10px] font-sans font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                  LEETCODE SOLVED
+                </div>
+              </div>
+              <div className="px-3 sm:px-5 border-r border-white/10">
+                <div className="serif-metric text-3xl sm:text-4xl font-bold text-amber-400">B.Tech</div>
+                <div className="text-[10px] font-sans font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                  AKTU CS &apos;28
+                </div>
+              </div>
+              <div className="pl-3 sm:pl-5">
+                <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">Top 10</div>
+                <div className="text-[10px] font-sans font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
+                  HACKATHON RUNNER-UP
+                </div>
               </div>
             </div>
-            <div className="px-4 border-r border-white/10">
-              <div className="serif-metric text-3xl sm:text-4xl font-bold text-amber-400">B.Tech</div>
-              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
-                AKTU CS &apos;28
-              </div>
-            </div>
-            <div className="pl-4">
-              <div className="serif-metric text-3xl sm:text-4xl font-bold text-white">Top 10</div>
-              <div className="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mt-1">
-                HACKATHON RUNNER-UP
-              </div>
+
+            {/* Authentic Signature & Tagline */}
+            <div className="relative flex flex-col items-center sm:items-end select-none group">
+              <Image
+                src="/images/nishant-signature.webp"
+                alt="Nishant Trivedi Signature - Code x Create x Impact"
+                width={250}
+                height={145}
+                className="w-[190px] sm:w-[220px] md:w-[240px] h-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300"
+                priority
+              />
             </div>
           </motion.div>
         </motion.div>
@@ -236,7 +229,7 @@ export default function Hero() {
             </div>
 
             {/* Bottom Meta Bar inside video container */}
-            <div className="p-4 bg-[#0a0d18]/95 backdrop-blur-md border-t border-white/10 flex items-center justify-between">
+            <div className="p-4 bg-[#0a0d18]/95 backdrop-blur-md border-t border-white/10 flex items-center justify-between font-sans">
               <div>
                 <div className="text-sm font-bold text-white tracking-wide">Nishant Trivedi</div>
                 <div className="text-[11px] text-slate-400">Full Stack Developer · Lucknow, IN</div>
