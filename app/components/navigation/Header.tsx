@@ -18,17 +18,20 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 30);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <header
+    <motion.header
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#08090d]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.5)] py-3.5"
+          ? "bg-[#07080c]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.6)] py-3.5"
           : "bg-transparent py-5"
       }`}
     >
@@ -36,9 +39,9 @@ export default function Header() {
         {/* Brand Logo */}
         <Link
           href="/"
-          className="group flex items-center gap-2 text-white font-display text-xl sm:text-2xl font-bold tracking-tight"
+          className="group flex items-center gap-1.5 text-white text-xl sm:text-2xl font-bold tracking-[0.14em]"
         >
-          <span className="text-white group-hover:text-amber-400 transition-colors">
+          <span className="text-white group-hover:text-amber-400 transition-colors uppercase">
             NISHANT
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
@@ -50,7 +53,7 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-xs font-mono tracking-widest text-slate-300 hover:text-amber-400 transition-colors duration-200 relative group py-1"
+              className="text-xs font-bold tracking-[0.22em] text-slate-300 hover:text-amber-400 transition-colors duration-200 relative group py-1 uppercase"
             >
               {item.label}
               <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-amber-400 transition-all duration-300 group-hover:w-full shadow-[0_0_8px_#f59e0b]" />
@@ -62,7 +65,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <Link
             href="#contact"
-            className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-mono font-semibold tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-200 transition-all duration-300 shadow-[0_0_15px_-3px_rgba(245,158,11,0.25)]"
+            className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold tracking-[0.16em] uppercase text-amber-300 bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-200 transition-all duration-300 shadow-[0_0_15px_-3px_rgba(245,158,11,0.3)]"
           >
             <span>LET&apos;S TALK</span>
             <span className="text-sm">↗</span>
@@ -102,7 +105,7 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#0a0c14]/98 border-b border-white/10 px-6 py-6"
+            className="md:hidden bg-[#07080c]/98 border-b border-white/10 px-6 py-6 backdrop-blur-xl"
           >
             <nav className="flex flex-col gap-4">
               {NAV_ITEMS.map((item) => (
@@ -118,7 +121,7 @@ export default function Header() {
               <Link
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="mt-2 text-center py-2.5 rounded-full text-xs font-mono font-bold tracking-wider text-black bg-amber-400"
+                className="mt-2 text-center py-2.5 rounded-full text-xs font-mono font-bold tracking-wider text-black bg-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
               >
                 LET&apos;S TALK ↗
               </Link>
@@ -126,6 +129,6 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }

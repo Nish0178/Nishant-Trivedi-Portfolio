@@ -2,19 +2,19 @@
 
 @layer base {
   :root {
-    --bg-page: #08090d;
-    --bg-surface: #0f121d;
-    --bg-surface-elevated: #161a29;
-    --bg-subtle: #1e2438;
-    --text-primary: #f8fafc;
+    --bg-page: #07080c;
+    --bg-surface: #0e111a;
+    --bg-surface-elevated: #141824;
+    --bg-subtle: #1c2233;
+    --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
     --accent-gold: #f59e0b;
     --accent-gold-light: #fbbf24;
-    --accent-gold-glow: rgba(245, 158, 11, 0.25);
+    --accent-gold-glow: rgba(245, 158, 11, 0.3);
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-medium: rgba(255, 255, 255, 0.16);
-    --border-gold: rgba(245, 158, 11, 0.35);
+    --border-medium: rgba(255, 255, 255, 0.15);
+    --border-gold: rgba(245, 158, 11, 0.4);
   }
 
   * {
@@ -33,10 +33,14 @@
     padding: 0;
     background-color: var(--bg-page);
     color: var(--text-primary);
-    font-family: "Plus Jakarta Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "Times New Roman", Times, serif;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  *, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label, nav, code, pre {
+    font-family: "Times New Roman", Times, serif;
   }
 
   /* Minimal glowing scrollbar */
@@ -45,7 +49,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #08090d;
+    background: #07080c;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -59,44 +63,57 @@
 
   ::selection {
     background: #f59e0b;
-    color: #08090d;
+    color: #07080c;
   }
 }
 
 /* ═══════════════════════════════════════════
-   CINEMATIC AURA & TYPOGRAPHY SYSTEM
+   CINEMATIC AURA & ART-DIRECTED TIMES NEW ROMAN
    ═══════════════════════════════════════════ */
 
 .font-signature {
-  font-family: "Caveat", "Reenie Beanie", cursive;
+  font-family: "Times New Roman", Times, serif;
+  font-style: italic;
 }
 
 .font-mono {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .font-display {
-  font-family: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
-/* Giant display typography */
-.display-massive {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 0.9;
-}
-
-.display-title {
-  font-family: "Space Grotesk", sans-serif;
+/* Editorial Serif Utilities */
+.serif-headline {
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 0.96;
+  letter-spacing: -0.025em;
+  line-height: 0.94;
+}
+
+.serif-italic {
+  font-family: "Times New Roman", Times, serif;
+  font-style: italic;
+}
+
+.serif-kicker {
+  font-family: "Times New Roman", Times, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+}
+
+.serif-metric {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 /* Gold Gradient Text */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #ffffff 20%, #fbbf24 60%, #f59e0b 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fde047 35%, #fbbf24 65%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -107,77 +124,71 @@
   -webkit-text-fill-color: transparent;
 }
 
-.text-silver-gradient {
-  background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 /* Glowing card frames */
 .aura-card {
-  background: linear-gradient(145deg, rgba(22, 26, 41, 0.75) 0%, rgba(13, 16, 26, 0.85) 100%);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(20, 24, 38, 0.85) 0%, rgba(11, 14, 22, 0.95) 100%);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .aura-card:hover {
-  border-color: rgba(245, 158, 11, 0.38);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 25px -5px rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.45);
+  box-shadow: 0 16px 45px -10px rgba(0, 0, 0, 0.7), 0 0 30px -5px rgba(245, 158, 11, 0.2);
   transform: translateY(-2px);
 }
 
 /* Glowing gold action button */
 .btn-gold {
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #08090d;
+  color: #07080c;
   font-weight: 700;
-  box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 25px -2px rgba(245, 158, 11, 0.4);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-gold:hover {
-  box-shadow: 0 0 32px 0px rgba(245, 158, 11, 0.55);
+  box-shadow: 0 0 35px 2px rgba(245, 158, 11, 0.65);
   transform: translateY(-2px);
-  filter: brightness(1.08);
+  filter: brightness(1.1);
 }
 
 .btn-outline-gold {
-  background: rgba(245, 158, 11, 0.04);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #f8fafc;
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #ffffff;
   transition: all 0.25s ease;
 }
 
 .btn-outline-gold:hover {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.65);
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.7);
   color: #fbbf24;
-  box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.3);
   transform: translateY(-2px);
 }
 
 /* Subtle tech grid background */
 .aura-grid-bg {
-  background-size: 50px 50px;
+  background-size: 45px 45px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-}
-
-/* Spotlight aura glow */
-.spotlight-glow {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.01) 50%, transparent 70%);
-  pointer-events: none;
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
 /* Hairline dividers with gold center */
 .aura-divider {
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08) 20%, rgba(245, 158, 11, 0.3) 50%, rgba(255, 255, 255, 0.08) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08) 25%, rgba(245, 158, 11, 0.35) 50%, rgba(255, 255, 255, 0.08) 75%, transparent);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
