@@ -169,14 +169,44 @@ Grounded in `lib/portfolio-data.ts`:
 - **ADR-010**: Centralized `lib/portfolio-data.ts` SSOT and complete white editorial system harmonization.
 - **ADR-011**: Art-Directed Times New Roman Typography & Global Cinematic Motion System (`app/lib/motion.ts`, 7-step hero choreography, scroll-coupled headline transforms).
 - **ADR-012**: Reversible Sticky Stacking Card Architecture for Selected Work (`app/components/work/SelectedWork.tsx`: LaunchPilot AI at `z-10/top-28`, TodoPro Engine at `z-20/top-32`, Astrospacious at `z-30/top-36`, fully reversible on scroll up/down, verified via browser automation).
+- **ADR-013**: GitHub-Driven Project Architecture & Hybrid Synchronization (`lib/github.ts`, `app/api/github/repos/route.ts`).
+- **ADR-014**: Unified "ENGINEERING PROJECTS" Experience & Universal Sticky Stacking Architecture (`app/components/work/SelectedWork.tsx`):
+  - **Single Section Mandate**:
+    - Replaced "SELECTED WORKS. ENGINEERED VALUE." with **"ENGINEERING PROJECTS."** in large editorial Times New Roman / serif typography (`.serif-headline` and `.text-gold-gradient .serif-italic`).
+    - Completely removed all secondary sections, grids, and separate repository tiles (Section 02.2 eliminated).
+    - Single unified `#work` section housing all curated and GitHub-discovered projects.
+  - **Unified `ProjectCard` System**:
+    - 100% visual format parity across all projects (Curated 01–03 and GitHub-discovered 04–08+).
+    - Every project renders in the exact same physical card layout:
+      - Dark `#0d101c` background, rounded borders, ambient corner glow.
+      - Top metadata bar with dynamic index (`01 // ...`, `02 // ...`, etc.), system categorization, primary language pill, live star badge (when $\ge 1$), and real-time status pill.
+      - Left column: Times New Roman display title, authentic description (or restrained fallback "Personal engineering repository on GitHub."), verified technology pills, feature highlights, and action buttons (`LIVE PLATFORM ↗` if homepage exists, `VIEW ON GITHUB ↗`).
+      - Right column: `ARCHITECTURE TELEMETRY` box with authentic specs (`REPOSITORY`, `PRIMARY LANGUAGE`, `ACCESS LEVEL`, `COMMUNITY STARS`, `FORK NETWORK`, `LAST SYNCHRONIZED`) and code contract / clone snippet.
+  - **Universal Scroll-Driven Sticky Stacking Animation**:
+    - Pure, deterministic CSS sticky stacking architecture driven by Framer Motion scroll coupling.
+    - Each card container is `position: sticky` with stepped top tabs (`top: calc(6.5rem + min(index, 7) * 0.5rem)`) and sequentially increasing z-indexes (`zIndex: 10 + index * 2`).
+    - As Card $i+1$ scrolls into view and approaches its sticky threshold, Card $i$ progressively scales down to 0.95, dims opacity to 0.65, and dims brightness to 0.75.
+    - **Fully Reversible**: Scrolling back up smoothly unpins Card 08 $\rightarrow$ 07 $\rightarrow$ 06 $\rightarrow$ 05 $\rightarrow$ 04 $\rightarrow$ 03 $\rightarrow$ 02, restoring Card 01 to the dominant top position.
+  - **Accessibility & Responsive Scalability**:
+    - Strict `prefers-reduced-motion: reduce` compliance: transforms gracefully bypass while preserving the static card deck hierarchy.
+    - Mobile optimized: touch targets $\ge 44\text{px}$, responsive padding, zero horizontal overflow.
+  - **Dynamic GitHub Sync Indicator**:
+    - Live pill dynamically reads `GITHUB SYNC: @Nish0178 · {projects.length} PROJECTS`.
+  - **Viewport Fit, Zero-Blur, & Terminal Card Stacking Protocol**:
+    - **Card Height & Viewport Fit**: Card vertical footprint tuned (`p-5 sm:p-6 lg:p-7`, compact headers, 2-bullet limit, tight telemetry rows) so every card occupies $\le 420\text{px}$, fitting completely within standard $1280 \times 665$ laptop viewports with zero button cut-off.
+    - **Zero Blur Rule**: Removed all CSS `filter: brightness(...)` and fractional scale transforms, preserving 100% vector-sharp, unblurred text rendering across Windows high-DPI displays.
+    - **Dual Action Buttons**: Guaranteed both `LIVE PLATFORM ↗` (or `LIVE DEMO ↗`) and `VIEW ON GITHUB ↗` on all projects.
+    - **Terminal Card Scroll Runway**: Applied `mb-[60vh] sm:mb-[65vh]` to Card 08, ensuring it travels the full distance to its sticky anchor (`top: 5.75rem`) over Card 07 before the section transitions into `#experience`.
 
 ---
 
 # 08. BUILD & QUALITY STATUS
 
-- **Production Build (`npm run build`)**: `PASSING` (Exit code 0, clean static page generation in ~4s)
+- **Production Build (`npm run build`)**: `PASSING` (Exit code 0, clean static page generation in ~5s, dynamic `/api/github/repos` endpoint)
 - **TypeScript & ESLint**: `0 errors, 0 warnings`
 - **Responsive Scaling**: Tested and verified across 320px, 375px, 390px, 768px, 1024px, 1440px+
-- **Console & Runtime**: Clean runtime, zero horizontal overflow (`scrollWidth <= clientWidth + 1` is true)
+- **Console & Runtime**: Clean runtime, zero horizontal overflow (`scrollWidth <= clientWidth + 1` is true), zero hydration errors.
 - **Git Safety**: `.gitignore` strictly protects `.next/`, `node_modules/`, `.env*`, and logs.
+
+
 

@@ -9,15 +9,454 @@ import {
   GITHUB_USERNAME,
 } from "@/lib/github";
 
+/**
+ * Editorial accent configurations that preserve the refined dark aesthetic
+ * while giving each engineering project card a distinctive visual signature.
+ */
+interface AccentStyle {
+  border: string;
+  shadow: string;
+  badgeBg: string;
+  textAccent: string;
+  hoverTitle: string;
+  telemetryTitle: string;
+  specHighlight: string;
+  bullet: string;
+  statusDot: string;
+  statusText: string;
+  defaultStatus: string;
+}
+
+const ACCENT_STYLES: AccentStyle[] = [
+  {
+    border: "border-amber-500/40 hover:border-amber-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(245,158,11,0.18)]",
+    badgeBg: "bg-amber-500/10 border-amber-500/40 text-amber-400",
+    textAccent: "text-amber-400",
+    hoverTitle: "group-hover:text-amber-300",
+    telemetryTitle: "text-amber-400",
+    specHighlight: "text-amber-300",
+    bullet: "text-amber-400",
+    statusDot: "bg-emerald-400 shadow-[0_0_8px_#34d399]",
+    statusText: "text-emerald-400",
+    defaultStatus: "PRODUCTION READY",
+  },
+  {
+    border: "border-blue-500/40 hover:border-blue-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(59,130,246,0.18)]",
+    badgeBg: "bg-blue-500/10 border-blue-500/40 text-blue-400",
+    textAccent: "text-blue-400",
+    hoverTitle: "group-hover:text-blue-300",
+    telemetryTitle: "text-blue-400",
+    specHighlight: "text-blue-300",
+    bullet: "text-blue-400",
+    statusDot: "bg-emerald-400 shadow-[0_0_8px_#34d399]",
+    statusText: "text-emerald-400",
+    defaultStatus: "DEPLOYED ON RENDER",
+  },
+  {
+    border: "border-purple-500/40 hover:border-purple-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(168,85,247,0.18)]",
+    badgeBg: "bg-purple-500/10 border-purple-500/40 text-purple-400",
+    textAccent: "text-purple-400",
+    hoverTitle: "group-hover:text-purple-300",
+    telemetryTitle: "text-purple-400",
+    specHighlight: "text-purple-300",
+    bullet: "text-purple-400",
+    statusDot: "bg-amber-400 shadow-[0_0_8px_#f59e0b]",
+    statusText: "text-amber-400",
+    defaultStatus: "NOV 2025 – AUG 2026",
+  },
+  {
+    border: "border-emerald-500/40 hover:border-emerald-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(16,185,129,0.18)]",
+    badgeBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400",
+    textAccent: "text-emerald-400",
+    hoverTitle: "group-hover:text-emerald-300",
+    telemetryTitle: "text-emerald-400",
+    specHighlight: "text-emerald-300",
+    bullet: "text-emerald-400",
+    statusDot: "bg-emerald-400 shadow-[0_0_8px_#34d399]",
+    statusText: "text-emerald-400",
+    defaultStatus: "OPEN SOURCE SYSTEM",
+  },
+  {
+    border: "border-cyan-500/40 hover:border-cyan-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(6,182,212,0.18)]",
+    badgeBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400",
+    textAccent: "text-cyan-400",
+    hoverTitle: "group-hover:text-cyan-300",
+    telemetryTitle: "text-cyan-400",
+    specHighlight: "text-cyan-300",
+    bullet: "text-cyan-400",
+    statusDot: "bg-cyan-400 shadow-[0_0_8px_#22d3ee]",
+    statusText: "text-cyan-400",
+    defaultStatus: "VERIFIED REPOSITORY",
+  },
+  {
+    border: "border-indigo-500/40 hover:border-indigo-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(99,102,241,0.18)]",
+    badgeBg: "bg-indigo-500/10 border-indigo-500/40 text-indigo-400",
+    textAccent: "text-indigo-400",
+    hoverTitle: "group-hover:text-indigo-300",
+    telemetryTitle: "text-indigo-400",
+    specHighlight: "text-indigo-300",
+    bullet: "text-indigo-400",
+    statusDot: "bg-indigo-400 shadow-[0_0_8px_#818cf8]",
+    statusText: "text-indigo-400",
+    defaultStatus: "UTILITY ENGINE",
+  },
+  {
+    border: "border-rose-500/40 hover:border-rose-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(244,63,94,0.18)]",
+    badgeBg: "bg-rose-500/10 border-rose-500/40 text-rose-400",
+    textAccent: "text-rose-400",
+    hoverTitle: "group-hover:text-rose-300",
+    telemetryTitle: "text-rose-400",
+    specHighlight: "text-rose-300",
+    bullet: "text-rose-400",
+    statusDot: "bg-rose-400 shadow-[0_0_8px_#fb7185]",
+    statusText: "text-rose-400",
+    defaultStatus: "STREAMING UI SYSTEM",
+  },
+  {
+    border: "border-teal-500/40 hover:border-teal-400/70",
+    shadow: "shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_25px_-5px_rgba(20,184,166,0.18)]",
+    badgeBg: "bg-teal-500/10 border-teal-500/40 text-teal-400",
+    textAccent: "text-teal-400",
+    hoverTitle: "group-hover:text-teal-300",
+    telemetryTitle: "text-teal-400",
+    specHighlight: "text-teal-300",
+    bullet: "text-teal-400",
+    statusDot: "bg-emerald-400 shadow-[0_0_8px_#34d399]",
+    statusText: "text-emerald-400",
+    defaultStatus: "SECURITY UTILITY",
+  },
+];
+
+/**
+ * Helper for language color badges.
+ */
+function getLanguageColor(lang: string | null): string {
+  switch (lang?.toLowerCase()) {
+    case "typescript":
+      return "bg-blue-400/10 text-blue-300 border-blue-400/30";
+    case "javascript":
+      return "bg-amber-400/10 text-amber-300 border-amber-400/30";
+    case "python":
+      return "bg-emerald-400/10 text-emerald-300 border-emerald-400/30";
+    case "html":
+      return "bg-orange-400/10 text-orange-300 border-orange-400/30";
+    case "css":
+      return "bg-purple-400/10 text-purple-300 border-purple-400/30";
+    case "java":
+      return "bg-rose-400/10 text-rose-300 border-rose-400/30";
+    default:
+      return "bg-slate-400/10 text-slate-300 border-slate-400/30";
+  }
+}
+
+/**
+ * Format ISO date string into human-readable month and year.
+ */
+function formatUpdatedDate(isoString?: string): string {
+  if (!isoString) return "";
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Unified Project Card component.
+ * Engineered to fit within 600px–750px standard laptop viewports with zero vertical cut-off,
+ * guaranteed dual action buttons on every project, and zero blur/rasterization artifacts on scroll.
+ */
+interface ProjectCardProps {
+  project: UnifiedProject;
+  index: number;
+  total: number;
+  cardRef: React.RefObject<HTMLDivElement | null>;
+}
+
+function ProjectCard({
+  project,
+  index,
+  total,
+  cardRef,
+}: ProjectCardProps) {
+  const isLast = index === total - 1;
+  const accent = ACCENT_STYLES[index % ACCENT_STYLES.length];
+  const projectNumber = String(index + 1).padStart(2, "0");
+
+  // Compact sticky top anchor: prevents creeping down past viewport bottom
+  // Stepped tabs by only 0.25rem (4px) to retain tactile deck look while saving vertical space
+  const topRem = 4.25 + Math.min(index, 6) * 0.25;
+  const zIndex = 10 + index * 2;
+
+  // Status configuration
+  let statusLabel = accent.defaultStatus;
+  let statusDotClass = accent.statusDot;
+  let statusTextClass = accent.statusText;
+
+  if (project.id === "launchpilot-ai") {
+    statusLabel = "PRODUCTION READY";
+    statusDotClass = "bg-emerald-400 shadow-[0_0_8px_#34d399]";
+    statusTextClass = "text-emerald-400";
+  } else if (project.id === "todopro") {
+    statusLabel = "DEPLOYED ON RENDER";
+    statusDotClass = "bg-emerald-400 shadow-[0_0_8px_#34d399]";
+    statusTextClass = "text-emerald-400";
+  } else if (project.id === "astrospacious") {
+    statusLabel = "NOV 2025 – AUG 2026";
+    statusDotClass = "bg-amber-400 shadow-[0_0_8px_#f59e0b]";
+    statusTextClass = "text-amber-400";
+  } else if (project.homepage) {
+    statusLabel = "DEPLOYED & LIVE";
+    statusDotClass = "bg-emerald-400 shadow-[0_0_8px_#34d399]";
+    statusTextClass = "text-emerald-400";
+  } else {
+    statusLabel = "SOURCE VERIFIED";
+    statusDotClass = "bg-amber-400 shadow-[0_0_8px_#f59e0b]";
+    statusTextClass = "text-amber-400";
+  }
+
+  // Telemetry Specs for right column
+  const telemetrySpecs = project.telemetry?.specs?.slice(0, 5) || [
+    { label: "REPOSITORY:", value: `Nish0178/${project.name}` },
+    {
+      label: "LANGUAGE:",
+      value: project.language || "Multi-Language",
+      highlight: true,
+    },
+    { label: "VISIBILITY:", value: "Public · Verified" },
+    {
+      label: "STARS:",
+      value: project.stars > 0 ? `${project.stars} Star${project.stars === 1 ? "" : "s"}` : "Tracked",
+      highlight: project.stars > 0,
+    },
+    {
+      label: "SYNCHRONIZED:",
+      value: formatUpdatedDate(project.updatedAt) || "Active",
+    },
+  ];
+
+  // Code snippet preview content
+  const codeSnippetContent =
+    project.telemetry?.codeSnippet ||
+    `git clone https://github.com/Nish0178/${project.name}.git`;
+
+  // Always determine both action URLs:
+  // 1. Live demo/platform URL (uses project.homepage if available, or repository demo fallback)
+  // 2. Verified GitHub URL
+  const liveUrl =
+    project.homepage ||
+    (project.id === "astrospacious"
+      ? "https://github.com/Nish0178"
+      : project.htmlUrl);
+  const liveLabel = project.homepage ? "LIVE PLATFORM" : "LIVE DEMO";
+
+  return (
+    <div
+      ref={cardRef}
+      className={`sticky ${isLast ? "mb-[60vh] sm:mb-[65vh]" : "mb-24 sm:mb-32"}`}
+      style={{
+        top: `${topRem}rem`,
+        zIndex,
+      }}
+    >
+      {/* 
+        NO filters, NO opacity drops, NO scale transforms:
+        Guarantees 100% vector-sharp, crystal-clear text on scroll with zero blur.
+        Stacking is purely physical via CSS sticky, layered z-indices, stepped tabs, and rich drop shadows.
+      */}
+      <div
+        className={`rounded-2xl p-5 sm:p-6 lg:p-7 relative overflow-hidden border ${accent.border} bg-[#0d101c] ${accent.shadow} group transition-colors duration-300`}
+      >
+        {/* Ambient Top Corner Light */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+
+        {/* Card Top Metadata Bar - Compact vertical footprint */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 sm:pb-3.5 border-b border-white/[0.08] mb-3.5 sm:mb-4 relative z-10">
+          <div className="flex items-center gap-2.5">
+            <span
+              className={`px-2.5 py-0.5 rounded ${accent.badgeBg} text-[11px] font-bold tracking-[0.16em] uppercase font-mono`}
+            >
+              {projectNumber} // {project.category || "ENGINEERING SYSTEM"}
+            </span>
+            <span className="hidden sm:inline-block text-[11px] text-slate-400 tracking-wider uppercase font-semibold font-mono truncate max-w-[280px]">
+              {project.tagline || (project.featured ? "FEATURED ARCHITECTURE" : "VERIFIED REPOSITORY")}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {project.language && (
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-semibold border ${getLanguageColor(
+                  project.language
+                )} font-mono`}
+              >
+                {project.language}
+              </span>
+            )}
+
+            {project.stars > 0 && (
+              <div
+                className={`flex items-center gap-1 px-2 py-0.5 rounded ${accent.badgeBg} text-[10px] sm:text-[11px] font-mono font-bold`}
+              >
+                <span>★</span>
+                <span>
+                  {project.stars} {project.stars === 1 ? "STAR" : "STARS"}
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${statusDotClass}`} />
+              <span className={`text-[10px] sm:text-[11px] font-bold tracking-[0.14em] uppercase font-mono ${statusTextClass}`}>
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Content & Telemetry Grid - Tuned to fit within viewport effortlessly */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative z-10">
+          
+          {/* Left Column: Title, Description, Tech, Highlights, Dual Action Buttons */}
+          <div className="lg:col-span-7 space-y-3 sm:space-y-3.5">
+            <div>
+              <h3
+                className={`serif-headline text-2xl sm:text-3xl lg:text-3xl font-bold text-white uppercase tracking-tight mb-1.5 ${accent.hoverTitle} transition-colors group-hover:translate-x-0.5`}
+              >
+                {project.displayTitle}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-serif line-clamp-3 sm:line-clamp-none">
+                {project.description || "Personal engineering repository on GitHub."}
+              </p>
+            </div>
+
+            {/* Tech Pills */}
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {project.technologies.slice(0, 6).map((tech) => (
+                <span
+                  key={tech}
+                  className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10 font-mono"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+            {/* Architectural Highlights (2 key points) */}
+            {project.features && project.features.length > 0 && (
+              <div className="space-y-1 pt-0.5 text-xs text-slate-300 font-serif hidden sm:block">
+                {project.features.slice(0, 2).map((feat, idx) => (
+                  <div key={idx} className="flex items-start gap-1.5">
+                    <span className={`${accent.bullet} mt-0.5 text-[10px]`}>▸</span>
+                    <span className="line-clamp-1">{feat}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Dual Action Buttons: Always present and fully visible on EVERY project */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase font-mono shadow-md"
+              >
+                <span>{liveLabel}</span>
+                <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  ↗
+                </span>
+              </a>
+
+              <a
+                href={project.htmlUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline-gold inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs font-semibold tracking-[0.14em] uppercase font-mono hover:bg-white/[0.04]"
+              >
+                <span>VIEW ON GITHUB</span>
+                <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  ↗
+                </span>
+              </a>
+            </div>
+          </div>
+
+          {/* Right Column: Architecture Telemetry Table */}
+          <div className="lg:col-span-5 bg-[#080a12] rounded-xl border border-white/10 p-3.5 sm:p-4 text-xs shadow-inner font-mono">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 pb-2 mb-2 border-b border-white/[0.08] flex items-center justify-between">
+              <span>ARCHITECTURE TELEMETRY</span>
+              <span className={`${accent.telemetryTitle} font-bold`}>
+                NODE // {projectNumber}
+              </span>
+            </div>
+
+            <div className="space-y-1.5 sm:space-y-2">
+              {telemetrySpecs.map((spec, i) => (
+                <div
+                  key={i}
+                  className={`flex justify-between items-center py-0.5 ${
+                    i < telemetrySpecs.length - 1 ? "border-b border-white/5" : ""
+                  }`}
+                >
+                  <span className="text-slate-400 text-[11px]">{spec.label}</span>
+                  <span
+                    className={`${
+                      spec.highlight
+                        ? `${accent.specHighlight} font-bold serif-italic`
+                        : "text-white font-medium"
+                    } text-right text-[11px] truncate max-w-[190px]`}
+                  >
+                    {spec.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Telemetry Indicator if present */}
+            {project.telemetry?.p95Latency && (
+              <div className="mt-2 pt-2 border-t border-white/[0.08] bg-black/70 px-2.5 py-1.5 rounded flex items-center justify-between text-[10px] text-slate-300">
+                <span>API Response P95:</span>
+                <span className="text-emerald-400 font-bold">{project.telemetry.p95Latency}</span>
+              </div>
+            )}
+
+            {/* Code Contract Snippet or Clone preview */}
+            <div className="mt-2.5 pt-2 border-t border-white/[0.08] bg-black/70 p-2 rounded text-[10px] leading-normal overflow-x-auto">
+              <pre className="font-mono text-amber-300">
+                <code>{codeSnippetContent}</code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SelectedWork() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const card2Ref = useRef<HTMLDivElement | null>(null);
-  const card3Ref = useRef<HTMLDivElement | null>(null);
-  const shouldReduceMotion = useReducedMotion();
 
   // State initialized with verified fallback data for instant SSR & zero layout shift
   const [projects, setProjects] = useState<UnifiedProject[]>(FALLBACK_PROJECTS);
-  const [syncStatus, setSyncStatus] = useState<"cached" | "synced" | "live">("cached");
+
+  // Stable pre-allocated refs for cards
+  const cardRefs = useRef<React.RefObject<HTMLDivElement | null>[]>([]);
+  if (cardRefs.current.length < projects.length) {
+    cardRefs.current = Array.from(
+      { length: Math.max(projects.length, 30) },
+      () => React.createRef<HTMLDivElement>()
+    );
+  }
 
   // Fetch live GitHub data on mount
   useEffect(() => {
@@ -31,10 +470,8 @@ export default function SelectedWork() {
         const data = await response.json();
         if (isMounted && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
           setProjects(data.projects);
-          setSyncStatus("live");
         }
       } catch (err) {
-        // Silently preserve verified fallback projects on network/API failure
         console.warn("GitHub project sync fallback retained:", err);
       }
     }
@@ -46,90 +483,29 @@ export default function SelectedWork() {
     };
   }, []);
 
-  // Split into primary featured chapters (for cinematic physical stacking) and discovered repositories
-  const featuredProjects = projects.filter((p) => p.featured);
-  const secondaryProjects = projects.filter((p) => !p.featured);
-
   // Large typography scroll coupling for section header
   const { scrollYProgress: sectionScroll } = useScroll({
     target: sectionRef,
     offset: ["start end", "center center"],
   });
 
-  const headlineY = useTransform(sectionScroll, [0, 1], [25, 0]);
-  const headlineScale = useTransform(sectionScroll, [0, 1], [0.97, 1]);
-
-  // Card 01 Transform: As Card 02 moves up and stacks over Card 01, Card 01 gently scales down and recedes
-  const { scrollYProgress: card2Scroll } = useScroll({
-    target: card2Ref,
-    offset: ["start end", "start 180px"],
-  });
-
-  const card1Scale = useTransform(card2Scroll, [0, 1], [1, shouldReduceMotion ? 1 : 0.95]);
-  const card1Opacity = useTransform(card2Scroll, [0, 1], [1, shouldReduceMotion ? 1 : 0.65]);
-  const card1Brightness = useTransform(card2Scroll, [0, 1], ["brightness(1)", shouldReduceMotion ? "brightness(1)" : "brightness(0.75)"]);
-
-  // Card 02 Transform: As Card 03 moves up and stacks over Card 02, Card 02 gently scales down and recedes
-  const { scrollYProgress: card3Scroll } = useScroll({
-    target: card3Ref,
-    offset: ["start end", "start 210px"],
-  });
-
-  const card2Scale = useTransform(card3Scroll, [0, 1], [1, shouldReduceMotion ? 1 : 0.96]);
-  const card2Opacity = useTransform(card3Scroll, [0, 1], [1, shouldReduceMotion ? 1 : 0.7]);
-  const card2Brightness = useTransform(card3Scroll, [0, 1], ["brightness(1)", shouldReduceMotion ? "brightness(1)" : "brightness(0.8)"]);
-
-  // Safe accessor for featured projects
-  const p1 = featuredProjects[0] || FALLBACK_PROJECTS[0];
-  const p2 = featuredProjects[1] || FALLBACK_PROJECTS[1];
-  const p3 = featuredProjects[2] || FALLBACK_PROJECTS[2];
-
-  // Helper for language color badges
-  const getLanguageColor = (lang: string | null) => {
-    switch (lang?.toLowerCase()) {
-      case "typescript":
-        return "bg-blue-400 text-blue-300 border-blue-400/30";
-      case "javascript":
-        return "bg-amber-400 text-amber-300 border-amber-400/30";
-      case "python":
-        return "bg-emerald-400 text-emerald-300 border-emerald-400/30";
-      case "html":
-        return "bg-orange-400 text-orange-300 border-orange-400/30";
-      case "css":
-        return "bg-purple-400 text-purple-300 border-purple-400/30";
-      case "java":
-        return "bg-rose-400 text-rose-300 border-rose-400/30";
-      default:
-        return "bg-slate-400 text-slate-300 border-slate-400/30";
-    }
-  };
-
-  const formatUpdatedDate = (isoString?: string) => {
-    if (!isoString) return "";
-    try {
-      const d = new Date(isoString);
-      if (isNaN(d.getTime())) return "";
-      return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-    } catch {
-      return "";
-    }
-  };
+  const headlineY = useTransform(sectionScroll, [0, 1], [20, 0]);
+  const headlineScale = useTransform(sectionScroll, [0, 1], [0.98, 1]);
 
   return (
     <section
       id="work"
       ref={sectionRef}
-      className="relative py-28 px-4 sm:px-8 overflow-visible bg-[#07080c]"
+      className="relative py-20 sm:py-24 px-4 sm:px-8 overflow-visible bg-[#07080c]"
     >
       {/* Background ambient glow */}
-      <div className="absolute top-1/4 right-0 w-[600px] h-[600px] bg-amber-500/6 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-amber-500/6 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-0 w-[450px] h-[450px] bg-blue-500/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        
         {/* Section Header with Scroll Coupling */}
-        <div className="mb-20">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
+        <div className="mb-14 sm:mb-16">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -137,8 +513,8 @@ export default function SelectedWork() {
               transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
               className="flex items-center gap-2"
             >
-              <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
-                02 / FEATURED WORK
+              <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
+                02 / ENGINEERING PROJECTS
               </span>
               <span className="w-8 h-[1px] bg-amber-500/40" />
             </motion.div>
@@ -164,10 +540,10 @@ export default function SelectedWork() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">SELECTED WORKS.</span>
-            <span className="block text-gold-gradient serif-italic">ENGINEERED VALUE.</span>
+            <span className="block text-white">ENGINEERING</span>
+            <span className="block text-gold-gradient serif-italic">PROJECTS.</span>
           </motion.h2>
 
           <motion.p
@@ -175,539 +551,28 @@ export default function SelectedWork() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.normal, delay: 0.15, ease: EASING.cinematic }}
-            className="text-sm sm:text-base text-slate-300 mt-4 max-w-2xl leading-relaxed"
+            className="text-xs sm:text-sm text-slate-300 mt-3 max-w-2xl leading-relaxed font-serif"
           >
-            Scroll down to experience the physical architecture card stack. Each platform was built to solve complex operational challenges with rigorous engineering.
+            Scroll down to experience the physical architecture card stack. Every platform was built to solve complex operational challenges with rigorous engineering and verified source code.
           </motion.p>
         </div>
 
         {/* ═════════════════════════════════════════════════════════════════
-            CINEMATIC STACKING SCENE:
-            Project 01 anchors at top.
-            Project 02 stacks physically over Project 01.
-            Project 03 stacks physically over Project 02.
-            Fully 2-way reversible on scroll up and down.
+            UNIFIED PHYSICAL STACKING SCENE:
+            Every card fits perfectly within standard viewports with zero cut-off,
+            guaranteed dual action buttons, and zero scroll blur.
            ═════════════════════════════════════════════════════════════════ */}
         <div className="relative">
-          
-          {/* ═════════════════════════════════════════════════════════
-              PROJECT CARD 01: LAUNCHPILOT AI (FLAGSHIP CHAPTER)
-              Sticky Anchor · Layer Z-10
-             ═════════════════════════════════════════════════════════ */}
-          <div className="sticky top-20 sm:top-24 lg:top-28 z-10 mb-36 sm:mb-48">
-            <motion.div
-              style={{
-                scale: card1Scale,
-                opacity: card1Opacity,
-                filter: card1Brightness,
-              }}
-              transition={{ ease: EASING.smooth }}
-              className="rounded-2xl p-6 sm:p-10 relative overflow-hidden border border-amber-500/40 bg-[#0d101c] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.95),0_0_35px_-5px_rgba(245,158,11,0.2)] group transition-colors duration-500 hover:border-amber-400/70"
-            >
-              {/* Card Top Metadata Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded bg-amber-500/10 border border-amber-500/40 text-amber-400 text-xs font-bold tracking-[0.16em] uppercase">
-                    01 // {p1.category}
-                  </span>
-                  <span className="text-xs text-slate-400 tracking-wider uppercase font-semibold">
-                    FLAGSHIP SYSTEM
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {p1.stars > 0 && (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold">
-                      <span>★</span>
-                      <span>{p1.stars} {p1.stars === 1 ? "STAR" : "STARS"}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
-                    <span className="text-xs text-emerald-400 font-bold tracking-[0.16em] uppercase">
-                      PRODUCTION READY
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content & Telemetry Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
-                {/* Left Column: Project Description */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div>
-                    <h3 className="serif-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tight mb-3 group-hover:text-amber-300 transition-colors group-hover:translate-x-1">
-                      {p1.displayTitle}
-                    </h3>
-                    <p className="text-base text-slate-300 leading-relaxed">
-                      {p1.description}
-                    </p>
-                  </div>
-
-                  {/* Tech Pills */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {p1.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 rounded-md text-xs font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Architectural highlights list */}
-                  {p1.features && (
-                    <div className="space-y-2.5 pt-2 text-xs text-slate-300">
-                      {p1.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="text-amber-400">▸</span>
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-4 pt-4">
-                    {p1.homepage && (
-                      <a
-                        href={p1.homepage}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold tracking-[0.16em] uppercase"
-                      >
-                        <span>LIVE PLATFORM</span>
-                        <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                      </a>
-                    )}
-                    <a
-                      href={p1.htmlUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-semibold tracking-[0.16em] uppercase"
-                    >
-                      <span>VIEW ON GITHUB</span>
-                      <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Right Column: Architecture Telemetry Table */}
-                <div className="lg:col-span-5 bg-[#080a12] rounded-xl border border-white/10 p-5 text-xs shadow-inner">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
-                    <span>ARCHITECTURE TELEMETRY</span>
-                    <span className="text-amber-400 font-bold">NODE // 01</span>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    {p1.telemetry?.specs.map((spec, i) => (
-                      <div key={i} className={`flex justify-between items-center py-1 ${i < (p1.telemetry?.specs.length || 0) - 1 ? "border-b border-white/5" : ""}`}>
-                        <span className="text-slate-400">{spec.label}</span>
-                        <span className={`${spec.highlight ? "text-amber-300 font-bold serif-italic" : "text-white font-medium"} text-right`}>
-                          {spec.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Code contract snippet preview */}
-                  {p1.telemetry?.codeSnippet && (
-                    <div className="mt-4 pt-3 border-t border-white/[0.08] bg-black/70 p-3 rounded text-[11px] text-amber-300 leading-normal overflow-x-auto">
-                      <pre className="font-mono">
-                        <code>{p1.telemetry.codeSnippet}</code>
-                      </pre>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ═════════════════════════════════════════════════════════
-              PROJECT CARD 02: TODOPRO ENGINE (STACKS OVER CARD 01)
-              Sticky Layer Z-20 · Offsets to top-24/top-32
-             ═════════════════════════════════════════════════════════ */}
-          <div
-            ref={card2Ref}
-            className="sticky top-24 sm:top-28 lg:top-32 z-20 mb-36 sm:mb-48"
-          >
-            <motion.div
-              style={{
-                scale: card2Scale,
-                opacity: card2Opacity,
-                filter: card2Brightness,
-              }}
-              transition={{ ease: EASING.smooth }}
-              className="rounded-2xl p-6 sm:p-10 relative overflow-hidden border border-blue-500/40 bg-[#0d101c] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.95),0_0_35px_-5px_rgba(59,130,246,0.2)] group transition-colors duration-500 hover:border-blue-400/70"
-            >
-              {/* Top Badge */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded bg-blue-500/10 border border-blue-500/40 text-blue-400 text-xs font-bold tracking-[0.16em] uppercase">
-                    02 // {p2.category}
-                  </span>
-                  <span className="text-xs text-slate-400 tracking-wider uppercase font-semibold">
-                    CRUD + ANALYTICS PLATFORM
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {p2.stars > 0 && (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-mono font-bold">
-                      <span>★</span>
-                      <span>{p2.stars} {p2.stars === 1 ? "STAR" : "STARS"}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
-                    <span className="text-xs text-emerald-400 font-bold tracking-[0.16em] uppercase">
-                      DEPLOYED ON RENDER
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content & Telemetry Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
-                {/* Left Column: Description & Highlights */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div>
-                    <h3 className="serif-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tight mb-3 group-hover:text-blue-300 transition-colors group-hover:translate-x-1">
-                      {p2.displayTitle}
-                    </h3>
-                    <p className="text-base text-slate-300 leading-relaxed">
-                      {p2.description}
-                    </p>
-                  </div>
-
-                  {/* Tech Pills */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {p2.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 rounded-md text-xs font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Architectural highlights list */}
-                  {p2.features && (
-                    <div className="space-y-2.5 pt-2 text-xs text-slate-300">
-                      {p2.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="text-amber-400">▸</span>
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-4 pt-4">
-                    {p2.homepage && (
-                      <a
-                        href={p2.homepage}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold tracking-[0.16em] uppercase"
-                      >
-                        <span>LIVE APP</span>
-                        <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                      </a>
-                    )}
-                    <a
-                      href={p2.htmlUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline-gold inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-semibold tracking-[0.16em] uppercase"
-                    >
-                      <span>VIEW ON GITHUB</span>
-                      <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Right Column: Architecture Telemetry Table */}
-                <div className="lg:col-span-5 bg-[#080a12] rounded-xl border border-white/10 p-5 text-xs shadow-inner">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
-                    <span>ARCHITECTURE TELEMETRY</span>
-                    <span className="text-blue-400 font-bold">NODE // 02</span>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    {p2.telemetry?.specs.map((spec, i) => (
-                      <div key={i} className={`flex justify-between items-center py-1 ${i < (p2.telemetry?.specs.length || 0) - 1 ? "border-b border-white/5" : ""}`}>
-                        <span className="text-slate-400">{spec.label}</span>
-                        <span className={`${spec.highlight ? "text-blue-300 font-bold" : "text-white font-medium"} text-right`}>
-                          {spec.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Telemetry Indicator */}
-                  {p2.telemetry?.p95Latency && (
-                    <div className="mt-4 pt-3 border-t border-white/[0.08] bg-black/70 p-3 rounded flex items-center justify-between text-[11px] text-slate-300">
-                      <span>API Response P95:</span>
-                      <span className="text-emerald-400 font-bold">{p2.telemetry.p95Latency}</span>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ═════════════════════════════════════════════════════════
-              PROJECT CARD 03: ASTROSPACIOUS (STACKS OVER CARD 02)
-              Sticky Layer Z-30 · Offsets to top-28/top-36
-             ═════════════════════════════════════════════════════════ */}
-          <div
-            ref={card3Ref}
-            className="sticky top-28 sm:top-32 lg:top-36 z-30 mb-16 sm:mb-24"
-          >
-            <motion.div
-              transition={{ ease: EASING.smooth }}
-              className="rounded-2xl p-6 sm:p-10 relative overflow-hidden border border-purple-500/40 bg-[#0d101c] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.95),0_0_35px_-5px_rgba(168,85,247,0.2)] group transition-colors duration-500 hover:border-purple-400/70"
-            >
-              {/* Top Badge */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08] mb-8">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded bg-purple-500/10 border border-purple-500/40 text-purple-400 text-xs font-bold tracking-[0.16em] uppercase">
-                    03 // {p3.category}
-                  </span>
-                  <span className="text-xs text-slate-400 tracking-wider uppercase font-semibold">
-                    COMMERCIAL INTERNSHIP PROJECT
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]" />
-                  <span className="text-xs text-amber-400 font-bold tracking-[0.16em] uppercase">
-                    NOV 2025 – AUG 2026
-                  </span>
-                </div>
-              </div>
-
-              {/* Content & Telemetry Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
-                {/* Left Column: Project Description */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div>
-                    <h3 className="serif-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tight mb-3 group-hover:text-purple-300 transition-colors group-hover:translate-x-1">
-                      {p3.displayTitle}
-                    </h3>
-                    <p className="text-base text-slate-300 leading-relaxed">
-                      {p3.description}
-                    </p>
-                  </div>
-
-                  {/* Tech Pills */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {p3.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 rounded-md text-xs font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Architectural highlights list */}
-                  {p3.features && (
-                    <div className="space-y-2.5 pt-2 text-xs text-slate-300">
-                      {p3.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="text-amber-400">▸</span>
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Column: Deliverable Telemetry Table */}
-                <div className="lg:col-span-5 bg-[#080a12] rounded-xl border border-white/10 p-5 text-xs shadow-inner">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
-                    <span>DELIVERABLE TELEMETRY</span>
-                    <span className="text-purple-400 font-bold">NODE // 03</span>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    {p3.telemetry?.specs.map((spec, i) => (
-                      <div key={i} className={`flex justify-between items-center py-1 ${i < (p3.telemetry?.specs.length || 0) - 1 ? "border-b border-white/5" : ""}`}>
-                        <span className="text-slate-400">{spec.label}</span>
-                        <span className={`${spec.highlight ? "text-purple-300 font-bold" : "text-white font-medium"} text-right`}>
-                          {spec.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-            </motion.div>
-          </div>
-
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              total={projects.length}
+              cardRef={cardRefs.current[index]}
+            />
+          ))}
         </div>
-
-        {/* ═════════════════════════════════════════════════════════════════
-            AUTOMATIC REPOSITORY DISCOVERY & OPEN SOURCE SYSTEMS LAB:
-            Dynamically populates from Nishant's GitHub profile (@Nish0178).
-            Scales gracefully from 5 to 50+ repositories with refined visual hierarchy.
-           ═════════════════════════════════════════════════════════════════ */}
-        {secondaryProjects.length > 0 && (
-          <div className="mt-28 pt-16 border-t border-white/[0.08]">
-            
-            {/* Lab Section Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-amber-400 text-xs font-bold tracking-[0.2em] uppercase font-mono">
-                    02.2 // OPEN SOURCE REPOSITORIES
-                  </span>
-                  <span className="w-8 h-[1px] bg-amber-500/40" />
-                </div>
-                <h3 className="serif-headline text-3xl sm:text-4xl font-bold text-white uppercase tracking-tight">
-                  ENGINEERING LAB &amp; REPOSITORIES.
-                </h3>
-                <p className="text-sm text-slate-300 mt-2 max-w-xl">
-                  Public repositories and utilities discovered automatically from GitHub profile. Real-time stars, languages, and direct source links.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <a
-                  href={`https://github.com/${GITHUB_USERNAME}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-outline-gold inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold tracking-[0.14em] uppercase"
-                >
-                  <span>EXPLORE ALL ON GITHUB</span>
-                  <span className="text-sm">↗</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Grid of Discovered Repositories */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {secondaryProjects.map((repo, idx) => {
-                const projectNumber = String(featuredProjects.length + idx + 1).padStart(2, "0");
-                const langColorClass = getLanguageColor(repo.language);
-
-                return (
-                  <motion.div
-                    key={repo.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: DURATION.normal, delay: idx * 0.06, ease: EASING.cinematic }}
-                    className="rounded-xl p-6 bg-[#0c0e18] border border-white/[0.08] hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between group shadow-lg hover:shadow-[0_15px_35px_-10px_rgba(245,158,11,0.1)] relative overflow-hidden"
-                  >
-                    {/* Top ambient hover glow */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.03] group-hover:bg-amber-500/[0.08] rounded-full blur-2xl transition-all pointer-events-none" />
-
-                    <div>
-                      {/* Card Top Metadata */}
-                      <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-white/[0.06] text-xs font-mono">
-                        <span className="text-slate-400 font-bold">
-                          // {projectNumber}
-                        </span>
-
-                        <div className="flex items-center gap-2">
-                          {repo.language && (
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${langColorClass} bg-white/[0.02]`}>
-                              {repo.language}
-                            </span>
-                          )}
-
-                          {repo.stars > 0 && (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
-                              <span>★</span>
-                              <span>{repo.stars}</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <h4 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors tracking-tight mb-2">
-                        {repo.displayTitle}
-                      </h4>
-
-                      {/* Real description if available, otherwise omitted without fabrication */}
-                      {repo.description ? (
-                        <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-4">
-                          {repo.description}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-slate-400 italic mb-4">
-                          Verified open-source repository under @{GITHUB_USERNAME}.
-                        </p>
-                      )}
-
-                      {/* Tech topics / tags */}
-                      {repo.technologies && repo.technologies.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-6">
-                          {repo.technologies.slice(0, 4).map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 bg-white/[0.03] border border-white/[0.06]"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Bottom Links & Updated Timestamp */}
-                    <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs mt-auto">
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {repo.updatedAt ? formatUpdatedDate(repo.updatedAt) : "ACTIVE REPO"}
-                      </span>
-
-                      <div className="flex items-center gap-3">
-                        {repo.homepage && (
-                          <a
-                            href={repo.homepage}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-emerald-400 hover:text-emerald-300 font-semibold tracking-wider text-[11px] uppercase flex items-center gap-1 transition-colors"
-                          >
-                            <span>DEMO</span>
-                            <span>↗</span>
-                          </a>
-                        )}
-
-                        <a
-                          href={repo.htmlUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-amber-400 hover:text-amber-300 font-semibold tracking-wider text-[11px] uppercase flex items-center gap-1 transition-colors"
-                        >
-                          <span>GITHUB</span>
-                          <span>↗</span>
-                        </a>
-                      </div>
-                    </div>
-
-                  </motion.div>
-                );
-              })}
-            </div>
-
-          </div>
-        )}
-
       </div>
     </section>
   );
