@@ -50,14 +50,14 @@ export default function ContactSection() {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#07080c]"
+      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Glow Effects */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Section Header: Slower, cinematic pacing like film ending */}
+        {/* Section Header */}
         <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -66,7 +66,7 @@ export default function ContactSection() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="flex items-center gap-2 mb-3"
           >
-            <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
+            <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
               05 / CONTACT
             </span>
             <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -78,9 +78,9 @@ export default function ContactSection() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.slow, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">INITIALIZE</span>
+            <span className="block text-[var(--text-primary)]">INITIALIZE</span>
             <span className="block text-gold-gradient serif-italic">TRANSMISSION.</span>
           </motion.h2>
 
@@ -89,14 +89,14 @@ export default function ContactSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.slow, delay: 0.18, ease: EASING.cinematic }}
-            className="text-sm sm:text-base text-slate-300 mt-4 max-w-2xl leading-relaxed"
+            className="text-sm sm:text-base text-[var(--text-secondary)] mt-4 max-w-2xl leading-relaxed font-serif"
           >
             Have an ambitious system to architect, an engineering opportunity, or a collaborative inquiry? Send a direct dispatch below.
           </motion.p>
         </div>
 
         {/* Transmission Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20 font-sans">
           
           {/* Left Column: Interactive Dispatch Terminal Form */}
           <motion.div
@@ -104,20 +104,20 @@ export default function ContactSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: DURATION.slow, delay: 0.15, ease: EASING.cinematic }}
-            className="lg:col-span-7 rounded-2xl aura-card p-6 sm:p-10 border border-amber-500/35 bg-[#0d101c]/98 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+            className="lg:col-span-7 rounded-2xl aura-card p-6 sm:p-10 border border-amber-500/35 bg-[var(--bg-surface)] shadow-lg"
           >
             {/* Terminal Header */}
-            <div className="flex items-center justify-between pb-6 mb-6 border-b border-white/[0.08] text-xs">
+            <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--border-subtle)] text-xs font-mono">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-                <span className="text-emerald-400 font-bold tracking-wider uppercase">STATUS: READY_FOR_DISPATCH</span>
+                <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider uppercase">STATUS: READY_FOR_DISPATCH</span>
               </div>
-              <span className="text-slate-400 tracking-wider uppercase">CHANNEL: ENCRYPTED // TLS</span>
+              <span className="text-[var(--text-muted)] tracking-wider uppercase">CHANNEL: ENCRYPTED // TLS</span>
             </div>
 
             <form onSubmit={handleDispatch} className="space-y-6">
               <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-slate-300 uppercase mb-2">
+                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
                   01 // SENDER IDENTITY (NAME / COMPANY)
                 </label>
                 <input
@@ -126,12 +126,12 @@ export default function ContactSection() {
                   placeholder="e.g. Alex Reed / Engineering Lead"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl bg-black/50 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-slate-300 uppercase mb-2">
+                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
                   02 // RETURN DISPATCH EMAIL
                 </label>
                 <input
@@ -140,12 +140,12 @@ export default function ContactSection() {
                   placeholder="e.g. alex@company.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl bg-black/50 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-slate-300 uppercase mb-2">
+                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
                   03 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY)
                 </label>
                 <textarea
@@ -154,13 +154,13 @@ export default function ContactSection() {
                   placeholder="Detail your engineering requirements, project scope, or opportunity..."
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl bg-black/50 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition-colors resize-none leading-relaxed"
+                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none leading-relaxed"
                 />
               </div>
 
               <button
                 type="submit"
-                className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer font-mono"
               >
                 <span>EXECUTE DISPATCH</span>
                 <span className="text-base">↗</span>
@@ -177,24 +177,24 @@ export default function ContactSection() {
             className="lg:col-span-5 space-y-6"
           >
             {/* Email Card with Copy Feature */}
-            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/95">
-              <div className="text-xs text-slate-400 uppercase tracking-[0.16em] font-bold mb-2">
+            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-md">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-[0.16em] font-bold mb-2 font-mono">
                 DIRECT INBOX
               </div>
-              <div className="text-base sm:text-lg text-white font-bold tracking-tight mb-4 break-all">
+              <div className="text-base sm:text-lg text-[var(--text-primary)] font-bold tracking-tight mb-4 break-all">
                 {PERSONAL_INFO.email}
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 font-mono">
                 <button
                   onClick={handleCopyEmail}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-amber-300 border border-amber-500/30 transition-colors flex items-center gap-1.5 cursor-pointer tracking-wider uppercase"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold dark:bg-white/[0.06] dark:hover:bg-white/[0.1] dark:text-amber-300 dark:border-amber-500/30 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-500/30 transition-colors flex items-center gap-1.5 cursor-pointer tracking-wider uppercase"
                 >
                   <span>{copied ? "COPIED TO CLIPBOARD ✓" : "COPY EMAIL"}</span>
                 </button>
                 <a
                   href={`mailto:${PERSONAL_INFO.email}`}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-white border border-white/10 transition-colors tracking-wider uppercase"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold dark:bg-amber-500/10 dark:hover:bg-amber-500/20 dark:text-white dark:border-white/10 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-black/10 transition-colors tracking-wider uppercase"
                 >
                   OPEN EMAIL CLIENT ↗
                 </a>
@@ -202,8 +202,8 @@ export default function ContactSection() {
             </div>
 
             {/* Canonical Social Channels */}
-            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/95">
-              <div className="text-xs text-slate-400 uppercase tracking-[0.16em] font-bold mb-4">
+            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-md">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-[0.16em] font-bold mb-4 font-mono">
                 CANONICAL CHANNELS
               </div>
 
@@ -214,24 +214,24 @@ export default function ContactSection() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/30 hover:bg-white/[0.06] transition-all flex items-center justify-between text-xs text-slate-200 group"
+                    className="p-3 rounded-lg dark:bg-white/[0.03] dark:border-white/[0.06] dark:hover:bg-white/[0.06] bg-slate-50 border border-black/10 hover:border-amber-500/30 hover:bg-slate-100 transition-all flex items-center justify-between text-xs text-[var(--text-primary)] group font-mono"
                   >
                     <span className="font-semibold">{link.name}</span>
-                    <span className="text-amber-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+                    <span className="text-amber-500 dark:text-amber-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
                   </a>
                 ))}
               </div>
             </div>
 
             {/* Location & Availability Note */}
-            <div className="p-6 rounded-2xl bg-[#090b14] border border-white/[0.06] text-xs text-slate-400 space-y-2">
+            <div className="p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] space-y-2 font-mono shadow-sm">
               <div className="flex justify-between">
                 <span>LOCATION:</span>
-                <span className="text-white font-semibold">Lucknow, India (UTC +05:30)</span>
+                <span className="text-[var(--text-primary)] font-semibold">Lucknow, India (UTC +05:30)</span>
               </div>
               <div className="flex justify-between">
                 <span>AVAILABILITY:</span>
-                <span className="text-emerald-400 font-bold tracking-wider">OPEN FOR ROLES &amp; PROJECTS</span>
+                <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider">OPEN FOR ROLES &amp; PROJECTS</span>
               </div>
             </div>
 
@@ -239,17 +239,17 @@ export default function ContactSection() {
 
         </div>
 
-        {/* 22. Footer: Very subtle reveal */}
+        {/* Footer */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
-          className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400"
+          className="pt-8 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)] font-mono"
         >
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
-            <span className="text-white font-semibold tracking-wider">NISHANT TRIVEDI</span>
+            <span className="text-[var(--text-primary)] font-semibold tracking-wider">NISHANT TRIVEDI</span>
             <span>·</span>
             <span className="tracking-wider">SOFTWARE ENGINEER</span>
           </div>

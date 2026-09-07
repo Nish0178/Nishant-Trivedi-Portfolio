@@ -48,7 +48,7 @@ export default function AboutSection() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#07080c]"
+      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background glow */}
       <div className="absolute top-1/2 left-0 w-[550px] h-[550px] bg-amber-500/8 rounded-full blur-[150px] pointer-events-none" />
@@ -65,7 +65,7 @@ export default function AboutSection() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="flex items-center gap-2 mb-3"
           >
-            <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
+            <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
               01 / ABOUT ME
             </span>
             <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -78,9 +78,9 @@ export default function AboutSection() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">I DON&apos;T JUST WRITE CODE.</span>
+            <span className="block text-[var(--text-primary)]">I DON&apos;T JUST WRITE CODE.</span>
             <span className="block text-gold-gradient serif-italic">I BUILD WHAT&apos;S NEXT.</span>
           </motion.h2>
         </div>
@@ -101,9 +101,9 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.normal, delay: 0.08, ease: EASING.cinematic }}
-              className="text-lg sm:text-xl text-slate-200 leading-relaxed font-normal"
+              className="text-lg sm:text-xl text-[var(--text-primary)] leading-relaxed font-normal"
             >
-              I&apos;m <strong className="text-amber-400 font-semibold serif-italic">Nishant Trivedi</strong>, a Full Stack Developer and Computer Science undergraduate specializing in building scalable web architectures, AI-integrated platforms, and refined digital experiences.
+              I&apos;m <strong className="text-amber-500 dark:text-amber-400 font-semibold serif-italic">Nishant Trivedi</strong>, a Full Stack Developer and Computer Science undergraduate specializing in building scalable web architectures, AI-integrated platforms, and refined digital experiences.
             </motion.p>
 
             <motion.p
@@ -111,9 +111,9 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.normal, delay: 0.18, ease: EASING.cinematic }}
-              className="text-base text-slate-300 leading-relaxed"
+              className="text-base text-[var(--text-secondary)] leading-relaxed"
             >
-              With a strong algorithmic foundation (<span className="text-white font-semibold">400+ problems solved in Java</span>) and a focus on clean engineering, I transform complex requirements into high-performance, resilient products.
+              With a strong algorithmic foundation (<span className="text-[var(--text-primary)] font-semibold">400+ problems solved in Java</span>) and a focus on clean engineering, I transform complex requirements into high-performance, resilient products.
             </motion.p>
 
             <motion.p
@@ -121,9 +121,9 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.normal, delay: 0.28, ease: EASING.cinematic }}
-              className="text-base text-slate-300 leading-relaxed"
+              className="text-base text-[var(--text-secondary)] leading-relaxed"
             >
-              Currently pursuing a B.Tech in Computer Science &amp; Engineering at <strong className="text-slate-100">Dr. A.P.J. Abdul Kalam Technical University (AKTU)</strong>, Lucknow (2024–2028).
+              Currently pursuing a B.Tech in Computer Science &amp; Engineering at <strong className="text-[var(--text-primary)]">Dr. A.P.J. Abdul Kalam Technical University (AKTU)</strong>, Lucknow (2024–2028).
             </motion.p>
 
             {/* 5. Supporting focus cards appear sequentially */}
@@ -132,31 +132,31 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.normal, delay: 0.35, ease: EASING.cinematic }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 font-sans"
             >
-              <div className="p-4 rounded-xl bg-[#0e1220] border border-white/[0.08] hover:border-amber-500/40 transition-colors group">
-                <div className="text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase">
+              <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-amber-500/40 transition-colors group shadow-sm">
+                <div className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase font-mono">
                   01 // RESILIENCE
                 </div>
-                <div className="text-xs text-slate-300 leading-normal">
+                <div className="text-xs text-[var(--text-secondary)] leading-normal">
                   Clean backend pipelines, strict TypeScript Zod schemas, and relational integrity.
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0e1220] border border-white/[0.08] hover:border-amber-500/40 transition-colors group">
-                <div className="text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase">
+              <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-amber-500/40 transition-colors group shadow-sm">
+                <div className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase font-mono">
                   02 // APPLIED AI
                 </div>
-                <div className="text-xs text-slate-300 leading-normal">
+                <div className="text-xs text-[var(--text-secondary)] leading-normal">
                   Multimodal Gemini 2.5 Flash orchestration, structured JSON outputs, and fast inference.
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0e1220] border border-white/[0.08] hover:border-amber-500/40 transition-colors group">
-                <div className="text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase">
+              <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-amber-500/40 transition-colors group shadow-sm">
+                <div className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.16em] mb-1 uppercase font-mono">
                   03 // ALGORITHMS
                 </div>
-                <div className="text-xs text-slate-300 leading-normal">
+                <div className="text-xs text-[var(--text-secondary)] leading-normal">
                   Rigorous data structures, time complexity optimization, and LeetCode consistency.
                 </div>
               </div>
@@ -170,7 +170,7 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)", scale: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.9, delay: 0.2, ease: EASING.cinematic }}
-              className="relative w-full max-w-[320px] sm:max-w-[360px] rounded-2xl overflow-hidden border border-amber-500/40 bg-[#0e1220] p-3 shadow-[0_25px_60px_rgba(0,0,0,0.75),0_0_35px_rgba(245,158,11,0.2)]"
+              className="relative w-full max-w-[320px] sm:max-w-[360px] rounded-2xl overflow-hidden border border-amber-500/40 bg-[var(--bg-surface)] p-3 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.75),0_0_35px_rgba(245,158,11,0.2)]"
             >
               <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-black/60">
                 <Image
@@ -183,18 +183,18 @@ export default function AboutSection() {
                 />
                 
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-transparent to-transparent opacity-50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
               </div>
 
               {/* Bottom Quote & Signature Overlay */}
               <div className="pt-3 px-2 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-bold text-white tracking-wide">Nishant Trivedi</div>
-                  <div className="text-[10px] text-amber-400 tracking-wider uppercase font-semibold">
+                  <div className="text-xs font-bold text-[var(--text-primary)] tracking-wide">Nishant Trivedi</div>
+                  <div className="text-[10px] text-amber-500 dark:text-amber-400 tracking-wider uppercase font-semibold font-mono">
                     AKTU CSE &apos;24–&apos;28
                   </div>
                 </div>
-                <div className="font-signature text-2xl text-amber-300 font-bold">
+                <div className="font-signature text-2xl text-amber-500 dark:text-amber-300 font-bold">
                   Nishant
                 </div>
               </div>
@@ -213,19 +213,19 @@ export default function AboutSection() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: DURATION.normal, delay: idx * STAGGER.normal, ease: EASING.cinematic }}
               className={`p-6 rounded-2xl aura-card relative overflow-hidden group ${
-                stat.highlight ? "border-amber-500/40 bg-[#121627]/90" : ""
+                stat.highlight ? "border-amber-500/40" : ""
               }`}
             >
               {stat.highlight && (
                 <div className="absolute top-0 right-0 w-28 h-28 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
               )}
-              <div className="serif-metric text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-2 group-hover:text-amber-400 transition-colors">
+              <div className="serif-metric text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-2 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
                 {stat.number}
               </div>
-              <div className="text-xs font-bold tracking-[0.16em] text-amber-400 uppercase mb-1">
+              <div className="text-xs font-bold tracking-[0.16em] text-amber-500 dark:text-amber-400 uppercase mb-1 font-mono">
                 {stat.label}
               </div>
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-[var(--text-muted)]">
                 {stat.subtext}
               </div>
             </motion.div>

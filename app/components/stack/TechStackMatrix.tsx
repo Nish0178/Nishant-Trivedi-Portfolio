@@ -9,7 +9,7 @@ const QUADRANTS = [
     number: "01",
     title: "FRONTEND ARCHITECTURE",
     tag: "CORE RUNTIMES",
-    tagColor: "text-amber-400 border-amber-500/40 bg-amber-500/10",
+    tagColor: "text-amber-500 dark:text-amber-400 border-amber-500/40 bg-amber-500/10",
     description:
       "Specialized in building high-performance client applications, modular design systems, and responsive zero-CLS web interfaces.",
     skills: ["React.js", "Next.js 15", "TypeScript", "Tailwind CSS", "HTML5", "CSS3", "Chart.js", "Responsive Design"],
@@ -18,7 +18,7 @@ const QUADRANTS = [
     number: "02",
     title: "DISTRIBUTED BACKEND",
     tag: "SERVER SYSTEMS",
-    tagColor: "text-blue-400 border-blue-500/40 bg-blue-500/10",
+    tagColor: "text-blue-500 dark:text-blue-400 border-blue-500/40 bg-blue-500/10",
     description:
       "Engineered resilient server architectures, RESTful API endpoints, stateless JWT authentication, and decoupled microservice pipelines.",
     skills: ["Node.js", "Express.js", "REST APIs", "JWT Auth", "Prisma ORM", "Microservices", "Bcrypt"],
@@ -27,7 +27,7 @@ const QUADRANTS = [
     number: "03",
     title: "DATA PLATFORMS",
     tag: "PERSISTENCE",
-    tagColor: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10",
+    tagColor: "text-emerald-500 dark:text-emerald-400 border-emerald-500/40 bg-emerald-500/10",
     description:
       "Designing high-throughput relational and document database schemas with optimized indexing, transactions, and isolation.",
     skills: ["MongoDB Atlas", "PostgreSQL", "MySQL", "SQLite", "Mongoose", "Prisma Schema", "Database Design"],
@@ -36,7 +36,7 @@ const QUADRANTS = [
     number: "04",
     title: "ALGORITHMS & MACHINE LEARNING",
     tag: "INTELLIGENCE & RIGOR",
-    tagColor: "text-purple-400 border-purple-500/40 bg-purple-500/10",
+    tagColor: "text-purple-500 dark:text-purple-400 border-purple-500/40 bg-purple-500/10",
     description:
       "400+ algorithmic challenges solved in Java, applied multimodal prompt chains, and deterministic structured outputs.",
     skills: ["Java (Primary)", "JavaScript", "TypeScript", "C++", "Python", "Gemini 2.5 Flash", "DSA", "OOP", "DBMS", "OS"],
@@ -59,7 +59,7 @@ export default function TechStackMatrix() {
     <section
       id="skills"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#07080c]"
+      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-amber-500/6 rounded-full blur-[160px] pointer-events-none" />
@@ -75,7 +75,7 @@ export default function TechStackMatrix() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="flex items-center gap-2 mb-3"
           >
-            <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
+            <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
               03 / TECH MATRIX
             </span>
             <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -87,9 +87,9 @@ export default function TechStackMatrix() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">ARCHITECTURAL MASTERY.</span>
+            <span className="block text-[var(--text-primary)]">ARCHITECTURAL MASTERY.</span>
             <span className="block text-gold-gradient serif-italic">PRECISION APPLIED.</span>
           </motion.h2>
 
@@ -98,7 +98,7 @@ export default function TechStackMatrix() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.normal, delay: 0.15, ease: EASING.cinematic }}
-            className="text-sm sm:text-base text-slate-300 mt-4 max-w-2xl leading-relaxed"
+            className="text-sm sm:text-base text-[var(--text-secondary)] mt-4 max-w-2xl leading-relaxed"
           >
             Grouped technical capabilities and architectural domains. Engineered for resilience, performance, and scale.
           </motion.p>
@@ -113,34 +113,34 @@ export default function TechStackMatrix() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: DURATION.cinematic, delay: idx * STAGGER.editorial, ease: EASING.cinematic }}
-              className="rounded-2xl aura-card p-6 sm:p-8 relative overflow-hidden group border border-white/[0.08] bg-[#0d101c]/95 flex flex-col justify-between hover:border-amber-500/40 transition-all duration-500"
+              className="rounded-2xl aura-card p-6 sm:p-8 relative overflow-hidden group border border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-col justify-between hover:border-amber-500/40 transition-all duration-500"
             >
               <div>
                 {/* Card Top Metadata */}
-                <div className="flex items-center justify-between gap-4 pb-4 mb-5 border-b border-white/[0.08]">
-                  <span className="text-xs text-slate-400 font-bold tracking-[0.16em] uppercase">
+                <div className="flex items-center justify-between gap-4 pb-4 mb-5 border-b border-[var(--border-subtle)]">
+                  <span className="text-xs text-[var(--text-muted)] font-bold tracking-[0.16em] uppercase font-mono">
                     DOMAIN // {quad.number}
                   </span>
-                  <span className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-[0.16em] uppercase border ${quad.tagColor}`}>
+                  <span className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-[0.16em] uppercase border font-mono ${quad.tagColor}`}>
                     {quad.tag}
                   </span>
                 </div>
 
                 {/* Title & Description */}
-                <h3 className="serif-headline text-2xl sm:text-3xl font-bold text-white tracking-tight uppercase mb-3 group-hover:text-amber-300 transition-colors group-hover:translate-x-1">
+                <h3 className="serif-headline text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight uppercase mb-3 group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors group-hover:translate-x-1">
                   {quad.title}
                 </h3>
-                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
                   {quad.description}
                 </p>
               </div>
 
               {/* Skills Pills Grouped by Domain */}
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/[0.06]">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-[var(--border-subtle)]">
                 {quad.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="px-3 py-1 rounded-md text-xs font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10 group-hover:border-amber-500/30 transition-colors"
+                    className="px-3 py-1 rounded-md text-xs font-semibold tracking-wider dark:text-slate-200 dark:bg-white/[0.05] dark:border-white/10 text-slate-700 bg-slate-100 border border-black/10 group-hover:border-amber-500/30 transition-colors font-mono"
                   >
                     {skill}
                   </span>
@@ -156,13 +156,13 @@ export default function TechStackMatrix() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: DURATION.normal, delay: 0.2, ease: EASING.cinematic }}
-          className="rounded-xl bg-[#0e1220] border border-amber-500/25 p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+          className="rounded-xl bg-[var(--bg-surface)] border border-amber-500/30 p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-md"
         >
           <div>
-            <div className="text-xs font-bold tracking-[0.2em] text-amber-400 uppercase mb-1">
+            <div className="text-xs font-bold tracking-[0.2em] text-amber-500 dark:text-amber-400 uppercase mb-1 font-mono">
               APPLIED AI &amp; DEVELOPER TOOLKIT
             </div>
-            <div className="text-sm text-slate-300">
+            <div className="text-sm text-[var(--text-secondary)]">
               Multimodal Gemini 2.5 Flash orchestration, Git/GitHub version control, VS Code, Postman, Render Cloud, npm.
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function TechStackMatrix() {
             {["Gemini 2.5 Flash", "Git", "GitHub", "VS Code", "Postman", "Render", "npm", "Linux/Bash"].map((tool) => (
               <span
                 key={tool}
-                className="px-3 py-1 rounded text-xs font-semibold tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/40"
+                className="px-3 py-1 rounded text-xs font-semibold tracking-wider text-amber-600 dark:text-amber-300 bg-amber-500/10 border border-amber-500/40 font-mono"
               >
                 {tool}
               </span>

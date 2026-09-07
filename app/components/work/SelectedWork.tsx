@@ -274,20 +274,20 @@ function ProjectCard({
         Stacking is purely physical via CSS sticky, layered z-indices, stepped tabs, and rich drop shadows.
       */}
       <div
-        className={`rounded-2xl p-5 sm:p-6 lg:p-7 relative overflow-hidden border ${accent.border} bg-[#0d101c] ${accent.shadow} group transition-colors duration-300`}
+        className={`rounded-2xl p-5 sm:p-6 lg:p-7 relative overflow-hidden border ${accent.border} dark:bg-[#0d101c] bg-white ${accent.shadow} shadow-lg group transition-colors duration-300`}
       >
         {/* Ambient Top Corner Light */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-48 h-48 dark:bg-white/[0.02] bg-black/[0.02] rounded-full blur-3xl pointer-events-none" />
 
         {/* Card Top Metadata Bar - Compact vertical footprint */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 sm:pb-3.5 border-b border-white/[0.08] mb-3.5 sm:mb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 sm:pb-3.5 border-b dark:border-white/[0.08] border-black/[0.08] mb-3.5 sm:mb-4 relative z-10">
           <div className="flex items-center gap-2.5">
             <span
               className={`px-2.5 py-0.5 rounded ${accent.badgeBg} text-[11px] font-bold tracking-[0.16em] uppercase font-mono`}
             >
               {projectNumber} // {project.category || "ENGINEERING SYSTEM"}
             </span>
-            <span className="hidden sm:inline-block text-[11px] text-slate-400 tracking-wider uppercase font-semibold font-mono truncate max-w-[280px]">
+            <span className="hidden sm:inline-block text-[11px] dark:text-slate-400 text-slate-500 tracking-wider uppercase font-semibold font-mono truncate max-w-[280px]">
               {project.tagline || (project.featured ? "FEATURED ARCHITECTURE" : "VERIFIED REPOSITORY")}
             </span>
           </div>
@@ -330,11 +330,11 @@ function ProjectCard({
           <div className="lg:col-span-7 space-y-3 sm:space-y-3.5">
             <div>
               <h3
-                className={`serif-headline text-2xl sm:text-3xl lg:text-3xl font-bold text-white uppercase tracking-tight mb-1.5 ${accent.hoverTitle} transition-colors group-hover:translate-x-0.5`}
+                className={`serif-headline text-2xl sm:text-3xl lg:text-3xl font-bold dark:text-white text-slate-900 uppercase tracking-tight mb-1.5 ${accent.hoverTitle} transition-colors group-hover:translate-x-0.5`}
               >
                 {project.displayTitle}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-serif line-clamp-3 sm:line-clamp-none">
+              <p className="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed font-serif line-clamp-3 sm:line-clamp-none">
                 {project.description || "Personal engineering repository on GitHub."}
               </p>
             </div>
@@ -344,7 +344,7 @@ function ProjectCard({
               {project.technologies.slice(0, 6).map((tech) => (
                 <span
                   key={tech}
-                  className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-200 bg-white/[0.05] border border-white/10 font-mono"
+                  className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold tracking-wider dark:text-slate-200 dark:bg-white/[0.05] dark:border-white/10 text-slate-700 bg-slate-100 border border-black/10 font-mono"
                 >
                   {tech}
                 </span>
@@ -353,7 +353,7 @@ function ProjectCard({
 
             {/* Architectural Highlights (2 key points) */}
             {project.features && project.features.length > 0 && (
-              <div className="space-y-1 pt-0.5 text-xs text-slate-300 font-serif hidden sm:block">
+              <div className="space-y-1 pt-0.5 text-xs dark:text-slate-300 text-slate-600 font-serif hidden sm:block">
                 {project.features.slice(0, 2).map((feat, idx) => (
                   <div key={idx} className="flex items-start gap-1.5">
                     <span className={`${accent.bullet} mt-0.5 text-[10px]`}>▸</span>
@@ -392,8 +392,8 @@ function ProjectCard({
           </div>
 
           {/* Right Column: Architecture Telemetry Table */}
-          <div className="lg:col-span-5 bg-[#080a12] rounded-xl border border-white/10 p-3.5 sm:p-4 text-xs shadow-inner font-mono">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 pb-2 mb-2 border-b border-white/[0.08] flex items-center justify-between">
+          <div className="lg:col-span-5 dark:bg-[#080a12] bg-slate-50 rounded-xl border dark:border-white/10 border-black/10 p-3.5 sm:p-4 text-xs shadow-inner font-mono">
+            <div className="text-[10px] uppercase tracking-[0.2em] dark:text-slate-400 text-slate-500 pb-2 mb-2 border-b dark:border-white/[0.08] border-black/[0.08] flex items-center justify-between">
               <span>ARCHITECTURE TELEMETRY</span>
               <span className={`${accent.telemetryTitle} font-bold`}>
                 NODE // {projectNumber}
@@ -405,15 +405,15 @@ function ProjectCard({
                 <div
                   key={i}
                   className={`flex justify-between items-center py-0.5 ${
-                    i < telemetrySpecs.length - 1 ? "border-b border-white/5" : ""
+                    i < telemetrySpecs.length - 1 ? "border-b dark:border-white/5 border-black/5" : ""
                   }`}
                 >
-                  <span className="text-slate-400 text-[11px]">{spec.label}</span>
+                  <span className="dark:text-slate-400 text-slate-500 text-[11px]">{spec.label}</span>
                   <span
                     className={`${
                       spec.highlight
                         ? `${accent.specHighlight} font-bold serif-italic`
-                        : "text-white font-medium"
+                        : "dark:text-white text-slate-800 font-medium"
                     } text-right text-[11px] truncate max-w-[190px]`}
                   >
                     {spec.value}
@@ -424,15 +424,15 @@ function ProjectCard({
 
             {/* Telemetry Indicator if present */}
             {project.telemetry?.p95Latency && (
-              <div className="mt-2 pt-2 border-t border-white/[0.08] bg-black/70 px-2.5 py-1.5 rounded flex items-center justify-between text-[10px] text-slate-300">
+              <div className="mt-2 pt-2 border-t dark:border-white/[0.08] border-black/[0.08] dark:bg-black/70 bg-slate-900 text-white px-2.5 py-1.5 rounded flex items-center justify-between text-[10px]">
                 <span>API Response P95:</span>
                 <span className="text-emerald-400 font-bold">{project.telemetry.p95Latency}</span>
               </div>
             )}
 
             {/* Code Contract Snippet or Clone preview */}
-            <div className="mt-2.5 pt-2 border-t border-white/[0.08] bg-black/70 p-2 rounded text-[10px] leading-normal overflow-x-auto">
-              <pre className="font-mono text-amber-300">
+            <div className="mt-2.5 pt-2 border-t dark:border-white/[0.08] border-black/[0.08] dark:bg-black/70 bg-slate-900 p-2 rounded text-[10px] leading-normal overflow-x-auto">
+              <pre className="font-mono text-amber-400 dark:text-amber-300">
                 <code>{codeSnippetContent}</code>
               </pre>
             </div>
@@ -496,7 +496,7 @@ export default function SelectedWork() {
     <section
       id="work"
       ref={sectionRef}
-      className="relative py-20 sm:py-24 px-4 sm:px-8 overflow-visible bg-[#07080c]"
+      className="relative py-20 sm:py-24 px-4 sm:px-8 overflow-visible bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background ambient glow */}
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-amber-500/6 rounded-full blur-[140px] pointer-events-none" />
@@ -513,7 +513,7 @@ export default function SelectedWork() {
               transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
               className="flex items-center gap-2"
             >
-              <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
+              <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
                 02 / ENGINEERING PROJECTS
               </span>
               <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -524,11 +524,11 @@ export default function SelectedWork() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[11px] font-mono text-slate-300"
+              className="flex items-center gap-2 px-3 py-1 rounded-full dark:bg-white/[0.03] dark:border-white/[0.08] dark:text-slate-300 bg-black/[0.03] border border-black/[0.08] text-slate-700 text-[11px] font-mono"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-              <span className="text-slate-400">GITHUB SYNC:</span>
-              <span className="text-amber-400 font-semibold uppercase">
+              <span className="dark:text-slate-400 text-slate-500">GITHUB SYNC:</span>
+              <span className="text-amber-500 dark:text-amber-400 font-semibold uppercase">
                 @{GITHUB_USERNAME} · {projects.length} PROJECTS
               </span>
             </motion.div>
@@ -540,9 +540,9 @@ export default function SelectedWork() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">ENGINEERING</span>
+            <span className="block text-[var(--text-primary)]">ENGINEERING</span>
             <span className="block text-gold-gradient serif-italic">PROJECTS.</span>
           </motion.h2>
 
@@ -551,7 +551,7 @@ export default function SelectedWork() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.normal, delay: 0.15, ease: EASING.cinematic }}
-            className="text-xs sm:text-sm text-slate-300 mt-3 max-w-2xl leading-relaxed font-serif"
+            className="text-xs sm:text-sm text-[var(--text-secondary)] mt-3 max-w-2xl leading-relaxed font-serif"
           >
             Scroll down to experience the physical architecture card stack. Every platform was built to solve complex operational challenges with rigorous engineering and verified source code.
           </motion.p>

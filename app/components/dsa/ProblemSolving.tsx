@@ -20,7 +20,7 @@ export default function ProblemSolving() {
     <section
       id="dsa"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#08090d]"
+      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/3 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -36,7 +36,7 @@ export default function ProblemSolving() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="flex items-center gap-2 mb-3"
           >
-            <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
+            <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
               ALGORITHMIC FOUNDATION
             </span>
             <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -48,9 +48,9 @@ export default function ProblemSolving() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-slate-100">DATA STRUCTURES &amp;</span>
+            <span className="block text-[var(--text-primary)]">DATA STRUCTURES &amp;</span>
             <span className="block text-gold-gradient serif-italic">ALGORITHMS RIGOR.</span>
           </motion.h2>
 
@@ -59,14 +59,14 @@ export default function ProblemSolving() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.normal, delay: 0.15, ease: EASING.cinematic }}
-            className="text-sm sm:text-base text-slate-300 mt-4 max-w-2xl leading-relaxed"
+            className="text-sm sm:text-base text-[var(--text-secondary)] mt-4 max-w-2xl leading-relaxed"
           >
             Demonstrated commitment to computational efficiency, time/space complexity optimization, and continuous algorithmic problem-solving.
           </motion.p>
         </div>
 
         {/* Problem Solving Evidence Board */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch font-sans">
           
           {/* Main Verified Metrics Card */}
           <motion.div
@@ -74,17 +74,17 @@ export default function ProblemSolving() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="lg:col-span-7 rounded-2xl aura-card p-6 sm:p-10 border border-amber-500/25 bg-[#0d101c]/90 flex flex-col justify-between"
+            className="lg:col-span-7 rounded-2xl aura-card p-6 sm:p-10 border border-amber-500/30 bg-[var(--bg-surface)] flex flex-col justify-between shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between pb-6 mb-6 border-b border-white/[0.08]">
+              <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--border-subtle)]">
                 <div className="flex items-center gap-3">
                   <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]" />
-                  <span className="text-xs text-white font-bold tracking-[0.16em] uppercase">
+                  <span className="text-xs text-[var(--text-primary)] font-bold tracking-[0.16em] uppercase font-mono">
                     LEETCODE VERIFIED SNAPSHOT
                   </span>
                 </div>
-                <span className="text-xs text-amber-400 font-semibold tracking-wider">
+                <span className="text-xs text-amber-500 dark:text-amber-400 font-semibold tracking-wider font-mono">
                   PRIMARY: JAVA
                 </span>
               </div>
@@ -97,10 +97,10 @@ export default function ProblemSolving() {
                 transition={{ duration: DURATION.cinematic, delay: 0.15, ease: EASING.cinematic }}
                 className="mb-8"
               >
-                <div className="serif-metric text-6xl sm:text-7xl font-bold text-white tracking-tight leading-none mb-2">
-                  400<span className="text-amber-400">+</span>
+                <div className="serif-metric text-6xl sm:text-7xl font-bold text-[var(--text-primary)] tracking-tight leading-none mb-2">
+                  400<span className="text-amber-500 dark:text-amber-400">+</span>
                 </div>
-                <div className="text-sm text-slate-300 uppercase tracking-wider font-semibold">
+                <div className="text-sm text-[var(--text-secondary)] uppercase tracking-wider font-semibold font-mono">
                   Algorithmic Problems Solved (Java &amp; Core Data Structures)
                 </div>
               </motion.div>
@@ -121,19 +121,19 @@ export default function ProblemSolving() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: DURATION.normal, delay: 0.2 + i * STAGGER.fast, ease: EASING.cinematic }}
-                    className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-left hover:border-amber-500/30 transition-colors"
+                    className="p-3.5 rounded-xl dark:bg-white/[0.03] dark:border-white/[0.06] bg-slate-50 border border-black/10 text-left hover:border-amber-500/30 transition-colors"
                   >
-                    <div className="text-xs font-semibold text-white">{item.topic}</div>
-                    <div className="text-[11px] text-amber-400/90 mt-0.5 font-bold tracking-wider">{item.count}</div>
+                    <div className="text-xs font-semibold text-[var(--text-primary)]">{item.topic}</div>
+                    <div className="text-[11px] text-amber-600 dark:text-amber-400/90 mt-0.5 font-bold tracking-wider font-mono">{item.count}</div>
                   </motion.div>
                 ))}
               </div>
             </div>
 
             {/* Profile CTA Link */}
-            <div className="pt-8 mt-6 border-t border-white/[0.08] flex items-center justify-between flex-wrap gap-4">
-              <div className="text-xs text-slate-400">
-                Handle: <span className="text-white font-bold">Nishant_trivedi01111</span>
+            <div className="pt-8 mt-6 border-t border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-4 font-mono">
+              <div className="text-xs text-[var(--text-muted)]">
+                Handle: <span className="text-[var(--text-primary)] font-bold">Nishant_trivedi01111</span>
               </div>
               <a
                 href="https://leetcode.com/u/Nishant_trivedi01111/"
@@ -148,7 +148,7 @@ export default function ProblemSolving() {
           </motion.div>
 
           {/* Right Pillar: Verified Badges & Contest Rating Fade/Slide */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="lg:col-span-5 flex flex-col gap-6 font-sans">
             
             {/* 1415 Contest Rating Card: Fade and Slide */}
             <motion.div
@@ -156,15 +156,15 @@ export default function ProblemSolving() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.cinematic, delay: 0.15, ease: EASING.cinematic }}
-              className="p-6 rounded-2xl aura-card border border-white/[0.08] bg-[#0d101c]/90"
+              className="p-6 rounded-2xl aura-card border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-md"
             >
-              <div className="text-xs text-slate-400 uppercase tracking-[0.16em] font-bold mb-2">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-[0.16em] font-bold mb-2 font-mono">
                 Contest Performance
               </div>
-              <div className="serif-metric text-4xl font-bold text-white mb-1">
-                1415 <span className="text-xs text-amber-400 font-normal serif-italic">Rating</span>
+              <div className="serif-metric text-4xl font-bold text-[var(--text-primary)] mb-1">
+                1415 <span className="text-xs text-amber-500 dark:text-amber-400 font-normal serif-italic">Rating</span>
               </div>
-              <div className="text-xs text-slate-300 leading-relaxed">
+              <div className="text-xs text-[var(--text-secondary)] leading-relaxed">
                 Demonstrated algorithmic problem solving during competitive programming contests.
               </div>
             </motion.div>
@@ -175,14 +175,14 @@ export default function ProblemSolving() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.cinematic, delay: 0.28, ease: EASING.cinematic }}
-              className="p-6 rounded-2xl aura-card border border-amber-500/20 bg-[#101424] flex items-center gap-4"
+              className="p-6 rounded-2xl aura-card border border-amber-500/25 bg-[var(--bg-surface)] flex items-center gap-4 shadow-md"
             >
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl font-bold serif-metric">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400 text-xl font-bold serif-metric">
                 50
               </div>
               <div>
-                <div className="text-sm font-bold text-white tracking-tight">50 DAYS BADGE 2026</div>
-                <div className="text-xs text-slate-400">Consistent Daily Problem Solving Streak</div>
+                <div className="text-sm font-bold text-[var(--text-primary)] tracking-tight font-mono">50 DAYS BADGE 2026</div>
+                <div className="text-xs text-[var(--text-muted)]">Consistent Daily Problem Solving Streak</div>
               </div>
             </motion.div>
 
@@ -192,9 +192,9 @@ export default function ProblemSolving() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: DURATION.normal, delay: 0.38, ease: EASING.cinematic }}
-              className="p-6 rounded-2xl bg-[#090b14] border border-white/[0.06] text-xs text-slate-400 leading-relaxed"
+              className="p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] leading-relaxed shadow-sm"
             >
-              <span className="text-amber-400 font-bold block mb-1 tracking-wider uppercase">
+              <span className="text-amber-500 dark:text-amber-400 font-bold block mb-1 tracking-wider uppercase font-mono">
                 ZERO DATA FABRICATION POLICY:
               </span>
               All metrics reflect verified snapshots directly from official LeetCode profile APIs and canonical profile URLs.

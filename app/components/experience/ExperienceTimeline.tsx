@@ -30,7 +30,7 @@ export default function ExperienceTimeline() {
     <section
       id="experience"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[#07080c]"
+      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background glow */}
       <div className="absolute top-1/2 right-1/4 w-[550px] h-[550px] bg-amber-500/6 rounded-full blur-[150px] pointer-events-none" />
@@ -46,7 +46,7 @@ export default function ExperienceTimeline() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="flex items-center gap-2 mb-3"
           >
-            <span className="text-amber-400 text-xs font-bold tracking-[0.24em] uppercase">
+            <span className="text-amber-500 dark:text-amber-400 text-xs font-bold tracking-[0.24em] uppercase font-mono">
               04 / EXPERIENCE
             </span>
             <span className="w-8 h-[1px] bg-amber-500/40" />
@@ -58,9 +58,9 @@ export default function ExperienceTimeline() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: DURATION.cinematic, ease: EASING.cinematic }}
-            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white uppercase leading-[0.95] max-w-4xl"
+            className="serif-headline text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] uppercase leading-[0.95] max-w-4xl"
           >
-            <span className="block text-white">EXPERIENCE &amp;</span>
+            <span className="block text-[var(--text-primary)]">EXPERIENCE &amp;</span>
             <span className="block text-gold-gradient serif-italic">MILESTONES.</span>
           </motion.h2>
 
@@ -69,7 +69,7 @@ export default function ExperienceTimeline() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: DURATION.normal, delay: 0.15, ease: EASING.cinematic }}
-            className="text-sm sm:text-base text-slate-300 mt-4 max-w-2xl leading-relaxed"
+            className="text-sm sm:text-base text-[var(--text-secondary)] mt-4 max-w-2xl leading-relaxed"
           >
             A chronological timeline of professional engineering internships, open-source initiatives, and academic training.
           </motion.p>
@@ -78,10 +78,10 @@ export default function ExperienceTimeline() {
         {/* Timeline Stack with Progressive Line Reveal */}
         <div
           ref={timelineRef}
-          className="relative pl-6 sm:pl-10 ml-2 sm:ml-6 space-y-12"
+          className="relative pl-6 sm:pl-10 ml-2 sm:ml-6 space-y-12 font-sans"
         >
           {/* Base Background Track Line */}
-          <div className="absolute left-0 top-3 bottom-6 w-[1px] bg-white/[0.08]" />
+          <div className="absolute left-0 top-3 bottom-6 w-[1px] bg-[var(--border-subtle)]" />
 
           {/* Progressive Glowing Gold Progress Line */}
           <motion.div
@@ -99,33 +99,33 @@ export default function ExperienceTimeline() {
               className="relative group"
             >
               {/* Timeline Bullet Node */}
-              <div className="absolute -left-[31px] sm:-left-[47px] top-6 w-3 h-3 rounded-full bg-amber-400 ring-4 ring-[#07080c] shadow-[0_0_12px_#f59e0b] group-hover:scale-125 transition-transform duration-300" />
+              <div className="absolute -left-[31px] sm:-left-[47px] top-6 w-3 h-3 rounded-full bg-amber-500 ring-4 ring-[var(--bg-page)] shadow-[0_0_12px_#f59e0b] group-hover:scale-125 transition-transform duration-300" />
 
               {/* Experience Card */}
-              <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/95 group-hover:border-amber-500/40 transition-all duration-500">
+              <div className="rounded-2xl aura-card p-6 sm:p-8 border border-[var(--border-subtle)] bg-[var(--bg-surface)] group-hover:border-amber-500/40 transition-all duration-500">
                 
                 {/* Header Row: Role & Period Stagger */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-white/[0.08]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-[var(--border-subtle)]">
                   <div>
-                    <h3 className="serif-headline text-xl sm:text-2xl font-bold text-white tracking-tight uppercase group-hover:text-amber-300 transition-colors group-hover:translate-x-0.5">
+                    <h3 className="serif-headline text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight uppercase group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors group-hover:translate-x-0.5">
                       {exp.role}
                     </h3>
-                    <div className="text-sm text-amber-300 font-semibold mt-0.5 serif-italic">
+                    <div className="text-sm text-amber-600 dark:text-amber-300 font-semibold mt-0.5 serif-italic">
                       {exp.company}
                     </div>
                   </div>
 
-                  <div className="text-xs px-3 py-1 rounded bg-white/[0.05] border border-white/10 text-slate-200 w-fit tracking-wider font-semibold">
+                  <div className="text-xs px-3 py-1 rounded dark:bg-white/[0.05] dark:border-white/10 dark:text-slate-200 bg-slate-100 border border-black/10 text-slate-700 w-fit tracking-wider font-semibold font-mono">
                     {exp.period}
                   </div>
                 </div>
 
                 {/* Bullet Contributions */}
                 {exp.contributions && exp.contributions.length > 0 && (
-                  <ul className="space-y-1.5 mb-5 text-xs text-slate-300">
+                  <ul className="space-y-1.5 mb-5 text-xs text-[var(--text-secondary)]">
                     {exp.contributions.map((bullet, bIdx) => (
                       <li key={bIdx} className="flex items-start gap-2">
-                        <span className="text-amber-400 mt-0.5">▸</span>
+                        <span className="text-amber-500 dark:text-amber-400 mt-0.5">▸</span>
                         <span className="leading-relaxed">{bullet}</span>
                       </li>
                     ))}
@@ -134,11 +134,11 @@ export default function ExperienceTimeline() {
 
                 {/* Tech Tags */}
                 {exp.technologies && exp.technologies.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.06]">
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-[var(--border-subtle)]">
                     {exp.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2.5 py-0.5 rounded text-[11px] font-medium text-slate-300 bg-white/[0.04] border border-white/[0.08]"
+                        className="px-2.5 py-0.5 rounded text-[11px] font-medium dark:text-slate-300 dark:bg-white/[0.04] dark:border-white/[0.08] text-slate-700 bg-slate-100 border border-black/10 font-mono"
                       >
                         {tech}
                       </span>
@@ -158,25 +158,25 @@ export default function ExperienceTimeline() {
             transition={{ duration: DURATION.normal, ease: EASING.cinematic }}
             className="relative group"
           >
-            <div className="absolute -left-[31px] sm:-left-[47px] top-6 w-3 h-3 rounded-full bg-blue-400 ring-4 ring-[#07080c] shadow-[0_0_12px_#60a5fa] group-hover:scale-125 transition-transform duration-300" />
+            <div className="absolute -left-[31px] sm:-left-[47px] top-6 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-[var(--bg-page)] shadow-[0_0_12px_#60a5fa] group-hover:scale-125 transition-transform duration-300" />
 
-            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-white/[0.08] bg-[#0d101c]/95 group-hover:border-blue-500/40 transition-all duration-500">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-white/[0.08]">
+            <div className="rounded-2xl aura-card p-6 sm:p-8 border border-[var(--border-subtle)] bg-[var(--bg-surface)] group-hover:border-blue-500/40 transition-all duration-500">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-[var(--border-subtle)]">
                 <div>
-                  <h3 className="serif-headline text-xl sm:text-2xl font-bold text-white tracking-tight uppercase group-hover:text-blue-300 transition-colors">
+                  <h3 className="serif-headline text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight uppercase group-hover:text-blue-500 dark:group-hover:text-blue-300 transition-colors">
                     B.TECH IN COMPUTER SCIENCE &amp; ENGINEERING
                   </h3>
-                  <div className="text-sm text-blue-300 font-semibold mt-0.5 serif-italic">
+                  <div className="text-sm text-blue-600 dark:text-blue-300 font-semibold mt-0.5 serif-italic">
                     Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow
                   </div>
                 </div>
 
-                <div className="text-xs px-3 py-1 rounded bg-white/[0.05] border border-white/10 text-slate-200 w-fit tracking-wider font-semibold">
+                <div className="text-xs px-3 py-1 rounded dark:bg-white/[0.05] dark:border-white/10 dark:text-slate-200 bg-slate-100 border border-black/10 text-slate-700 w-fit tracking-wider font-semibold font-mono">
                   July 2024 – September 2028
                 </div>
               </div>
 
-              <p className="text-sm text-slate-300 leading-relaxed">
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 Core academic coursework focused on Data Structures &amp; Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, and Distributed Computing.
               </p>
             </div>

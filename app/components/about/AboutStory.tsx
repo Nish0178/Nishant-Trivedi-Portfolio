@@ -80,13 +80,13 @@ export default function AboutStory() {
             <div className="rounded-2xl bg-[#0a0a0a] border border-white/[0.07] p-6 sm:p-8 shadow-2xl">
               {/* Identity Header */}
               <div className="flex items-center gap-4 pb-6 mb-6 border-b border-white/[0.06]">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[#c9a84c]/30 shrink-0">
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-blue-500/30 bg-slate-950/80 shrink-0 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                   <Image
-                    src="/images/nt-logo-raw.png"
+                    src="/images/icon-logo.png"
                     alt="Nishant Trivedi"
                     fill
                     sizes="48px"
-                    className="object-cover"
+                    className="object-contain p-1.5"
                   />
                 </div>
                 <div>
