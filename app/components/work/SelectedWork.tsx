@@ -13,7 +13,8 @@ import {
  * Editorial accent configurations that preserve the refined dark aesthetic
  * while giving each engineering project card a distinctive visual signature.
  */
-interface AccentStyle {
+interface AccentStyle { 
+  husdfsd
   border: string;
   shadow: string;
   badgeBg: string;
