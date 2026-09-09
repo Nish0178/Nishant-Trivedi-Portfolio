@@ -14,8 +14,7 @@ import {
  * while giving each engineering project card a distinctive visual signature.
  */
 interface AccentStyle { 
-  husdfsd
-  border: string;
+   border: string;
   shadow: string;
   badgeBg: string;
   textAccent: string;
