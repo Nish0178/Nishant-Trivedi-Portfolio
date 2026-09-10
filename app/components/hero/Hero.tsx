@@ -156,7 +156,7 @@ export default function Hero() {
           >
             <Link
               href="#work"
-              className="inline-flex items-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3 rounded-full text-xs font-bold tracking-wider uppercase text-black bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:brightness-110 hover:-translate-y-0.5 transition-all font-mono"
+              className="btn-gold inline-flex items-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3 rounded-full text-xs font-bold tracking-wider uppercase font-mono shadow-md"
             >
               <span>EXPLORE MY WORK</span>
               <span className="text-sm">↗</span>
@@ -164,11 +164,7 @@ export default function Hero() {
 
             <a
               href="mailto:trivedinishant880@gmail.com?subject=Inquiry%20-%20Nishant%20Trivedi"
-              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs font-semibold tracking-wider uppercase border hover:border-amber-400 hover:text-amber-500 hover:-translate-y-0.5 transition-all font-mono ${
-                isDark
-                  ? "text-white bg-black/50 border-white/20"
-                  : "text-slate-800 bg-white/90 border-black/15 shadow-sm"
-              }`}
+              className="btn-secondary inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs font-semibold tracking-wider uppercase font-mono shadow-sm"
             >
               <span>DOWNLOAD RESUME</span>
               <span className="text-sm">↓</span>
@@ -250,28 +246,20 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Right Column: Walking Video Card
-            REFINEMENTS:
-            1. Positioned slightly toward the LEFT (-translate-x-3 lg:-translate-x-6)
-            2. Stretched UPWARD toward the navbar (-mt-4 sm:-mt-6 lg:-mt-8)
-            3. "SYS // ACTIVE_FRAME" and "ESTD 2026" overlays completely removed
-            4. Video given more vertical upper room with object-[center_6%] so face is never cropped
-            5. Single-viewport height strictly preserved
-            6. Video footer card ("Nishant Trivedi", "Full Stack Developer", "NT") and quote card kept intact
-        */}
+        {/* Right Column: Walking Video Card - Centered in available column space */}
         <motion.div
           initial={{ opacity: 0, clipPath: "inset(10% 0% 0% 0%)", scale: 0.95 }}
           animate={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)", scale: 1 }}
           style={{ scale: heroVideoScale, y: heroVideoY }}
           transition={{ duration: 1.0, delay: 0.48, ease: EASING.cinematic }}
-          className="lg:col-span-5 flex flex-col items-center lg:items-center xl:items-start lg:-translate-x-4 xl:-translate-x-7 lg:-mt-6 xl:-mt-8 relative"
+          className="lg:col-span-5 flex flex-col items-center justify-center relative w-full"
         >
           {/* Subtle Ambient Glow Behind Media */}
           <div className="absolute inset-0 bg-gradient-to-t from-amber-500/25 via-amber-500/5 to-transparent rounded-3xl blur-3xl -z-10" />
 
-          {/* Video Container - viewport constrained, upward extended */}
+          {/* Video Container - centered, properly constrained */}
           <div
-            className={`relative w-full max-w-[240px] sm:max-w-[260px] lg:max-w-[280px] xl:max-w-[295px] rounded-2xl overflow-hidden border transition-all duration-300 ${
+            className={`relative w-full max-w-[250px] sm:max-w-[270px] lg:max-w-[290px] xl:max-w-[305px] mx-auto rounded-2xl overflow-hidden border transition-all duration-300 ${
               isDark
                 ? "border-amber-500/40 bg-[#0e111d] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.9),0_0_30px_-5px_rgba(245,158,11,0.22)]"
                 : "border-amber-500/35 bg-white shadow-[0_16px_40px_-10px_rgba(0,0,0,0.12),0_0_25px_-5px_rgba(217,119,6,0.15)]"
@@ -324,9 +312,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Horizontal Quote Card Directly Below Video - Preserved */}
+          {/* Horizontal Quote Card Directly Below Video - Preserved & Centered */}
           <div
-            className={`w-full max-w-[240px] sm:max-w-[260px] lg:max-w-[280px] xl:max-w-[295px] rounded-xl border py-2.5 px-3.5 mt-2.5 flex items-center justify-between transition-all duration-300 ${
+            className={`w-full max-w-[250px] sm:max-w-[270px] lg:max-w-[290px] xl:max-w-[305px] mx-auto rounded-xl border py-2.5 px-3.5 mt-2.5 flex items-center justify-between transition-all duration-300 ${
               isDark
                 ? "border-amber-500/40 bg-[#0b0e18]/90 shadow-[0_10px_25px_rgba(0,0,0,0.7),0_0_20px_-5px_rgba(245,158,11,0.18)]"
                 : "border-amber-500/35 bg-white shadow-[0_10px_25px_rgba(0,0,0,0.06),0_0_15px_-4px_rgba(217,119,6,0.12)]"

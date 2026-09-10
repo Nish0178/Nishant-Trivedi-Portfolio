@@ -381,7 +381,7 @@ function ProjectCard({
                 href={project.htmlUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-outline-gold inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs font-semibold tracking-[0.14em] uppercase font-mono hover:bg-white/[0.04]"
+                className="btn-outline-gold inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs font-semibold tracking-[0.14em] uppercase font-mono"
               >
                 <span>VIEW ON GITHUB</span>
                 <span className="text-sm transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
@@ -496,7 +496,7 @@ export default function SelectedWork() {
     <section
       id="work"
       ref={sectionRef}
-      className="relative py-20 sm:py-24 px-4 sm:px-8 overflow-visible bg-[var(--bg-page)] transition-colors duration-300"
+      className="relative py-16 sm:py-20 lg:py-22 px-6 sm:px-8 lg:px-12 overflow-visible bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background ambient glow */}
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-amber-500/6 rounded-full blur-[140px] pointer-events-none" />

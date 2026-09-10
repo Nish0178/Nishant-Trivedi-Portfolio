@@ -59,7 +59,7 @@ export default function TechStackMatrix() {
     <section
       id="skills"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
+      className="relative py-16 sm:py-20 lg:py-22 px-6 sm:px-8 lg:px-12 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-amber-500/6 rounded-full blur-[160px] pointer-events-none" />

@@ -30,7 +30,7 @@ export default function ExperienceTimeline() {
     <section
       id="experience"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
+      className="relative py-16 sm:py-20 lg:py-22 px-6 sm:px-8 lg:px-12 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Background glow */}
       <div className="absolute top-1/2 right-1/4 w-[550px] h-[550px] bg-amber-500/6 rounded-full blur-[150px] pointer-events-none" />
