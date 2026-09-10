@@ -4,11 +4,15 @@ import React, { useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { PERSONAL_INFO } from "@/lib/portfolio-data";
 import { EASING, DURATION } from "@/app/lib/motion";
+import { sendContactMessage } from "@/lib/api/contact";
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Large typography scroll coupling
   const { scrollYProgress } = useScroll({
@@ -29,11 +33,29 @@ export default function ContactSection() {
     }
   };
 
-  const handleDispatch = (e: React.FormEvent) => {
+  const handleDispatch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Transmission from ${formData.name || "Engineering Partner"}`);
+    setStatus("submitting");
+    setFieldErrors({});
+
+    const res = await sendContactMessage(formData);
+    if (res.success) {
+      setStatus("success");
+      setStatusMessage(res.message);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } else {
+      setStatus("error");
+      setStatusMessage(res.message);
+      if (res.errors) {
+        setFieldErrors(res.errors);
+      }
+    }
+  };
+
+  const handleMailtoFallback = () => {
+    const subject = encodeURIComponent(formData.subject || `Transmission from ${formData.name || "Engineering Partner"}`);
     const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nPayload:\n${formData.message}`
+      `Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nPayload:\n${formData.message}`
     );
     window.location.href = `mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`;
   };
@@ -50,7 +72,7 @@ export default function ContactSection() {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative py-28 px-6 sm:px-8 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
+      className="relative py-16 sm:py-20 lg:py-22 px-6 sm:px-8 lg:px-12 overflow-hidden bg-[var(--bg-page)] transition-colors duration-300"
     >
       {/* Glow Effects */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[160px] pointer-events-none" />
@@ -109,63 +131,127 @@ export default function ContactSection() {
             {/* Terminal Header */}
             <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--border-subtle)] text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-                <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider uppercase">STATUS: READY_FOR_DISPATCH</span>
+                <span className={`w-2.5 h-2.5 rounded-full ${status === "submitting" ? "bg-amber-400 animate-ping" : status === "success" ? "bg-emerald-400 shadow-[0_0_10px_#34d399]" : "bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]"}`} />
+                <span className="text-emerald-500 dark:text-emerald-400 font-bold tracking-wider uppercase">
+                  {status === "submitting" ? "STATUS: TRANSMITTING..." : status === "success" ? "STATUS: DISPATCH_CONFIRMED" : "STATUS: READY_FOR_DISPATCH"}
+                </span>
               </div>
-              <span className="text-[var(--text-muted)] tracking-wider uppercase">CHANNEL: ENCRYPTED // TLS</span>
+              <span className="text-[var(--text-muted)] tracking-wider uppercase">CHANNEL: SPRING_BOOT // REST</span>
             </div>
 
-            <form onSubmit={handleDispatch} className="space-y-6">
-              <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                  01 // SENDER IDENTITY (NAME / COMPANY)
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Alex Reed / Engineering Lead"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
-                />
+            {status === "success" ? (
+              <div className="py-8 text-center space-y-4 font-mono">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto text-xl font-bold">
+                  ✓
+                </div>
+                <div className="serif-headline text-2xl font-bold text-[var(--text-primary)] uppercase">
+                  TRANSMISSION RECEIVED
+                </div>
+                <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto leading-relaxed">
+                  {statusMessage || "Your message has been securely received and recorded in the PostgreSQL database."}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setStatus("idle")}
+                  className="btn-gold px-6 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase mt-4 cursor-pointer"
+                >
+                  TRANSMIT ANOTHER MESSAGE
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleDispatch} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    01 // SENDER IDENTITY (NAME / COMPANY)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Alex Reed / Engineering Lead"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                  />
+                  {fieldErrors.name && (
+                    <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.name}</span>
+                  )}
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                  02 // RETURN DISPATCH EMAIL
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. alex@company.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    02 // RETURN DISPATCH EMAIL
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="e.g. alex@company.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                  />
+                  {fieldErrors.email && (
+                    <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.email}</span>
+                  )}
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                  03 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY)
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="Detail your engineering requirements, project scope, or opportunity..."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none leading-relaxed"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    03 // SUBJECT
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Full-Stack Engineering Role / Systems Architecture"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                  />
+                  {fieldErrors.subject && (
+                    <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.subject}</span>
+                  )}
+                </div>
 
-              <button
-                type="submit"
-                className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer font-mono"
-              >
-                <span>EXECUTE DISPATCH</span>
-                <span className="text-base">↗</span>
-              </button>
-            </form>
+                <div>
+                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    04 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY)
+                  </label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Detail your engineering requirements, project scope, or opportunity..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none leading-relaxed"
+                  />
+                  {fieldErrors.message && (
+                    <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.message}</span>
+                  )}
+                </div>
+
+                {status === "error" && (
+                  <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono space-y-2">
+                    <div>{statusMessage || "Unable to dispatch message directly to server."}</div>
+                    <button
+                      type="button"
+                      onClick={handleMailtoFallback}
+                      className="btn-secondary px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wider uppercase inline-flex items-center gap-1.5"
+                    >
+                      <span>DISPATCH VIA DIRECT MAIL CLIENT</span>
+                      <span>↗</span>
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer font-mono disabled:opacity-60"
+                >
+                  <span>{status === "submitting" ? "TRANSMITTING TO SERVER..." : "EXECUTE DISPATCH"}</span>
+                  <span className="text-base">↗</span>
+                </button>
+              </form>
+            )}
           </motion.div>
 
           {/* Right Column: Direct Channels & Verified Details */}
@@ -188,13 +274,13 @@ export default function ContactSection() {
               <div className="flex flex-wrap gap-3 font-mono">
                 <button
                   onClick={handleCopyEmail}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold dark:bg-white/[0.06] dark:hover:bg-white/[0.1] dark:text-amber-300 dark:border-amber-500/30 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-500/30 transition-colors flex items-center gap-1.5 cursor-pointer tracking-wider uppercase"
+                  className="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer tracking-wider uppercase"
                 >
                   <span>{copied ? "COPIED TO CLIPBOARD ✓" : "COPY EMAIL"}</span>
                 </button>
                 <a
                   href={`mailto:${PERSONAL_INFO.email}`}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold dark:bg-amber-500/10 dark:hover:bg-amber-500/20 dark:text-white dark:border-white/10 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-black/10 transition-colors tracking-wider uppercase"
+                  className="btn-outline-gold px-4 py-2 rounded-lg text-xs font-semibold tracking-wider uppercase"
                 >
                   OPEN EMAIL CLIENT ↗
                 </a>
