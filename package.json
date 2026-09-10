@@ -7,7 +7,7 @@
     "build": "npm --prefix frontend run build",
     "start": "npm --prefix frontend run start",
     "lint": "npm --prefix frontend run lint",
-    "backend:test": "mvn -f backend/pom.xml test",
-    "backend:run": "mvn -f backend/pom.xml spring-boot:run"
+    "backend:test": "cd backend && (mvnw.cmd test || mvn test)",
+    "backend:run": "cd backend && (mvnw.cmd spring-boot:run || mvn spring-boot:run)"
   }
 }

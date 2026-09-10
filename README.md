@@ -50,11 +50,14 @@ PostgreSQL 18 Database (`contact_messages` table)
 
 ```
 /
-├── app/                  # Next.js 15 App Router pages, layouts, and components
-│   ├── components/       # Hero, About, SelectedWork, Stack, Experience, Contact, Navigation
-│   ├── globals.css       # Semantic theme tokens, typography, and button systems
-│   └── page.tsx          # Single-page layout architecture
-├── backend/              # Spring Boot 3 application (Java 21)
+├── frontend/             # Next.js 15 App Router, React 19, Tailwind CSS, TypeScript
+│   ├── app/              # Layout, pages, and components (Hero, About, SelectedWork, Stack, Experience, Contact, Navigation)
+│   ├── lib/              # API abstraction layer (api/contact.ts, api/health.ts, api/projects.ts) and portfolio data
+│   ├── public/           # Static images, icons, and native video assets
+│   ├── package.json      # Frontend dependencies & Next.js scripts
+│   ├── tsconfig.json     # TypeScript configuration
+│   └── next.config.mjs   # Next.js configuration
+├── backend/              # Spring Boot 3 REST API (Java 21, Spring Data JPA, PostgreSQL)
 │   ├── pom.xml           # Maven build specification & dependencies
 │   └── src/
 │       ├── main/java/com/nishant/portfolio/
@@ -68,11 +71,8 @@ PostgreSQL 18 Database (`contact_messages` table)
 │       │   └── PortfolioApplication.java
 │       ├── main/resources/application.yml
 │       └── test/             # JUnit 5 & MockMvc test suite (using isolated H2 in-memory DB)
-├── lib/
-│   ├── api/              # Frontend API contract layer (contact.ts, health.ts, projects.ts)
-│   ├── github.ts         # GitHub data models and fallback curated projects
-│   └── portfolio-data.ts # Single Source of Truth (SSOT) data registry
-├── public/               # Static images, icons, and native video assets
+├── package.json          # Root workspace scripts (delegating to frontend and backend)
+├── README.md             # Project documentation & setup instructions
 └── brain.md              # Persistent project memory and Architectural Decision Records (ADRs)
 ```
 
@@ -90,10 +90,11 @@ PostgreSQL 18 Database (`contact_messages` table)
 ### 2. Frontend Setup (Next.js)
 
 ```bash
-# Install dependencies
-npm install
+# Run from repository root:
+npm run dev
 
-# Start Next.js development server
+# Or directly within the frontend directory:
+cd frontend
 npm run dev
 ```
 

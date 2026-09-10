@@ -7,9 +7,15 @@ frontend/.vercel/
 # Backend
 backend/target/
 
+# Root caches & virtual environments
+node_modules/
+.next/
+.venv/
+
 # Environments & Logs
 .env
 .env.local
 .env.*.local
 *.log
 .DS_Store
+

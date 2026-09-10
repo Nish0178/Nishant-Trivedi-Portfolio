@@ -184,17 +184,18 @@ Grounded in `lib/portfolio-data.ts`:
   - **Hero Video Centering**: Removed artificial negative offset hacks (`lg:-translate-x-4 xl:-translate-x-7 lg:-mt-6 xl:-mt-8` and `xl:items-start`), centering the native 9:16 portrait video cleanly inside its 5-column grid space.
   - **Spacing System Normalization**: Standardized section vertical padding from excessive `py-28` (~224px gaps with dividers) to an intentional, balanced `py-16 sm:py-20 lg:py-22` with consistent container widths (`max-w-7xl px-6 sm:px-8 lg:px-12`).
 
+- **ADR-016**: Clean Modular Repository Separation (`/frontend` and `/backend`):
+  - **Directory Architecture**: Segregated all client code into `/frontend` (Next.js 15, React 19, Tailwind CSS v4, TypeScript, `app/`, `public/`, `lib/`, `scripts/`, `tsconfig.json`, `next.config.mjs`, `postcss.config.mjs`) and server code into `/backend` (Java 21, Spring Boot 3.3.4, Maven, `pom.xml`, `src/main`, `src/test`).
+  - **Root Orchestration**: Configured root `package.json` with workspace delegation scripts (`npm run dev`, `npm run build`, `npm run backend:test`, `npm run backend:run`) for seamless local developer workflows and unified build pipelines.
+  - **Environment & Build Isolation**: Fully isolated build artifacts (`frontend/.next/`, `backend/target/`) and dependencies (`frontend/node_modules/`) with explicit `.gitignore` boundaries.
+
 ---
 
 # 08. BUILD & QUALITY STATUS
 
-- **Frontend Production Build (`npm run build`)**: `PASSING` (Exit code 0, Next.js 15.5.25 App Router, static page generation in ~4s, dynamic `/api/github/repos` endpoint)
-- **Backend Build & Test Suite (`mvn test`)**: `PASSING` (Exit code 0, 5/5 tests passing: ContactControllerTest, HealthControllerTest, ContactServiceTest with isolated H2 in-memory DB)
+- **Frontend Production Build (`npm run build`)**: `PASSING` (Exit code 0, Next.js 15.5.25 App Router inside `frontend/`, static page generation in ~4s)
+- **Backend Build & Test Suite (`mvn test`)**: `PASSING` (Exit code 0, 5/5 tests passing in `backend/`: ContactControllerTest, HealthControllerTest, ContactServiceTest with isolated H2 in-memory DB)
 - **TypeScript & ESLint**: `0 errors, 0 warnings`
 - **Responsive Scaling**: Tested and verified across 320px, 375px, 390px, 768px, 1024px, 1440px+
-- **Console & Runtime**: Clean runtime, zero horizontal overflow (`scrollWidth <= clientWidth + 1` is true), zero hydration errors.
-- **Git Safety**: `.gitignore` strictly protects `.next/`, `node_modules/`, `backend/target/`, `.env*`, and logs.
-
-
-
-
+- **Console & Runtime**: Clean runtime, zero horizontal overflow, zero hydration errors.
+- **Git Safety**: Root `.gitignore` strictly protects `frontend/.next/`, `frontend/node_modules/`, `backend/target/`, root caches, `.env*`, and logs.
