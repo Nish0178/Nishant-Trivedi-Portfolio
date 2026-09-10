@@ -177,6 +177,7 @@ function formatUpdatedDate(isoString?: string): string {
  * guaranteed dual action buttons on every project, and zero blur/rasterization artifacts on scroll.
  */
 interface ProjectCardProps {
+  key?: React.Key;
   project: UnifiedProject;
   index: number;
   total: number;

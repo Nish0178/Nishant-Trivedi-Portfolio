@@ -11,6 +11,7 @@ backend/target/
 node_modules/
 .next/
 .venv/
+*.tsbuildinfo
 
 # Environments, Secrets & Local Credentials
 .env

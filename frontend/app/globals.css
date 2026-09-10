@@ -187,6 +187,7 @@ html.dark .text-gold-gradient,
 :root:not(.light) .text-gold-gradient {
   background: linear-gradient(135deg, #ffffff 0%, #fde047 35%, #fbbf24 65%, #f59e0b 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -194,6 +195,7 @@ html.light .text-gold-gradient,
 [data-theme="light"] .text-gold-gradient {
   background: linear-gradient(135deg, #b45309 0%, #d97706 40%, #f59e0b 80%, #b45309 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -201,6 +203,7 @@ html.dark .text-gold-pure,
 :root:not(.light) .text-gold-pure {
   background: linear-gradient(135deg, #fef08a 0%, #fbbf24 50%, #d97706 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -208,6 +211,7 @@ html.light .text-gold-pure,
 [data-theme="light"] .text-gold-pure {
   background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #ea580c 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
