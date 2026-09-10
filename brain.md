@@ -199,3 +199,24 @@ Grounded in `lib/portfolio-data.ts`:
 - **Responsive Scaling**: Tested and verified across 320px, 375px, 390px, 768px, 1024px, 1440px+
 - **Console & Runtime**: Clean runtime, zero horizontal overflow, zero hydration errors.
 - **Git Safety**: Root `.gitignore` strictly protects `frontend/.next/`, `frontend/node_modules/`, `backend/target/`, root caches, `.env*`, and logs.
+
+---
+
+# 09. SECURITY INCIDENT ENTRY (REDACTED)
+
+- **Incident ID / Detector**: GitGuardian High Severity Incident (`Nish0178/Nishant-Trivedi-Portfolio`)
+- **Originating Commit**: `3e13535`
+- **Detected Location**: `backend/src/main/resources/application.yml` (Spring Boot datasource configuration)
+- **Classification**: Hardcoded PostgreSQL development password fallback (`${DB_PASSWORD:[REDACTED_DEFAULT]}`)
+- **Remediation Status**: `RESOLVED IN HEAD`
+  - Removed the development fallback value from `application.yml`: updated configuration to strict `password: ${DB_PASSWORD}`.
+  - Required credentials are now bound solely through runtime environment variables.
+  - Sanitized `README.md` to remove any implied default database password.
+  - Hardened `.gitignore` to explicitly ignore all `.env`, `.env.*`, `*.env`, `backend/.env*`, `frontend/.env*`, and local credential keyfiles.
+  - Provided `.env.example` and `backend/.env.example` containing only safe, non-sensitive placeholders.
+- **Credential Rotation Requirement**:
+  - `ROTATION NOT REQUIRED` for production infrastructure provided no live production database ever used this default value.
+  - `NEEDS VERIFICATION` by the repository owner to confirm that any live/production database does not share or reuse the local default password.
+- **Git History Cleanup Status**:
+  - `PENDING EXPLICIT USER CONFIRMATION`: Git history currently contains the initial commit `3e13535`. As per strict security instructions, history rewriting (`git filter-repo` / BFG / force-push) has NOT been performed automatically and will only proceed upon explicit confirmation.
+

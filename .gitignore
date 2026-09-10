@@ -12,10 +12,25 @@ node_modules/
 .next/
 .venv/
 
-# Environments & Logs
+# Environments, Secrets & Local Credentials
 .env
-.env.local
-.env.*.local
+.env.*
+*.env
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+application-local.yml
+*.key
+*.pem
+*.p12
+*.jks
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Logs & System
 *.log
 .DS_Store
+Thumbs.db
 

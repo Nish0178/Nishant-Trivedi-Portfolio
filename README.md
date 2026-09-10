@@ -102,13 +102,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
 
 ### 3. Backend Setup (Spring Boot)
 
-Configure environment variables (or rely on sensible defaults in `application.yml`):
+Configure environment variables for database connectivity:
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `DB_URL` | PostgreSQL JDBC Connection URL | `jdbc:postgresql://localhost:5432/portfolio_db` |
 | `DB_USERNAME` | PostgreSQL User | `postgres` |
-| `DB_PASSWORD` | PostgreSQL Password | `postgres` |
+| `DB_PASSWORD` | PostgreSQL Password | *(None — must be supplied via environment)* |
 | `FRONTEND_URL` | Allowed CORS Frontend Origin | `http://localhost:3000` |
 
 Start the backend:
