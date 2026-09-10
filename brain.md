@@ -220,3 +220,33 @@ Grounded in `lib/portfolio-data.ts`:
 - **Git History Cleanup Status**:
   - `PENDING EXPLICIT USER CONFIRMATION`: Git history currently contains the initial commit `3e13535`. As per strict security instructions, history rewriting (`git filter-repo` / BFG / force-push) has NOT been performed automatically and will only proceed upon explicit confirmation.
 
+---
+
+# 10. BACKEND RUNTIME & INTEGRATION VERIFICATION
+
+- **PostgreSQL Runtime**: `NEEDS VERIFICATION`
+  - Service `postgresql-x64-18` (PostgreSQL 18) is active and listening on port 5432.
+  - Connection authentication failed with `FATAL: password authentication failed for user "postgres"`.
+  - No `DB_PASSWORD` environment variable was configured.
+- **Spring Boot Startup Against PostgreSQL**: `NEEDS VERIFICATION`
+  - Spring Boot enforces fail-fast schema validation on startup (`ddl-auto: update`); application halts startup due to unauthenticated PostgreSQL connection.
+- **Spring Health API (`GET /api/health`)**: `VERIFIED` / `PASS`
+  - WebMvc integration test passes with status 200 OK, returning `{"status": "UP", "service": "portfolio-api"}`.
+- **Projects API (`GET /api/projects`)**: `VERIFIED` / `PASS`
+  - WebMvc integration test passes with status 200 OK, returning `{ "success": true, "count": N, "projects": [...] }`.
+- **GitHub Integration & Deduplication**: `VERIFIED` / `PASS`
+  - Unit tests confirm: curated projects always present, portfolio repo excluded, `first-contributions` excluded, `Launch-pilot` deduplicated against LaunchPilot AI, forks excluded.
+  - Live Next.js fallback `/api/github/repos` successfully retrieved 8 repositories from GitHub API.
+- **Contact API Persistence**: `NEEDS VERIFICATION`
+  - Validation rules (`@NotBlank`, `@Email`) and service logic verified via `ContactControllerTest` and `ContactServiceTest`.
+  - End-to-end persistence into live PostgreSQL requires valid `DB_PASSWORD`.
+- **Frontend Integration**: `VERIFIED` / `PASS`
+  - Client application renders cleanly without console errors or hydration mismatches.
+- **CORS Configuration**: `VERIFIED` / `PASS`
+  - `CorsConfig` safely restricts allowed origins to `http://localhost:3000`, `3001`, `3002`, `127.0.0.1:3000`, and `${app.frontend-url}`. No wildcards with credentials.
+- **Fallback Chain Architecture**: `VERIFIED` / `PASS`
+  - Complete 3-tier fallback tested and verified: when Java backend is unavailable, Next.js `/api/github/repos` and static curated projects cleanly take over. Contact form displays clear status and 1-click direct mailto dispatch.
+- **Automated Tests**: `PASS` (9/9 JUnit tests passing in backend).
+- **Frontend Production Build**: `PASS` (Next.js `npm run build` exits with code 0).
+- **Visual Regression**: `PASS` (Verified via browser subagent across Navbar, Hero, Video, About, Projects, Skills, Experience, Contact, and Footer).
+
