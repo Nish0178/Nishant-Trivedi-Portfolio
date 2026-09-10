@@ -171,42 +171,30 @@ Grounded in `lib/portfolio-data.ts`:
 - **ADR-012**: Reversible Sticky Stacking Card Architecture for Selected Work (`app/components/work/SelectedWork.tsx`: LaunchPilot AI at `z-10/top-28`, TodoPro Engine at `z-20/top-32`, Astrospacious at `z-30/top-36`, fully reversible on scroll up/down, verified via browser automation).
 - **ADR-013**: GitHub-Driven Project Architecture & Hybrid Synchronization (`lib/github.ts`, `app/api/github/repos/route.ts`).
 - **ADR-014**: Unified "ENGINEERING PROJECTS" Experience & Universal Sticky Stacking Architecture (`app/components/work/SelectedWork.tsx`):
-  - **Single Section Mandate**:
-    - Replaced "SELECTED WORKS. ENGINEERED VALUE." with **"ENGINEERING PROJECTS."** in large editorial Times New Roman / serif typography (`.serif-headline` and `.text-gold-gradient .serif-italic`).
-    - Completely removed all secondary sections, grids, and separate repository tiles (Section 02.2 eliminated).
-    - Single unified `#work` section housing all curated and GitHub-discovered projects.
-  - **Unified `ProjectCard` System**:
-    - 100% visual format parity across all projects (Curated 01–03 and GitHub-discovered 04–08+).
-    - Every project renders in the exact same physical card layout:
-      - Dark `#0d101c` background, rounded borders, ambient corner glow.
-      - Top metadata bar with dynamic index (`01 // ...`, `02 // ...`, etc.), system categorization, primary language pill, live star badge (when $\ge 1$), and real-time status pill.
-      - Left column: Times New Roman display title, authentic description (or restrained fallback "Personal engineering repository on GitHub."), verified technology pills, feature highlights, and action buttons (`LIVE PLATFORM ↗` if homepage exists, `VIEW ON GITHUB ↗`).
-      - Right column: `ARCHITECTURE TELEMETRY` box with authentic specs (`REPOSITORY`, `PRIMARY LANGUAGE`, `ACCESS LEVEL`, `COMMUNITY STARS`, `FORK NETWORK`, `LAST SYNCHRONIZED`) and code contract / clone snippet.
-  - **Universal Scroll-Driven Sticky Stacking Animation**:
-    - Pure, deterministic CSS sticky stacking architecture driven by Framer Motion scroll coupling.
-    - Each card container is `position: sticky` with stepped top tabs (`top: calc(6.5rem + min(index, 7) * 0.5rem)`) and sequentially increasing z-indexes (`zIndex: 10 + index * 2`).
-    - As Card $i+1$ scrolls into view and approaches its sticky threshold, Card $i$ progressively scales down to 0.95, dims opacity to 0.65, and dims brightness to 0.75.
-    - **Fully Reversible**: Scrolling back up smoothly unpins Card 08 $\rightarrow$ 07 $\rightarrow$ 06 $\rightarrow$ 05 $\rightarrow$ 04 $\rightarrow$ 03 $\rightarrow$ 02, restoring Card 01 to the dominant top position.
-  - **Accessibility & Responsive Scalability**:
-    - Strict `prefers-reduced-motion: reduce` compliance: transforms gracefully bypass while preserving the static card deck hierarchy.
-    - Mobile optimized: touch targets $\ge 44\text{px}$, responsive padding, zero horizontal overflow.
-  - **Dynamic GitHub Sync Indicator**:
-    - Live pill dynamically reads `GITHUB SYNC: @Nish0178 · {projects.length} PROJECTS`.
-  - **Viewport Fit, Zero-Blur, & Terminal Card Stacking Protocol**:
-    - **Card Height & Viewport Fit**: Card vertical footprint tuned (`p-5 sm:p-6 lg:p-7`, compact headers, 2-bullet limit, tight telemetry rows) so every card occupies $\le 420\text{px}$, fitting completely within standard $1280 \times 665$ laptop viewports with zero button cut-off.
-    - **Zero Blur Rule**: Removed all CSS `filter: brightness(...)` and fractional scale transforms, preserving 100% vector-sharp, unblurred text rendering across Windows high-DPI displays.
-    - **Dual Action Buttons**: Guaranteed both `LIVE PLATFORM ↗` (or `LIVE DEMO ↗`) and `VIEW ON GITHUB ↗` on all projects.
-    - **Terminal Card Scroll Runway**: Applied `mb-[60vh] sm:mb-[65vh]` to Card 08, ensuring it travels the full distance to its sticky anchor (`top: 5.75rem`) over Card 07 before the section transitions into `#experience`.
+  - **Single Section Mandate**: Single unified `#work` section housing all curated and GitHub-discovered projects.
+  - **Unified `ProjectCard` System**: 100% visual format parity across all projects (Curated 01–03 and GitHub-discovered 04–08+).
+  - **Universal Scroll-Driven Sticky Stacking Animation**: Pure, deterministic CSS sticky stacking architecture driven by Framer Motion scroll coupling. Stepped top tabs (`top: calc(6.5rem + min(index, 7) * 0.5rem)`), sequentially increasing z-indexes.
+  - **Fully Reversible**: Scrolling back up smoothly unpins Card 08 through 02, restoring Card 01.
+- **ADR-015**: Java 21 Spring Boot 3 Backend Integration, PostgreSQL Contact Persistence, and Semantic Theme Button Tokens:
+  - **Backend Location & Architecture**: Preserved existing Next.js application at repository root. Added dedicated `/backend` module containing a Spring Boot 3.3.4 REST API powered by Java 21 and Spring Data JPA.
+  - **Contact Persistence API (`POST /api/contact`)**: Implemented robust controller-service-repository flow. Validates incoming contact requests using Jakarta Bean Validation (`@NotBlank`, `@Email`, `@Size`), maps to `ContactMessage` entity, and persists into PostgreSQL `contact_messages` table.
+  - **Health Monitoring API (`GET /api/health`)**: Lightweight JSON probe `{ "status": "UP", "service": "portfolio-api" }` for monitoring backend availability.
+  - **Client API Contract Layer (`lib/api/`)**: Built dedicated TypeScript abstraction layer (`contact.ts`, `health.ts`, `projects.ts`). Guarantees graceful degradation: if backend is offline, contact submission provides seamless 1-click fallback to email client and projects fall back to cached/curated data.
+  - **Theme-Aware Semantic Button Tokens**: Defined `--btn-primary-*`, `--btn-secondary-*`, and `--btn-outline-*` tokens in `app/globals.css`, eliminating white-on-white or low-contrast button states in both Dark and Light themes.
+  - **Hero Video Centering**: Removed artificial negative offset hacks (`lg:-translate-x-4 xl:-translate-x-7 lg:-mt-6 xl:-mt-8` and `xl:items-start`), centering the native 9:16 portrait video cleanly inside its 5-column grid space.
+  - **Spacing System Normalization**: Standardized section vertical padding from excessive `py-28` (~224px gaps with dividers) to an intentional, balanced `py-16 sm:py-20 lg:py-22` with consistent container widths (`max-w-7xl px-6 sm:px-8 lg:px-12`).
 
 ---
 
 # 08. BUILD & QUALITY STATUS
 
-- **Production Build (`npm run build`)**: `PASSING` (Exit code 0, clean static page generation in ~5s, dynamic `/api/github/repos` endpoint)
+- **Frontend Production Build (`npm run build`)**: `PASSING` (Exit code 0, Next.js 15.5.25 App Router, static page generation in ~4s, dynamic `/api/github/repos` endpoint)
+- **Backend Build & Test Suite (`mvn test`)**: `PASSING` (Exit code 0, 5/5 tests passing: ContactControllerTest, HealthControllerTest, ContactServiceTest with isolated H2 in-memory DB)
 - **TypeScript & ESLint**: `0 errors, 0 warnings`
 - **Responsive Scaling**: Tested and verified across 320px, 375px, 390px, 768px, 1024px, 1440px+
 - **Console & Runtime**: Clean runtime, zero horizontal overflow (`scrollWidth <= clientWidth + 1` is true), zero hydration errors.
-- **Git Safety**: `.gitignore` strictly protects `.next/`, `node_modules/`, `.env*`, and logs.
+- **Git Safety**: `.gitignore` strictly protects `.next/`, `node_modules/`, `backend/target/`, `.env*`, and logs.
+
 
 
 

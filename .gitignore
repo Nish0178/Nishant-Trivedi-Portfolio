@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 .next/
 out/
 .vercel/
@@ -6,3 +6,5 @@ out/
 .env.local
 .env.*.local
 *.log
+backend/target/
+.DS_Store

@@ -8,6 +8,7 @@ import {
   UnifiedProject,
   GITHUB_USERNAME,
 } from "@/lib/github";
+import { fetchProjects } from "@/lib/api/projects";
 
 /**
  * Editorial accent configurations that preserve the refined dark aesthetic
@@ -458,18 +459,15 @@ export default function SelectedWork() {
     );
   }
 
-  // Fetch live GitHub data on mount
+  // Fetch live project data on mount via API abstraction layer
   useEffect(() => {
     let isMounted = true;
 
     async function syncGitHubData() {
       try {
-        const response = await fetch("/api/github/repos");
-        if (!response.ok) return;
-
-        const data = await response.json();
-        if (isMounted && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
-          setProjects(data.projects);
+        const liveProjects = await fetchProjects();
+        if (isMounted && Array.isArray(liveProjects) && liveProjects.length > 0) {
+          setProjects(liveProjects);
         }
       } catch (err) {
         console.warn("GitHub project sync fallback retained:", err);
