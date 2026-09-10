@@ -1,10 +1,15 @@
-node_modules/
-.next/
-out/
-.vercel/
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# Backend
+backend/target/
+
+# Environments & Logs
 .env
 .env.local
 .env.*.local
 *.log
-backend/target/
 .DS_Store
