@@ -227,7 +227,7 @@ function ProjectCard({
   }
 
   // Telemetry Specs for right column
-  const telemetrySpecs = project.telemetry?.specs?.slice(0, 5) || [
+  const telemetrySpecs: Array<{ label: string; value: string | number; highlight?: boolean }> = project.telemetry?.specs?.slice(0, 5) || [
     { label: "REPOSITORY:", value: `Nish0178/${project.name}` },
     {
       label: "LANGUAGE:",
@@ -343,7 +343,7 @@ function ProjectCard({
 
             {/* Tech Pills */}
             <div className="flex flex-wrap gap-1.5 pt-0.5">
-              {project.technologies.slice(0, 6).map((tech) => (
+              {project.technologies.slice(0, 6).map((tech: string) => (
                 <span
                   key={tech}
                   className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold tracking-wider dark:text-slate-200 dark:bg-white/[0.05] dark:border-white/10 text-slate-700 bg-slate-100 border border-black/10 font-mono"
@@ -356,7 +356,7 @@ function ProjectCard({
             {/* Architectural Highlights (2 key points) */}
             {project.features && project.features.length > 0 && (
               <div className="space-y-1 pt-0.5 text-xs dark:text-slate-300 text-slate-600 font-serif hidden sm:block">
-                {project.features.slice(0, 2).map((feat, idx) => (
+                {project.features.slice(0, 2).map((feat: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-1.5">
                     <span className={`${accent.bullet} mt-0.5 text-[10px]`}>▸</span>
                     <span className="line-clamp-1">{feat}</span>
@@ -403,7 +403,7 @@ function ProjectCard({
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
-              {telemetrySpecs.map((spec, i) => (
+              {telemetrySpecs.map((spec: { label: string; value: string | number; highlight?: boolean }, i: number) => (
                 <div
                   key={i}
                   className={`flex justify-between items-center py-0.5 ${

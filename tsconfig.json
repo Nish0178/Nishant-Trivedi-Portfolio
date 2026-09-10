@@ -17,14 +17,18 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "./frontend",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["frontend/*", "*"]
     }
   },
   "include": [
     "frontend/**/*.ts",
     "frontend/**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
     "frontend/next-env.d.ts",
     "frontend/.next/types/**/*.ts"
   ],
