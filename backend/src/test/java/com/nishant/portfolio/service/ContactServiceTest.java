@@ -16,12 +16,14 @@ import static org.mockito.ArgumentMatchers.any;
 class ContactServiceTest {
 
     private ContactMessageRepository repository;
+    private EmailService emailService;
     private ContactService contactService;
 
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(ContactMessageRepository.class);
-        contactService = new ContactService(repository);
+        emailService = Mockito.mock(EmailService.class);
+        contactService = new ContactService(repository, emailService);
     }
 
     @Test
@@ -44,6 +46,8 @@ class ContactServiceTest {
         savedEntity.setId(42L);
 
         Mockito.when(repository.save(any(ContactMessage.class))).thenReturn(savedEntity);
+        Mockito.when(emailService.sendContactNotifications(any(ContactMessage.class)))
+                .thenReturn(new EmailService.EmailDeliveryResult(true, "SENT", null));
 
         ContactResponse response = contactService.saveContactMessage(request, "127.0.0.1");
 
@@ -53,9 +57,9 @@ class ContactServiceTest {
         assertEquals("Your transmission has been received and logged.", response.getMessage());
 
         ArgumentCaptor<ContactMessage> captor = ArgumentCaptor.forClass(ContactMessage.class);
-        Mockito.verify(repository, Mockito.times(1)).save(captor.capture());
+        Mockito.verify(repository, Mockito.atLeastOnce()).save(captor.capture());
 
-        ContactMessage captured = captor.getValue();
+        ContactMessage captured = captor.getAllValues().get(0);
         assertEquals("Jane Doe", captured.getName());
         assertEquals("jane@acme.org", captured.getEmail());
         assertEquals("Systems Inquiry", captured.getSubject());

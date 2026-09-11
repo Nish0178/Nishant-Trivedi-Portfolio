@@ -1,17 +1,32 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { EASING } from "@/app/lib/motion";
 import { useTheme } from "@/app/context/ThemeContext";
+import { fetchPublicCmsContent, FALLBACK_PUBLIC_CONTENT } from "@/lib/api/content";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+
+  const [cmsHero, setCmsHero] = useState(FALLBACK_PUBLIC_CONTENT.hero);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicCmsContent().then((content) => {
+      if (mounted && content?.hero) {
+        setCmsHero((prev) => ({ ...prev, ...content.hero }));
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Scroll-based cinematic hero exit transition
   const { scrollYProgress } = useScroll({
@@ -77,7 +92,7 @@ export default function Hero() {
                 isDark ? "text-white" : "text-slate-900"
               }`}
             >
-              NISHANT
+              {cmsHero.badgeName || "NISHANT"}
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
           </motion.div>
@@ -94,7 +109,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.28, ease: EASING.cinematic }}
               className="block"
             >
-              I BUILD
+              {cmsHero.headlineLine1 || "I BUILD"}
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 22 }}
@@ -102,7 +117,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.42, ease: EASING.cinematic }}
               className="block"
             >
-              DIGITAL
+              {cmsHero.headlineLine2 || "DIGITAL"}
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 22 }}
@@ -110,7 +125,7 @@ export default function Hero() {
               transition={{ duration: 0.85, delay: 0.58, ease: EASING.cinematic }}
               className="block text-[#f59e0b] dark:text-[#f59e0b]"
             >
-              EXPERIENCES
+              {cmsHero.headlineLine3 || "EXPERIENCES"}
             </motion.span>
           </h1>
 
@@ -121,7 +136,10 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.72, ease: EASING.cinematic }}
             className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4 font-sans"
           >
-            {["FULL STACK DEVELOPER", "UI/UX DESIGNER", "DATA SCIENCE"].map((role) => (
+            {(cmsHero.subRoles && cmsHero.subRoles.length > 0
+              ? cmsHero.subRoles
+              : ["FULL STACK DEVELOPER", "UI/UX DESIGNER", "DATA SCIENCE"]
+            ).map((role) => (
               <span
                 key={role}
                 className={`px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wider backdrop-blur-md shadow-sm uppercase font-mono border ${
@@ -144,7 +162,7 @@ export default function Hero() {
               isDark ? "text-slate-300" : "text-slate-600"
             }`}
           >
-            I turn bold ideas into seamless digital experiences, where frontend meets powerful backend, and code transforms vision into impact.
+            {cmsHero.bio || "I turn bold ideas into seamless digital experiences, where frontend meets powerful backend, and code transforms vision into impact."}
           </motion.p>
 
           {/* Action Buttons Row */}

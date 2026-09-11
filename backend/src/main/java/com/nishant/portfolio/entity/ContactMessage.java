@@ -29,6 +29,15 @@ public class ContactMessage {
     @Column(name = "ip_address", length = 50)
     private String ipAddress;
 
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead = false;
+
+    @Column(name = "email_status", length = 50)
+    private String emailStatus = "PENDING"; // PENDING, SENT, FAILED, NOT_CONFIGURED
+
+    @Column(name = "email_error", length = 255)
+    private String emailError;
+
     public ContactMessage() {
     }
 
@@ -39,6 +48,8 @@ public class ContactMessage {
         this.message = message;
         this.ipAddress = ipAddress;
         this.createdAt = LocalDateTime.now();
+        this.isRead = false;
+        this.emailStatus = "PENDING";
     }
 
     @PrePersist
@@ -102,5 +113,29 @@ public class ContactMessage {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
+    public String getEmailStatus() {
+        return emailStatus;
+    }
+
+    public void setEmailStatus(String emailStatus) {
+        this.emailStatus = emailStatus;
+    }
+
+    public String getEmailError() {
+        return emailError;
+    }
+
+    public void setEmailError(String emailError) {
+        this.emailError = emailError;
     }
 }

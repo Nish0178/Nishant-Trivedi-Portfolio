@@ -1,14 +1,16 @@
 package com.nishant.portfolio.controller;
 
 import com.nishant.portfolio.dto.ProjectDto;
-import com.nishant.portfolio.service.GitHubSyncService;
+import com.nishant.portfolio.service.CmsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -17,14 +19,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ProjectController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ProjectControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private GitHubSyncService gitHubSyncService;
+    private CmsService cmsService;
 
     @Test
     @DisplayName("GET /api/projects - Returns 200 OK with success flag and project list")
@@ -35,7 +39,7 @@ class ProjectControllerTest {
         p1.setTitle("LaunchPilot AI");
         p1.setCurated(true);
 
-        Mockito.when(gitHubSyncService.getProjects()).thenReturn(List.of(p1));
+        Mockito.when(cmsService.getUnifiedProjects()).thenReturn(List.of(p1));
 
         mockMvc.perform(get("/api/projects")
                         .accept(MediaType.APPLICATION_JSON))

@@ -15,9 +15,11 @@ public class ContactService {
     private static final Logger log = LoggerFactory.getLogger(ContactService.class);
 
     private final ContactMessageRepository repository;
+    private final EmailService emailService;
 
-    public ContactService(ContactMessageRepository repository) {
+    public ContactService(ContactMessageRepository repository, EmailService emailService) {
         this.repository = repository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -33,9 +35,22 @@ public class ContactService {
                 ipAddress
         );
 
+        // 1. Persist to PostgreSQL first - guaranteeing zero data loss
         ContactMessage saved = repository.save(entity);
-
         log.info("Successfully persisted contact message with id={}", saved.getId());
+
+        // 2. Defensively attempt email notifications
+        try {
+            EmailService.EmailDeliveryResult emailResult = emailService.sendContactNotifications(saved);
+            saved.setEmailStatus(emailResult.getStatus());
+            saved.setEmailError(emailResult.getError());
+            repository.save(saved);
+        } catch (Exception e) {
+            log.warn("Non-fatal email notification error for message id={}: {}", saved.getId(), e.getMessage());
+            saved.setEmailStatus("FAILED");
+            saved.setEmailError("Email dispatch error");
+            repository.save(saved);
+        }
 
         return new ContactResponse(
                 true,

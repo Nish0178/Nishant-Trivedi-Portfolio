@@ -33,12 +33,44 @@ export default function ContactSection() {
     }
   };
 
+  const validateClient = (): boolean => {
+    const errors: Record<string, string> = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.name.trim() || formData.name.trim().length < 2) {
+      errors.name = "Please provide your name or organization (minimum 2 characters).";
+    }
+
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      errors.email = "Please provide a valid return email address.";
+    }
+
+    if (!formData.subject.trim() || formData.subject.trim().length < 3) {
+      errors.subject = "Please enter a subject (minimum 3 characters).";
+    }
+
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      errors.message = "Message payload must be at least 10 characters in length.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleDispatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateClient()) return;
+
     setStatus("submitting");
     setFieldErrors({});
 
-    const res = await sendContactMessage(formData);
+    const res = await sendContactMessage({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim(),
+    });
+
     if (res.success) {
       setStatus("success");
       setStatusMessage(res.message);
@@ -148,8 +180,11 @@ export default function ContactSection() {
                   TRANSMISSION RECEIVED
                 </div>
                 <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto leading-relaxed">
-                  {statusMessage || "Your message has been securely received and recorded in the PostgreSQL database."}
+                  {statusMessage || "Your message has been securely recorded in the PostgreSQL database and queued for email delivery."}
                 </p>
+                <div className="text-[11px] text-emerald-400/90 font-mono">
+                  PostgreSQL Persistence: Confirmed · Notification: Dispatched
+                </div>
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
@@ -159,18 +194,25 @@ export default function ContactSection() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleDispatch} className="space-y-5">
+              <form onSubmit={handleDispatch} className="space-y-5" noValidate>
                 <div>
-                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                    01 // SENDER IDENTITY (NAME / COMPANY)
+                  <label htmlFor="contact-name" className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    01 // SENDER IDENTITY (NAME / COMPANY) <span className="text-amber-500">*</span>
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     required
+                    disabled={status === "submitting"}
                     placeholder="e.g. Alex Reed / Engineering Lead"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      if (fieldErrors.name) setFieldErrors({ ...fieldErrors, name: "" });
+                    }}
+                    className={`w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors disabled:opacity-50 ${
+                      fieldErrors.name ? "border-rose-500/70" : ""
+                    }`}
                   />
                   {fieldErrors.name && (
                     <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.name}</span>
@@ -178,16 +220,23 @@ export default function ContactSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                    02 // RETURN DISPATCH EMAIL
+                  <label htmlFor="contact-email" className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    02 // RETURN DISPATCH EMAIL <span className="text-amber-500">*</span>
                   </label>
                   <input
+                    id="contact-email"
                     type="email"
                     required
+                    disabled={status === "submitting"}
                     placeholder="e.g. alex@company.com"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: "" });
+                    }}
+                    className={`w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors disabled:opacity-50 ${
+                      fieldErrors.email ? "border-rose-500/70" : ""
+                    }`}
                   />
                   {fieldErrors.email && (
                     <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.email}</span>
@@ -195,16 +244,23 @@ export default function ContactSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                    03 // SUBJECT
+                  <label htmlFor="contact-subject" className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    03 // SUBJECT <span className="text-amber-500">*</span>
                   </label>
                   <input
+                    id="contact-subject"
                     type="text"
                     required
+                    disabled={status === "submitting"}
                     placeholder="e.g. Full-Stack Engineering Role / Systems Architecture"
                     value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+                    onChange={(e) => {
+                      setFormData({ ...formData, subject: e.target.value });
+                      if (fieldErrors.subject) setFieldErrors({ ...fieldErrors, subject: "" });
+                    }}
+                    className={`w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors disabled:opacity-50 ${
+                      fieldErrors.subject ? "border-rose-500/70" : ""
+                    }`}
                   />
                   {fieldErrors.subject && (
                     <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.subject}</span>
@@ -212,16 +268,23 @@ export default function ContactSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
-                    04 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY)
+                  <label htmlFor="contact-message" className="block text-xs font-bold tracking-[0.16em] text-[var(--text-secondary)] uppercase mb-2 font-mono">
+                    04 // TRANSMISSION PAYLOAD (PROJECT / INQUIRY) <span className="text-amber-500">*</span>
                   </label>
                   <textarea
+                    id="contact-message"
                     rows={4}
                     required
+                    disabled={status === "submitting"}
                     placeholder="Detail your engineering requirements, project scope, or opportunity..."
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none leading-relaxed"
+                    onChange={(e) => {
+                      setFormData({ ...formData, message: e.target.value });
+                      if (fieldErrors.message) setFieldErrors({ ...fieldErrors, message: "" });
+                    }}
+                    className={`w-full px-4 py-3.5 rounded-xl dark:bg-black/50 dark:border-white/10 dark:text-white bg-slate-50 border border-black/10 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none leading-relaxed disabled:opacity-50 ${
+                      fieldErrors.message ? "border-rose-500/70" : ""
+                    }`}
                   />
                   {fieldErrors.message && (
                     <span className="text-xs text-rose-500 font-mono mt-1 block">{fieldErrors.message}</span>
@@ -234,7 +297,7 @@ export default function ContactSection() {
                     <button
                       type="button"
                       onClick={handleMailtoFallback}
-                      className="btn-secondary px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wider uppercase inline-flex items-center gap-1.5"
+                      className="btn-secondary px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wider uppercase inline-flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>DISPATCH VIA DIRECT MAIL CLIENT</span>
                       <span>↗</span>
@@ -245,10 +308,19 @@ export default function ContactSection() {
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer font-mono disabled:opacity-60"
+                  className="btn-gold w-full py-4 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer font-mono disabled:opacity-60 transition-all"
                 >
-                  <span>{status === "submitting" ? "TRANSMITTING TO SERVER..." : "EXECUTE DISPATCH"}</span>
-                  <span className="text-base">↗</span>
+                  {status === "submitting" ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></span>
+                      <span>STATUS: TRANSMITTING...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>EXECUTE DISPATCH</span>
+                      <span className="text-base">↗</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}

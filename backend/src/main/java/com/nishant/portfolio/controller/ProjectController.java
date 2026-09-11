@@ -1,7 +1,7 @@
 package com.nishant.portfolio.controller;
 
 import com.nishant.portfolio.dto.ProjectDto;
-import com.nishant.portfolio.service.GitHubSyncService;
+import com.nishant.portfolio.service.CmsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,15 +14,15 @@ import java.util.Map;
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-    private final GitHubSyncService gitHubSyncService;
+    private final CmsService cmsService;
 
-    public ProjectController(GitHubSyncService gitHubSyncService) {
-        this.gitHubSyncService = gitHubSyncService;
+    public ProjectController(CmsService cmsService) {
+        this.cmsService = cmsService;
     }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getProjects() {
-        List<ProjectDto> projects = gitHubSyncService.getProjects();
+        List<ProjectDto> projects = cmsService.getUnifiedProjects();
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "count", projects.size(),

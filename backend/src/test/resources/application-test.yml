@@ -21,3 +21,12 @@ spring:
 
 app:
   frontend-url: http://localhost:3000
+  admin:
+    email: test-admin@example.com
+    password: TestPassword123!
+  jwt:
+    secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RzLXNob3VsZC1iZS1sb25nLWVub3VnaA==
+    expiration-ms: 3600000
+  mail:
+    to: test-owner@example.com
+    from: noreply@example.com
