@@ -20,5 +20,30 @@ spring:
         format_sql: true
     show-sql: false
 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  admin:
+    email: ${ADMIN_EMAIL:admin@nishanttrivedi.com}
+    password: ${ADMIN_PASSWORD:Admin@Nishant2026!}
+  jwt:
+    secret: ${JWT_SECRET:c3VwZXItc2VjdXJlLWp3dC1rZXktZm9yLXBvcnRmb2xpby1hZG1pbi1hdXRoZW50aWNhdGlvbg==}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  mail:
+    to: ${MAIL_TO:trivedinishant880@gmail.com}
+    from: ${MAIL_FROM:noreply@nishanttrivedi.com}
