@@ -12,8 +12,8 @@ node_modules/
 .next/
 .venv/
 *.tsbuildinfo
-app/
-lib/
+/app
+/lib
 
 # Environments, Secrets & Local Credentials
 .env

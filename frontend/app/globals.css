@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "./";
+@source "../lib";
+
 
 @layer base {
   :root, html.dark, [data-theme="dark"] {
