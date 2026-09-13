@@ -133,4 +133,36 @@ public class ProjectDto {
     public void setCurated(boolean curated) {
         this.curated = curated;
     }
+
+    public List<String> getTechnologies() {
+        return tech != null ? tech : (language != null ? List.of(language) : List.of());
+    }
+
+    public void setTechnologies(List<String> technologies) {
+        this.tech = technologies;
+    }
+
+    public String getDisplayTitle() {
+        return title != null && !title.isBlank() ? title : name;
+    }
+
+    public void setDisplayTitle(String displayTitle) {
+        this.title = displayTitle;
+    }
+
+    public int getStars() {
+        return stargazersCount;
+    }
+
+    public void setStars(int stars) {
+        this.stargazersCount = stars;
+    }
+
+    public int getForks() {
+        return forksCount;
+    }
+
+    public void setForks(int forks) {
+        this.forksCount = forks;
+    }
 }

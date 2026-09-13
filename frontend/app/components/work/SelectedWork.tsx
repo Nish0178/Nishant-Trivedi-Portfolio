@@ -334,7 +334,7 @@ function ProjectCard({
               <h3
                 className={`serif-headline text-2xl sm:text-3xl lg:text-3xl font-bold dark:text-white text-slate-900 uppercase tracking-tight mb-1.5 ${accent.hoverTitle} transition-colors group-hover:translate-x-0.5`}
               >
-                {project.displayTitle}
+                {project.displayTitle || project.name || "Engineering Project"}
               </h3>
               <p className="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed font-serif line-clamp-3 sm:line-clamp-none">
                 {project.description || "Personal engineering repository on GitHub."}
@@ -343,7 +343,7 @@ function ProjectCard({
 
             {/* Tech Pills */}
             <div className="flex flex-wrap gap-1.5 pt-0.5">
-              {project.technologies.slice(0, 6).map((tech: string) => (
+              {(project.technologies || []).slice(0, 6).map((tech: string) => (
                 <span
                   key={tech}
                   className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold tracking-wider dark:text-slate-200 dark:bg-white/[0.05] dark:border-white/10 text-slate-700 bg-slate-100 border border-black/10 font-mono"
@@ -354,7 +354,7 @@ function ProjectCard({
             </div>
 
             {/* Architectural Highlights (2 key points) */}
-            {project.features && project.features.length > 0 && (
+            {Array.isArray(project.features) && project.features.length > 0 && (
               <div className="space-y-1 pt-0.5 text-xs dark:text-slate-300 text-slate-600 font-serif hidden sm:block">
                 {project.features.slice(0, 2).map((feat: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-1.5">
