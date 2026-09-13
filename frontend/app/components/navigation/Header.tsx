@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "@/app/context/ThemeContext";
+import AdminLoginModal from "@/app/components/admin/AdminLoginModal";
 
 const NAV_ITEMS = [
   { label: "ABOUT", href: "#about" },
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -29,6 +31,7 @@ export default function Header() {
   }, []);
 
   return (
+    <>
     <motion.header
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -91,6 +94,22 @@ export default function Header() {
               />
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={() => setIsAdminModalOpen(true)}
+            className={`text-xs font-bold tracking-[0.22em] transition-colors duration-200 relative group py-1 uppercase cursor-pointer ${
+              isDark
+                ? "text-slate-300 hover:text-amber-400"
+                : "text-slate-700 hover:text-amber-600"
+            }`}
+          >
+            ADMIN
+            <span
+              className={`absolute bottom-0 left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full ${
+                isDark ? "bg-amber-400 shadow-[0_0_8px_#f59e0b]" : "bg-amber-600 shadow-[0_0_6px_#d97706]"
+              }`}
+            />
+          </button>
         </nav>
 
         {/* Right Controls: Theme Toggle, CTA, & Mobile Hamburger */}
@@ -230,6 +249,20 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsAdminModalOpen(true);
+                }}
+                className={`text-sm font-mono tracking-widest py-2 border-b text-left transition-colors cursor-pointer ${
+                  isDark
+                    ? "text-slate-300 hover:text-amber-400 border-white/5"
+                    : "text-slate-800 hover:text-amber-600 border-black/5"
+                }`}
+              >
+                ADMIN
+              </button>
 
               <div className="flex items-center justify-between pt-2">
                 <span
@@ -264,5 +297,10 @@ export default function Header() {
         )}
       </AnimatePresence>
     </motion.header>
+    <AdminLoginModal
+      isOpen={isAdminModalOpen}
+      onClose={() => setIsAdminModalOpen(false)}
+    />
+    </>
   );
 }

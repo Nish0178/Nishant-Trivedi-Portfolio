@@ -15,20 +15,26 @@ export default function AdminLoginPage() {
 
   // If already authenticated, redirect to /admin directly
   useEffect(() => {
+    let isMounted = true;
     async function checkAuth() {
       try {
         const user = await verifyAdminSession();
-        if (user) {
+        if (user && isMounted) {
           router.replace("/admin");
           return;
         }
       } catch {
         // Not logged in
       } finally {
-        setVerifying(false);
+        if (isMounted) {
+          setVerifying(false);
+        }
       }
     }
     checkAuth();
+    return () => {
+      isMounted = false;
+    };
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {

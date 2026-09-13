@@ -18,6 +18,8 @@ export interface AdminAuthResponse {
   message?: string;
   user?: AdminUser;
   error?: string;
+  remainingAttempts?: number;
+  locked?: boolean;
 }
 
 export interface DashboardStats {
@@ -167,6 +169,8 @@ export async function loginAdmin(email: string, password: string): Promise<Admin
     return {
       success: false,
       error: data.message || "Invalid credentials or unauthorized access.",
+      remainingAttempts: data.remainingAttempts,
+      locked: data.locked,
     };
   } catch (err: unknown) {
     const error = err as Error;
@@ -182,9 +186,15 @@ export async function verifyAdminSession(): Promise<AdminUser | null> {
   if (!token) return null;
 
   try {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 4000) : null;
+
     const res = await fetch(`${BACKEND_URL}/api/admin/auth/me`, {
       headers: getAuthHeaders(),
+      signal: controller?.signal,
     });
+
+    if (timeoutId) clearTimeout(timeoutId);
 
     if (res.ok) {
       return await res.json();
@@ -192,6 +202,7 @@ export async function verifyAdminSession(): Promise<AdminUser | null> {
     removeStoredToken();
     return null;
   } catch {
+    removeStoredToken();
     return null;
   }
 }

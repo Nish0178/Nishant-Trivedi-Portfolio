@@ -48,26 +48,6 @@ export default function AdminPage() {
   const [statsLoading, setStatsLoading] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // Authentication check
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const user = await verifyAdminSession();
-        if (!user) {
-          router.replace("/admin/login");
-          return;
-        }
-        setAdminUser(user);
-        loadStats();
-      } catch {
-        router.replace("/admin/login");
-      } finally {
-        setLoading(false);
-      }
-    }
-    checkAuth();
-  }, [router]);
-
   const loadStats = useCallback(async () => {
     setStatsLoading(true);
     const data = await fetchDashboardStats();
@@ -76,6 +56,34 @@ export default function AdminPage() {
     }
     setStatsLoading(false);
   }, []);
+
+  // Authentication check
+  useEffect(() => {
+    let isMounted = true;
+    async function checkAuth() {
+      try {
+        const user = await verifyAdminSession();
+        if (!user) {
+          if (isMounted) router.replace("/admin/login");
+          return;
+        }
+        if (isMounted) {
+          setAdminUser(user);
+          loadStats();
+        }
+      } catch {
+        if (isMounted) router.replace("/admin/login");
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, [router, loadStats]);
 
   const handleLogout = () => {
     logoutAdmin();

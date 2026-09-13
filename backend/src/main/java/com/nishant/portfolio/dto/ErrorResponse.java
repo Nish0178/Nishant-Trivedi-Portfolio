@@ -12,6 +12,8 @@ public class ErrorResponse {
     private String path;
     private Map<String, String> errors;
     private String timestamp;
+    private Integer remainingAttempts;
+    private Boolean locked;
 
     public ErrorResponse() {
         this.success = false;
@@ -38,6 +40,12 @@ public class ErrorResponse {
         this.message = message;
         this.path = path;
         this.timestamp = LocalDateTime.now().toString();
+    }
+
+    public ErrorResponse(int status, String error, String message, String path, Integer remainingAttempts, Boolean locked) {
+        this(status, error, message, path);
+        this.remainingAttempts = remainingAttempts;
+        this.locked = locked;
     }
 
     public boolean isSuccess() {
@@ -94,5 +102,21 @@ public class ErrorResponse {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Integer getRemainingAttempts() {
+        return remainingAttempts;
+    }
+
+    public void setRemainingAttempts(Integer remainingAttempts) {
+        this.remainingAttempts = remainingAttempts;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
     }
 }
