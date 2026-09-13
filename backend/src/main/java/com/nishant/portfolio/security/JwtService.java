@@ -24,7 +24,7 @@ public class JwtService {
     private final long expirationMs;
 
     public JwtService(
-            @Value("${app.jwt.secret:default-secret-key-that-must-be-very-long-and-secure-for-production-use}") String secret,
+            @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-ms:86400000}") long expirationMs
     ) {
         this.expirationMs = expirationMs;
