@@ -20,22 +20,6 @@ spring:
         format_sql: true
     show-sql: false
 
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   admin:
@@ -45,5 +29,7 @@ app:
     secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
     to: ${MAIL_TO:trivedinishant880@gmail.com}
     from: ${MAIL_FROM:noreply@nishanttrivedi.com}

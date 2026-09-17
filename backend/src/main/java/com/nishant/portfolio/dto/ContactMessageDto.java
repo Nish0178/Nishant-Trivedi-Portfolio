@@ -1,62 +1,53 @@
-package com.nishant.portfolio.entity;
+package com.nishant.portfolio.dto;
 
-import jakarta.persistence.*;
+import com.nishant.portfolio.entity.ContactMessage;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "contact_messages")
-public class ContactMessage {
+public class ContactMessageDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, length = 100)
     private String name;
-
-    @Column(nullable = false, length = 150)
     private String email;
-
-    @Column(nullable = false, length = 200)
     private String subject;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
-
-    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "ip_address", length = 50)
-    private String ipAddress;
-
-    @Column(name = "is_read", nullable = false)
-    private boolean isRead = false;
-
-    @Column(name = "email_status", length = 50)
-    private String emailStatus = "PENDING"; // PENDING, SENT, FAILED, NOT_CONFIGURED
-
-    @Column(name = "email_error", length = 255)
+    private String status; // "UNREAD" or "READ"
+    private boolean read;   // For frontend compatibility (m.read)
+    private String emailStatus;
     private String emailError;
 
-    public ContactMessage() {
+    public ContactMessageDto() {
     }
 
-    public ContactMessage(String name, String email, String subject, String message, String ipAddress) {
+    public ContactMessageDto(Long id, String name, String email, String subject, String message,
+                             LocalDateTime createdAt, String status, boolean read,
+                             String emailStatus, String emailError) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.subject = subject;
         this.message = message;
-        this.ipAddress = ipAddress;
-        this.createdAt = LocalDateTime.now();
-        this.isRead = false;
-        this.emailStatus = "PENDING";
+        this.createdAt = createdAt;
+        this.status = status;
+        this.read = read;
+        this.emailStatus = emailStatus;
+        this.emailError = emailError;
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
+    public static ContactMessageDto fromEntity(ContactMessage entity) {
+        if (entity == null) return null;
+        return new ContactMessageDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getEmail(),
+                entity.getSubject(),
+                entity.getMessage(),
+                entity.getCreatedAt(),
+                entity.getStatus(),
+                entity.isRead(),
+                entity.getEmailStatus(),
+                entity.getEmailError()
+        );
     }
 
     public Long getId() {
@@ -107,28 +98,22 @@ public class ContactMessage {
         this.createdAt = createdAt;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
     public String getStatus() {
-        return isRead ? "READ" : "UNREAD";
+        return status;
     }
 
     public void setStatus(String status) {
-        this.isRead = "READ".equalsIgnoreCase(status);
+        this.status = status;
+        this.read = "READ".equalsIgnoreCase(status);
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+        this.status = read ? "READ" : "UNREAD";
     }
 
     public String getEmailStatus() {

@@ -68,6 +68,7 @@ export default function MessagesTab() {
       setMessages((prev) =>
         prev.map((item) => (item.id === m.id ? { ...item, read: true } : item))
       );
+      setSelectedMessage((prev) => prev && prev.id === m.id ? { ...prev, read: true } : prev);
     }
   };
 
@@ -151,6 +152,15 @@ export default function MessagesTab() {
                   </span>
                   <span className="text-[11px] font-mono text-zinc-400">
                     {new Date(m.createdAt).toLocaleString()}
+                  </span>
+                  <span
+                    className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border ${
+                      !m.read
+                        ? "bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold"
+                        : "bg-zinc-800/80 border-zinc-700 text-zinc-400"
+                    }`}
+                  >
+                    {m.read ? "READ" : "UNREAD"}
                   </span>
                   {m.emailStatus && (
                     <span
@@ -242,6 +252,12 @@ export default function MessagesTab() {
                   <span className="text-zinc-400">TIMESTAMP:</span>{" "}
                   <span className="text-zinc-200">
                     {new Date(selectedMessage.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-zinc-400">INBOX STATUS:</span>{" "}
+                  <span className={`font-bold ${!selectedMessage.read ? "text-amber-400" : "text-zinc-300"}`}>
+                    {!selectedMessage.read ? "UNREAD" : "READ"}
                   </span>
                 </div>
                 <div>

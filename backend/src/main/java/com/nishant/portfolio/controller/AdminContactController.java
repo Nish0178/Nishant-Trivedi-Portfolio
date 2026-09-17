@@ -1,5 +1,6 @@
 package com.nishant.portfolio.controller;
 
+import com.nishant.portfolio.dto.ContactMessageDto;
 import com.nishant.portfolio.dto.ErrorResponse;
 import com.nishant.portfolio.entity.ContactMessage;
 import com.nishant.portfolio.repository.ContactMessageRepository;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/messages")
@@ -23,9 +25,12 @@ public class AdminContactController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ContactMessage>> getAllMessages() {
+    public ResponseEntity<List<ContactMessageDto>> getAllMessages() {
         List<ContactMessage> messages = repository.findAllByOrderByCreatedAtDesc();
-        return ResponseEntity.ok(messages);
+        List<ContactMessageDto> dtos = messages.stream()
+                .map(ContactMessageDto::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
@@ -39,13 +44,13 @@ public class AdminContactController {
                     request.getRequestURI()
             ));
         }
-        return ResponseEntity.ok(messageOpt.get());
+        return ResponseEntity.ok(ContactMessageDto.fromEntity(messageOpt.get()));
     }
 
-    @PatchMapping("/{id}/read")
-    public ResponseEntity<?> toggleReadStatus(
+    @PatchMapping(value = {"/{id}/read", "/{id}/status"})
+    public ResponseEntity<?> updateMessageStatus(
             @PathVariable Long id,
-            @RequestBody(required = false) Map<String, Boolean> body,
+            @RequestBody(required = false) Map<String, Object> body,
             HttpServletRequest request
     ) {
         Optional<ContactMessage> messageOpt = repository.findById(id);
@@ -59,14 +64,23 @@ public class AdminContactController {
         }
 
         ContactMessage msg = messageOpt.get();
-        if (body != null && body.containsKey("isRead")) {
-            msg.setRead(body.get("isRead"));
+        if (body != null) {
+            if (body.containsKey("status")) {
+                String statusStr = String.valueOf(body.get("status"));
+                msg.setRead("READ".equalsIgnoreCase(statusStr));
+            } else if (body.containsKey("isRead")) {
+                msg.setRead(Boolean.parseBoolean(String.valueOf(body.get("isRead"))));
+            } else if (body.containsKey("read")) {
+                msg.setRead(Boolean.parseBoolean(String.valueOf(body.get("read"))));
+            } else {
+                msg.setRead(!msg.isRead());
+            }
         } else {
             msg.setRead(!msg.isRead());
         }
 
         ContactMessage updated = repository.save(msg);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ContactMessageDto.fromEntity(updated));
     }
 
     @DeleteMapping("/{id}")

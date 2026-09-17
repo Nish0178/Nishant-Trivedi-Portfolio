@@ -59,6 +59,7 @@ export default function ContactSection() {
 
   const handleDispatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status === "submitting") return;
     if (!validateClient()) return;
 
     setStatus("submitting");
@@ -177,10 +178,10 @@ export default function ContactSection() {
                   ✓
                 </div>
                 <div className="serif-headline text-2xl font-bold text-[var(--text-primary)] uppercase">
-                  TRANSMISSION RECEIVED
+                  MESSAGE SENT SUCCESSFULLY
                 </div>
                 <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto leading-relaxed">
-                  {statusMessage || "Your message has been securely recorded in the PostgreSQL database and queued for email delivery."}
+                  {statusMessage || "Message sent successfully. Your transmission has been received and logged."}
                 </p>
                 <div className="text-[11px] text-emerald-400/90 font-mono">
                   PostgreSQL Persistence: Confirmed · Notification: Dispatched

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -21,27 +20,51 @@ public class EmailService {
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final String mailTo;
     private final String mailFrom;
-    private final String mailUsername;
+    private final String customUsername;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public EmailService(
             ObjectProvider<JavaMailSender> mailSenderProvider,
             @Value("${app.mail.to:trivedinishant880@gmail.com}") String mailTo,
-            @Value("${app.mail.from:noreply@nishanttrivedi.com}") String mailFrom,
-            @Value("${spring.mail.username:}") String mailUsername
+            @Value("${app.mail.from:noreply@nishanttrivedi.com}") String mailFrom
+    ) {
+        this(mailSenderProvider, mailTo, mailFrom, null);
+    }
+
+    public EmailService(
+            ObjectProvider<JavaMailSender> mailSenderProvider,
+            String mailTo,
+            String mailFrom,
+            String mailUsername
     ) {
         this.mailSenderProvider = mailSenderProvider;
         this.mailTo = mailTo;
         this.mailFrom = mailFrom;
-        this.mailUsername = mailUsername;
+        this.customUsername = mailUsername;
     }
 
     public boolean isMailConfigured() {
-        return mailUsername != null && !mailUsername.isBlank() && !mailUsername.contains("your-email");
+        if (customUsername != null) {
+            return !customUsername.isBlank() && !customUsername.contains("your-email");
+        }
+
+        String username = System.getenv("MAIL_USERNAME");
+        if (username == null || username.isBlank()) {
+            username = System.getProperty("MAIL_USERNAME");
+        }
+
+        String password = System.getenv("MAIL_PASSWORD");
+        if (password == null || password.isBlank()) {
+            password = System.getProperty("MAIL_PASSWORD");
+        }
+
+        return username != null && !username.isBlank() && !username.contains("your-email")
+                && password != null && !password.isBlank() && !password.contains("your-password");
     }
 
     public EmailDeliveryResult sendContactNotifications(ContactMessage message) {
         if (!isMailConfigured()) {
-            log.info("Email notifications skipped: SMTP credentials not configured for MAIL_USERNAME");
+            log.info("Email notifications skipped: SMTP credentials not configured (MAIL_USERNAME / MAIL_PASSWORD)");
             return new EmailDeliveryResult(false, "SKIPPED_NOT_CONFIGURED", "SMTP credentials not configured");
         }
 
@@ -51,20 +74,40 @@ public class EmailService {
             return new EmailDeliveryResult(false, "SKIPPED_NOT_CONFIGURED", "JavaMailSender unavailable");
         }
 
+        boolean ownerSuccess = false;
+        boolean visitorSuccess = false;
+        StringBuilder errors = new StringBuilder();
+
+        // 1. Send Notification to Portfolio Owner
         try {
-            // 1. Send Notification to Portfolio Owner
             sendOwnerNotification(mailSender, message);
-
-            // 2. Send Acknowledgement to Visitor
-            sendVisitorAcknowledgement(mailSender, message);
-
-            log.info("Successfully delivered contact emails for transmission id={}", message.getId());
-            return new EmailDeliveryResult(true, "SENT", null);
+            ownerSuccess = true;
+            log.info("Owner notification email delivered successfully for message id={}", message.getId());
         } catch (Exception e) {
-            // Defensively catch email delivery issues, ensuring NO credentials are printed
-            String sanitizedError = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            log.error("Email delivery failed for transmission id={}: {}", message.getId(), sanitizedError);
-            return new EmailDeliveryResult(false, "FAILED", sanitizedError);
+            String sanitized = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            log.error("Owner notification email delivery failed for message id={}: {}", message.getId(), sanitized);
+            errors.append("Owner notification failed: ").append(sanitized).append("; ");
+        }
+
+        // 2. Send Acknowledgement to Visitor
+        try {
+            sendVisitorAcknowledgement(mailSender, message);
+            visitorSuccess = true;
+            log.info("Visitor acknowledgement email delivered successfully to {} for message id={}", message.getEmail(), message.getId());
+        } catch (Exception e) {
+            String sanitized = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            log.error("Visitor acknowledgement email delivery failed for message id={}: {}", message.getId(), sanitized);
+            errors.append("Visitor acknowledgement failed: ").append(sanitized);
+        }
+
+        if (ownerSuccess && visitorSuccess) {
+            return new EmailDeliveryResult(true, "SENT", null);
+        } else if (ownerSuccess) {
+            return new EmailDeliveryResult(false, "PARTIAL_OWNER_ONLY", errors.toString().trim());
+        } else if (visitorSuccess) {
+            return new EmailDeliveryResult(false, "PARTIAL_VISITOR_ONLY", errors.toString().trim());
+        } else {
+            return new EmailDeliveryResult(false, "FAILED", errors.toString().trim());
         }
     }
 
@@ -73,26 +116,24 @@ public class EmailService {
         mail.setFrom(mailFrom);
         mail.setTo(mailTo);
         mail.setReplyTo(message.getEmail());
-        mail.setSubject("[Portfolio Transmission] New message from " + message.getName() + ": " + message.getSubject());
+        mail.setSubject("New Portfolio Contact — " + message.getName());
 
         String formattedTime = message.getCreatedAt() != null ? message.getCreatedAt().format(FORMATTER) : "Just now";
         String body = String.format(
                 "You have received a new contact inquiry via your engineering portfolio:\n\n" +
                 "--------------------------------------------------\n" +
-                "SENDER:    %s\n" +
+                "NAME:      %s\n" +
                 "EMAIL:     %s\n" +
                 "SUBJECT:   %s\n" +
-                "TIMESTAMP: %s\n" +
-                "IP ADDR:   %s\n" +
+                "TIME:      %s\n" +
                 "--------------------------------------------------\n\n" +
-                "TRANSMISSION PAYLOAD:\n%s\n\n" +
+                "MESSAGE:\n%s\n\n" +
                 "--------------------------------------------------\n" +
-                "You can reply directly to this email to reach %s.",
+                "Reply directly to this email to contact %s.",
                 message.getName(),
                 message.getEmail(),
                 message.getSubject(),
                 formattedTime,
-                message.getIpAddress() != null ? message.getIpAddress() : "Direct",
                 message.getMessage(),
                 message.getName()
         );
@@ -105,14 +146,14 @@ public class EmailService {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setFrom(mailFrom);
         mail.setTo(message.getEmail());
-        mail.setSubject("Transmission Received — Nishant Trivedi Engineering Portfolio");
+        mail.setSubject("Message received — Nishant Trivedi Portfolio");
 
         String formattedTime = message.getCreatedAt() != null ? message.getCreatedAt().format(FORMATTER) : "Just now";
         String body = String.format(
                 "Hello %s,\n\n" +
-                "Thank you for reaching out through my engineering portfolio.\n\n" +
-                "Your transmission regarding \"%s\" has been received and recorded in my system on %s.\n\n" +
-                "I review all direct inquiries and will follow up with you as soon as possible.\n\n" +
+                "Thank you for getting in touch through my engineering portfolio.\n\n" +
+                "Your message regarding \"%s\" was successfully received on %s.\n\n" +
+                "I review inquiries personally and will respond when appropriate.\n\n" +
                 "Best regards,\n\n" +
                 "Nishant Trivedi\n" +
                 "Software Engineer · Full-Stack & Systems\n" +

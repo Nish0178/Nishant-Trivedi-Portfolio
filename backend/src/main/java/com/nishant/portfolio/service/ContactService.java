@@ -36,7 +36,7 @@ public class ContactService {
         );
 
         // 1. Persist to PostgreSQL first - guaranteeing zero data loss
-        ContactMessage saved = repository.save(entity);
+        ContactMessage saved = repository.saveAndFlush(entity);
         log.info("Successfully persisted contact message with id={}", saved.getId());
 
         // 2. Defensively attempt email notifications
@@ -48,7 +48,7 @@ public class ContactService {
         } catch (Exception e) {
             log.warn("Non-fatal email notification error for message id={}: {}", saved.getId(), e.getMessage());
             saved.setEmailStatus("FAILED");
-            saved.setEmailError("Email dispatch error");
+            saved.setEmailError("Email dispatch error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
             repository.save(saved);
         }
 
