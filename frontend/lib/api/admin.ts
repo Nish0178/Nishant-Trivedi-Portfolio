@@ -42,6 +42,7 @@ export interface ProjectRecord {
   tagline?: string;
   githubUrl?: string;
   liveUrl?: string;
+  imageUrl?: string;
   language?: string;
   technologies?: string;
   features?: string;
@@ -316,6 +317,39 @@ export async function updateAdminProject(
 ): Promise<boolean> {
   const res = await saveAdminProject({ ...project, id });
   return res !== null;
+}
+
+export async function syncGitHubProjects(): Promise<{
+  success: boolean;
+  message: string;
+  addedCount?: number;
+  updatedCount?: number;
+}> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/projects/sync-github`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      return {
+        success: true,
+        message: data.message || "GitHub synchronization completed successfully.",
+        addedCount: data.addedCount,
+        updatedCount: data.updatedCount,
+      };
+    }
+    return {
+      success: false,
+      message: data.message || `GitHub sync failed with status ${res.status}`,
+    };
+  } catch (err: unknown) {
+    const error = err as Error;
+    return {
+      success: false,
+      message: error.message || "Failed to connect to backend during GitHub sync.",
+    };
+  }
 }
 
 // ============================================================================

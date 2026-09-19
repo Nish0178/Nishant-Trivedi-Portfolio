@@ -120,9 +120,23 @@ public class CmsService {
 
     @Transactional
     public ProjectEntity saveProject(ProjectEntity project) {
-        if (project.getId() == null || project.getId().isBlank()) {
-            project.setId(UUID.randomUUID().toString().substring(0, 8));
+        if ((project.getTitle() == null || project.getTitle().isBlank()) &&
+            (project.getName() == null || project.getName().isBlank())) {
+            throw new IllegalArgumentException("Project title is required");
         }
+        if (project.getTitle() == null || project.getTitle().isBlank()) {
+            project.setTitle(project.getName().trim());
+        }
+        if (project.getName() == null || project.getName().isBlank()) {
+            project.setName(project.getTitle().trim());
+        }
+        if (project.getId() == null || project.getId().isBlank()) {
+            project.setId(project.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", ""));
+            if (project.getId().isBlank()) {
+                project.setId(UUID.randomUUID().toString().substring(0, 8));
+            }
+        }
+        project.setUpdatedAt(LocalDateTime.now());
         if (project.getCreatedAt() == null) {
             projectRepository.findById(project.getId()).ifPresentOrElse(
                     existing -> project.setCreatedAt(existing.getCreatedAt()),
@@ -135,6 +149,113 @@ public class CmsService {
     @Transactional
     public void deleteProject(String id) {
         projectRepository.deleteById(id);
+    }
+
+    /**
+     * On-demand synchronization of GitHub repositories into PostgreSQL.
+     * Prevents duplication of curated projects and preserves custom manually managed fields.
+     */
+    @Transactional
+    public Map<String, Object> syncGitHubRepositories() {
+        log.info("Starting on-demand GitHub repositories synchronization");
+        List<ProjectEntity> allDbProjects = projectRepository.findAll();
+        Map<String, ProjectEntity> projectsByRepoIdentifier = new HashMap<>();
+
+        for (ProjectEntity pe : allDbProjects) {
+            if (pe.getName() != null) {
+                projectsByRepoIdentifier.put(pe.getName().trim().toLowerCase(), pe);
+            }
+            if (pe.getTitle() != null) {
+                projectsByRepoIdentifier.put(pe.getTitle().trim().toLowerCase(), pe);
+            }
+            if (pe.getId() != null) {
+                projectsByRepoIdentifier.put(pe.getId().trim().toLowerCase(), pe);
+            }
+            if (pe.getGithubUrl() != null && !pe.getGithubUrl().isBlank()) {
+                String normalizedUrl = pe.getGithubUrl().trim().toLowerCase().replaceAll("/+$", "");
+                int lastSlash = normalizedUrl.lastIndexOf('/');
+                if (lastSlash >= 0) {
+                    projectsByRepoIdentifier.put(normalizedUrl.substring(lastSlash + 1), pe);
+                }
+            }
+        }
+
+        int addedCount = 0;
+        int updatedCount = 0;
+
+        try {
+            List<ProjectDto> gitHubProjects = gitHubSyncService.getProjects();
+            int currentMaxSort = allDbProjects.stream().mapToInt(ProjectEntity::getSortOrder).max().orElse(0);
+
+            for (ProjectDto gp : gitHubProjects) {
+                if (gp.isCurated()) {
+                    continue; // Curated already present and managed in DB
+                }
+
+                String repoNameKey = gp.getName() != null ? gp.getName().trim().toLowerCase() : "";
+                ProjectEntity existing = projectsByRepoIdentifier.get(repoNameKey);
+
+                if (existing != null) {
+                    // Update ONLY GitHub-derived metrics; PRESERVE custom description, features, etc.
+                    existing.setStargazersCount(gp.getStargazersCount());
+                    existing.setForksCount(gp.getForksCount());
+                    if (existing.getLanguage() == null || existing.getLanguage().isBlank()) {
+                        existing.setLanguage(gp.getLanguage());
+                    }
+                    if (existing.getGithubUrl() == null || existing.getGithubUrl().isBlank()) {
+                        existing.setGithubUrl(gp.getHtmlUrl());
+                    }
+                    if ((existing.getLiveUrl() == null || existing.getLiveUrl().isBlank()) && gp.getHomepage() != null) {
+                        existing.setLiveUrl(gp.getHomepage());
+                    }
+                    existing.setUpdatedAt(LocalDateTime.now());
+                    projectRepository.save(existing);
+                    updatedCount++;
+                } else {
+                    // Discovered new project from GitHub
+                    ProjectEntity newEntity = new ProjectEntity();
+                    newEntity.setId("github-" + (gp.getId() != null ? gp.getId() : repoNameKey));
+                    newEntity.setName(gp.getName());
+                    newEntity.setTitle(gp.getTitle() != null && !gp.getTitle().isBlank() ? gp.getTitle() : gp.getName());
+                    newEntity.setDescription(gp.getDescription() != null ? gp.getDescription() : "Personal engineering repository on GitHub.");
+                    newEntity.setCategory(gp.getCategory() != null ? gp.getCategory() : "DISCOVERED OPEN SOURCE");
+                    newEntity.setTagline("Automated GitHub repository sync.");
+                    newEntity.setGithubUrl(gp.getHtmlUrl());
+                    newEntity.setLiveUrl(gp.getHomepage());
+                    newEntity.setLanguage(gp.getLanguage() != null ? gp.getLanguage() : "TypeScript");
+                    newEntity.setTechnologies(gp.getTech() != null && !gp.getTech().isEmpty()
+                            ? String.join(", ", gp.getTech())
+                            : (gp.getLanguage() != null ? gp.getLanguage() + ", Git, GitHub" : "Git, GitHub"));
+                    newEntity.setFeatures(gp.getFeatures() != null && !gp.getFeatures().isEmpty()
+                            ? String.join("\n", gp.getFeatures())
+                            : "Public GitHub repository\nAutomated GitHub synchronization");
+                    newEntity.setStargazersCount(gp.getStargazersCount());
+                    newEntity.setForksCount(gp.getForksCount());
+                    newEntity.setFeatured(false);
+                    newEntity.setVisible(true);
+                    newEntity.setCurated(false);
+                    newEntity.setSortOrder(++currentMaxSort);
+                    newEntity.setCreatedAt(LocalDateTime.now());
+                    newEntity.setUpdatedAt(LocalDateTime.now());
+
+                    projectRepository.save(newEntity);
+                    projectsByRepoIdentifier.put(repoNameKey, newEntity);
+                    addedCount++;
+                }
+            }
+        } catch (Exception e) {
+            log.error("GitHub repository synchronization failed: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to synchronize GitHub repositories: " + e.getMessage(), e);
+        }
+
+        log.info("GitHub synchronization completed: {} new added, {} updated", addedCount, updatedCount);
+        return Map.of(
+                "success", true,
+                "addedCount", addedCount,
+                "updatedCount", updatedCount,
+                "totalCount", projectRepository.count(),
+                "message", String.format("GitHub sync completed: %d added, %d updated.", addedCount, updatedCount)
+        );
     }
 
     /**
@@ -188,6 +309,7 @@ public class CmsService {
         dto.setDescription(entity.getDescription());
         dto.setHtmlUrl(entity.getGithubUrl());
         dto.setHomepage(entity.getLiveUrl());
+        dto.setImageUrl(entity.getImageUrl());
         dto.setLanguage(entity.getLanguage() != null ? entity.getLanguage() : "TypeScript");
         dto.setStargazersCount(entity.getStargazersCount());
         dto.setForksCount(entity.getForksCount());

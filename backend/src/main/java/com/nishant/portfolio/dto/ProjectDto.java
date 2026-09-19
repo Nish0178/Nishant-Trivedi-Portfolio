@@ -18,6 +18,7 @@ public class ProjectDto {
     private List<String> tech;
     private List<String> features;
     private boolean curated;
+    private String imageUrl;
 
     public ProjectDto() {
     }
@@ -164,5 +165,13 @@ public class ProjectDto {
 
     public void setForks(int forks) {
         this.forksCount = forks;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

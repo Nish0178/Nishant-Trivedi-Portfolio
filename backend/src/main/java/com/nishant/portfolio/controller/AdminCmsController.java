@@ -77,6 +77,11 @@ public class AdminCmsController {
         return ResponseEntity.ok(Map.of("success", true, "deletedId", id));
     }
 
+    @PostMapping("/projects/sync-github")
+    public ResponseEntity<Map<String, Object>> syncGitHub() {
+        return ResponseEntity.ok(cmsService.syncGitHubRepositories());
+    }
+
     // ==========================================
     // EXPERIENCES MANAGEMENT
     // ==========================================

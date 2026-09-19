@@ -7,12 +7,14 @@ import {
   createAdminProject,
   updateAdminProject,
   deleteAdminProject,
+  syncGitHubProjects,
 } from "@/lib/api/admin";
 
 export default function ProjectsTab() {
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   // Modal / Editing state
@@ -35,6 +37,33 @@ export default function ProjectsTab() {
     loadProjects();
   }, []);
 
+  const handleSyncGitHub = async () => {
+    setSyncing(true);
+    setFeedback(null);
+    try {
+      const res = await syncGitHubProjects();
+      if (res.success) {
+        setFeedback({
+          type: "success",
+          message: res.message || "GitHub repositories synchronized successfully into PostgreSQL.",
+        });
+        loadProjects();
+      } else {
+        setFeedback({
+          type: "error",
+          message: res.message || "Failed to synchronize GitHub repositories.",
+        });
+      }
+    } catch {
+      setFeedback({
+        type: "error",
+        message: "Unexpected error occurred during GitHub sync.",
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const handleOpenCreate = () => {
     setIsCreating(true);
     setEditingProject({
@@ -46,8 +75,10 @@ export default function ProjectsTab() {
       tagline: "",
       githubUrl: "",
       liveUrl: "",
+      imageUrl: "",
       language: "TypeScript",
       technologies: "Next.js, TypeScript, Tailwind CSS",
+      features: "",
       stargazersCount: 0,
       forksCount: 0,
       featured: true,
@@ -88,6 +119,7 @@ export default function ProjectsTab() {
       tagline: editingProject.tagline || "",
       githubUrl: editingProject.githubUrl || "",
       liveUrl: editingProject.liveUrl || "",
+      imageUrl: editingProject.imageUrl || "",
       language: editingProject.language || "TypeScript",
       technologies: editingProject.technologies || "",
       features: editingProject.features || "",
@@ -140,22 +172,38 @@ export default function ProjectsTab() {
     }
   };
 
+  const handleToggleFeatured = async (p: ProjectRecord) => {
+    const updated = { ...p, featured: !p.featured };
+    const ok = await updateAdminProject(p.id, updated);
+    if (ok) {
+      setProjects((prev) => prev.map((item) => (item.id === p.id ? updated : item)));
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <div className="text-xs font-mono text-amber-500 uppercase tracking-wider mb-1">
-            PROJECT REPOSITORY & SHOWCASE
+            PROJECTS
           </div>
           <h2 className="text-2xl sm:text-3xl font-normal text-white">
-            Projects Management
+            Project Repository & Showcase
           </h2>
           <p className="text-xs font-mono text-zinc-400 mt-1">
-            Manage flagship curated projects and synchronized GitHub repositories.
+            Manage portfolio projects and GitHub synchronization.
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncGitHub}
+            disabled={syncing || loading}
+            className="px-4 py-2 rounded-lg bg-[#141824] hover:bg-[#1c2233] border border-white/10 text-xs font-mono text-zinc-300 hover:text-white font-bold tracking-wider uppercase transition-all cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
+          >
+            <span className={syncing ? "animate-spin" : ""}>↻</span>
+            <span>{syncing ? "SYNCING..." : "SYNC GITHUB"}</span>
+          </button>
           <button
             onClick={handleOpenCreate}
             className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-lg shadow-amber-500/20 cursor-pointer flex items-center space-x-1.5"
@@ -247,6 +295,16 @@ export default function ProjectsTab() {
                   }`}
                 >
                   {p.visible ? "LIVE" : "HIDDEN"}
+                </button>
+                <button
+                  onClick={() => handleToggleFeatured(p)}
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-mono uppercase cursor-pointer transition-all ${
+                    p.featured
+                      ? "bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20"
+                      : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  {p.featured ? "FEATURED" : "STANDARD"}
                 </button>
                 <button
                   onClick={() => handleOpenEdit(p)}
@@ -390,6 +448,32 @@ export default function ProjectsTab() {
                   value={editingProject.technologies || ""}
                   onChange={(e) => setEditingProject({ ...editingProject, technologies: e.target.value })}
                   placeholder="Next.js, TypeScript, PostgreSQL, Spring Boot"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#141824] border border-white/10 text-white text-sm focus:border-amber-500/70 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-zinc-400 uppercase mb-1">
+                  KEY FEATURES & ACCOMPLISHMENTS (One per line)
+                </label>
+                <textarea
+                  rows={3}
+                  value={editingProject.features || ""}
+                  onChange={(e) => setEditingProject({ ...editingProject, features: e.target.value })}
+                  placeholder="Top 10 Runner-Up at Hackathon 2026&#10;Deterministic prompt chaining&#10;Sub-millisecond latency caching"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#141824] border border-white/10 text-white text-sm focus:border-amber-500/70 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-zinc-400 uppercase mb-1">
+                  IMAGE / THUMBNAIL URL
+                </label>
+                <input
+                  type="url"
+                  value={editingProject.imageUrl || ""}
+                  onChange={(e) => setEditingProject({ ...editingProject, imageUrl: e.target.value })}
+                  placeholder="https://... or /images/..."
                   className="w-full px-3.5 py-2.5 rounded-lg bg-[#141824] border border-white/10 text-white text-sm focus:border-amber-500/70 focus:outline-none"
                 />
               </div>

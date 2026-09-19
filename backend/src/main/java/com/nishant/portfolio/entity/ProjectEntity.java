@@ -41,6 +41,9 @@ public class ProjectEntity {
     @Column(columnDefinition = "TEXT")
     private String features; // Stored as newline-delimited or JSON string
 
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Column(name = "stargazers_count")
     private int stargazersCount;
 
@@ -172,6 +175,14 @@ public class ProjectEntity {
 
     public void setFeatures(String features) {
         this.features = features;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public int getStargazersCount() {
