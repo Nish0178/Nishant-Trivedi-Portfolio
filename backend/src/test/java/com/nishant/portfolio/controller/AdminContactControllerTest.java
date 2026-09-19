@@ -163,4 +163,26 @@ class AdminContactControllerTest {
         // Verify removed from DB
         assertFalse(contactMessageRepository.existsById(testMessage.getId()));
     }
+
+    @Test
+    @DisplayName("GET /api/admin/messages/{id} - Non-existent ID returns 404 Not Found")
+    void testGetMessageByIdNotFound() throws Exception {
+        mockMvc.perform(get("/api/admin/messages/999999")
+                        .header("Authorization", "Bearer " + validAdminToken)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/admin/messages/{id} - Non-existent ID returns 404 Not Found")
+    void testDeleteNotFound() throws Exception {
+        mockMvc.perform(delete("/api/admin/messages/999999")
+                        .header("Authorization", "Bearer " + validAdminToken)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
 }

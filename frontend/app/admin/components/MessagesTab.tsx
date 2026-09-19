@@ -8,7 +8,11 @@ import {
   deleteAdminMessage,
 } from "@/lib/api/admin";
 
-export default function MessagesTab() {
+interface MessagesTabProps {
+  onMessagesChange?: () => void;
+}
+
+export default function MessagesTab({ onMessagesChange }: MessagesTabProps = {}) {
   const [messages, setMessages] = useState<ContactMessageRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessageRecord | null>(null);
@@ -41,6 +45,7 @@ export default function MessagesTab() {
       if (selectedMessage && selectedMessage.id === m.id) {
         setSelectedMessage({ ...selectedMessage, read: newStatus });
       }
+      onMessagesChange?.();
     }
   };
 
@@ -55,6 +60,7 @@ export default function MessagesTab() {
         setSelectedMessage(null);
       }
       loadMessages();
+      onMessagesChange?.();
     } else {
       setFeedback({ type: "error", message: "Failed to delete transmission." });
     }
@@ -69,6 +75,7 @@ export default function MessagesTab() {
         prev.map((item) => (item.id === m.id ? { ...item, read: true } : item))
       );
       setSelectedMessage((prev) => prev && prev.id === m.id ? { ...prev, read: true } : prev);
+      onMessagesChange?.();
     }
   };
 
@@ -284,16 +291,16 @@ export default function MessagesTab() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <a
                 href={`mailto:${selectedMessage.email}?subject=${encodeURIComponent(
                   `Re: ${selectedMessage.subject || "Your message to Nishant Trivedi"}`
                 )}`}
-                className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs font-mono transition-all"
+                className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs font-mono transition-all text-center"
               >
                 REPLY VIA EMAIL →
               </a>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 justify-end">
                 <button
                   onClick={() => handleToggleRead(selectedMessage)}
                   className="px-3 py-2 rounded-lg bg-[#141824] hover:bg-[#1c2233] text-zinc-300 text-xs font-mono uppercase cursor-pointer"

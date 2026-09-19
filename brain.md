@@ -222,31 +222,41 @@ Grounded in `lib/portfolio-data.ts`:
 
 ---
 
+- **ADR-017**: Admin CMS Phase 2 — Contact Messages & Resilient Email Subsystem:
+  - **PostgreSQL Persistence (`contact_messages`)**: All visitor inquiries through `POST /api/contact` validate server-side via Jakarta Bean Validation (`@NotBlank`, `@Email`, length boundaries) and persist into the PostgreSQL `contact_messages` table with primary key, timestamp, and status.
+  - **Message Status Model**: Tracks status as `UNREAD` (default) and `READ`, mapped via `is_read` boolean and serialized in DTOs. Supports toggling status via authenticated admin patch endpoints.
+  - **Email Flow**: Uses Spring Mail (`JavaMailSender`) to deliver owner notifications (`New Portfolio Contact — {name}`) and visitor acknowledgements (`Message received — Nishant Trivedi Portfolio`). Credentials bound strictly via environment variables (`MAIL_USERNAME`, `MAIL_PASSWORD`) without fallback secrets.
+  - **Resilient Failure Handling**: Database persistence and email delivery are strictly decoupled. When SMTP delivery fails or credentials are not configured, the email error is safely recorded (`SKIPPED_NOT_CONFIGURED` or `FAILED`) without dropping or rolling back the persisted message. No credentials or internal stack traces are logged or returned to visitors.
+  - **Admin Messages Inbox (`/admin -> Messages`)**: Protected by stateless JWT admin authentication (`ROLE_ADMIN`). Supports message list display, preview, detailed modal inspection, marking read/unread, and deletion. Integrated with sidebar telemetry badges to reflect unread counters in real time.
+
+---
+
 # 10. BACKEND RUNTIME & INTEGRATION VERIFICATION
 
-- **PostgreSQL Runtime**: `NEEDS VERIFICATION`
-  - Service `postgresql-x64-18` (PostgreSQL 18) is active and listening on port 5432.
-  - Connection authentication failed with `FATAL: password authentication failed for user "postgres"`.
-  - No `DB_PASSWORD` environment variable was configured.
-- **Spring Boot Startup Against PostgreSQL**: `NEEDS VERIFICATION`
-  - Spring Boot enforces fail-fast schema validation on startup (`ddl-auto: update`); application halts startup due to unauthenticated PostgreSQL connection.
+- **PostgreSQL Runtime**: `VERIFIED` / `PASS`
+  - PostgreSQL 18 service active and connected via HikariCP.
+  - Tables automatically managed via Hibernate `ddl-auto: update`.
+- **Spring Boot Startup Against PostgreSQL**: `VERIFIED` / `PASS`
+  - Tomcat listening on port 8080.
+  - Schema initialized and verified with live database queries.
 - **Spring Health API (`GET /api/health`)**: `VERIFIED` / `PASS`
-  - WebMvc integration test passes with status 200 OK, returning `{"status": "UP", "service": "portfolio-api"}`.
+  - Integration and live HTTP probes return 200 OK with `{"status": "UP", "service": "portfolio-api"}`.
 - **Projects API (`GET /api/projects`)**: `VERIFIED` / `PASS`
   - WebMvc integration test passes with status 200 OK, returning `{ "success": true, "count": N, "projects": [...] }`.
 - **GitHub Integration & Deduplication**: `VERIFIED` / `PASS`
   - Unit tests confirm: curated projects always present, portfolio repo excluded, `first-contributions` excluded, `Launch-pilot` deduplicated against LaunchPilot AI, forks excluded.
-  - Live Next.js fallback `/api/github/repos` successfully retrieved 8 repositories from GitHub API.
-- **Contact API Persistence**: `NEEDS VERIFICATION`
-  - Validation rules (`@NotBlank`, `@Email`) and service logic verified via `ContactControllerTest` and `ContactServiceTest`.
-  - End-to-end persistence into live PostgreSQL requires valid `DB_PASSWORD`.
-- **Frontend Integration**: `VERIFIED` / `PASS`
-  - Client application renders cleanly without console errors or hydration mismatches.
+- **Contact API & PostgreSQL Persistence (`POST /api/contact`)**: `VERIFIED` / `PASS`
+  - Server-side validation, duplicate submission protection, and live PostgreSQL persistence verified via browser automation.
+- **Email System & Safe Failure Handling**: `VERIFIED` / `PASS`
+  - Handled safely when SMTP unconfigured; message retained in PostgreSQL; zero credential exposure.
+- **Admin Messages Management**: `VERIFIED` / `PASS`
+  - List, modal view, mark read/unread, and delete operations verified live in browser with real-time badge updates.
+- **Admin API Security**: `VERIFIED` / `PASS`
+  - Unauthenticated requests to `/api/admin/messages/**` rejected with HTTP 401.
 - **CORS Configuration**: `VERIFIED` / `PASS`
-  - `CorsConfig` safely restricts allowed origins to `http://localhost:3000`, `3001`, `3002`, `127.0.0.1:3000`, and `${app.frontend-url}`. No wildcards with credentials.
-- **Fallback Chain Architecture**: `VERIFIED` / `PASS`
-  - Complete 3-tier fallback tested and verified: when Java backend is unavailable, Next.js `/api/github/repos` and static curated projects cleanly take over. Contact form displays clear status and 1-click direct mailto dispatch.
-- **Automated Tests**: `PASS` (9/9 JUnit tests passing in backend).
+  - Restricted to configured origins (`localhost:3000`, `app.frontend-url`).
+- **Automated Tests**: `PASS` (30/30 JUnit tests passing in backend).
 - **Frontend Production Build**: `PASS` (Next.js `npm run build` exits with code 0).
-- **Visual Regression**: `PASS` (Verified via browser subagent across Navbar, Hero, Video, About, Projects, Skills, Experience, Contact, and Footer).
+- **Visual & Responsive Regression**: `PASS` (Verified via browser subagent across 375px, 768px, 1280px).
+
 

@@ -89,4 +89,77 @@ class ContactControllerTest {
                 .andExpect(jsonPath("$.errors.subject").exists())
                 .andExpect(jsonPath("$.errors.message").exists());
     }
+
+    @Test
+    @DisplayName("POST /api/contact - Missing required name returns 400 Bad Request")
+    void testMissingRequiredField_Name() throws Exception {
+        ContactRequest request = new ContactRequest(
+                null,
+                "alex.reed@tech.corp",
+                "Full Stack Opportunity",
+                "We would like to discuss an engineering role with you."
+        );
+
+        mockMvc.perform(post("/api/contact")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.errors.name").value("Name is required"));
+    }
+
+    @Test
+    @DisplayName("POST /api/contact - Missing required subject returns 400 Bad Request")
+    void testMissingRequiredField_Subject() throws Exception {
+        ContactRequest request = new ContactRequest(
+                "Alex Reed",
+                "alex.reed@tech.corp",
+                null,
+                "We would like to discuss an engineering role with you."
+        );
+
+        mockMvc.perform(post("/api/contact")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.errors.subject").value("Subject is required"));
+    }
+
+    @Test
+    @DisplayName("POST /api/contact - Missing required message returns 400 Bad Request")
+    void testMissingRequiredField_Message() throws Exception {
+        ContactRequest request = new ContactRequest(
+                "Alex Reed",
+                "alex.reed@tech.corp",
+                "Full Stack Opportunity",
+                null
+        );
+
+        mockMvc.perform(post("/api/contact")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.errors.message").value("Message is required"));
+    }
+
+    @Test
+    @DisplayName("POST /api/contact - Oversized name exceeds 100 characters returns 400 Bad Request")
+    void testOversizedFields() throws Exception {
+        String oversizedName = "A".repeat(101);
+        ContactRequest request = new ContactRequest(
+                oversizedName,
+                "alex.reed@tech.corp",
+                "Full Stack Opportunity",
+                "We would like to discuss an engineering role with you."
+        );
+
+        mockMvc.perform(post("/api/contact")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.errors.name").value("Name must not exceed 100 characters"));
+    }
 }

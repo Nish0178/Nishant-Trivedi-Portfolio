@@ -459,7 +459,7 @@ export default function AdminPage() {
           {activeTab === "experience" && <ExperienceTab />}
           {activeTab === "skills" && <SkillsTab />}
           {activeTab === "achievements" && <AchievementsTab />}
-          {activeTab === "messages" && <MessagesTab />}
+          {activeTab === "messages" && <MessagesTab onMessagesChange={loadStats} />}
           {activeTab === "media" && <MediaTab />}
           {activeTab === "settings" && <SettingsTab />}
         </main>
