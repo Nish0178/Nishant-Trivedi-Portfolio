@@ -1,7 +1,9 @@
 package com.nishant.portfolio.controller;
 
+import com.nishant.portfolio.dto.ProjectAdminDto;
 import com.nishant.portfolio.entity.*;
 import com.nishant.portfolio.service.CmsService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,23 +53,23 @@ public class AdminCmsController {
     // PROJECTS MANAGEMENT
     // ==========================================
     @GetMapping("/projects")
-    public ResponseEntity<List<ProjectEntity>> getAllProjects() {
+    public ResponseEntity<List<ProjectAdminDto>> getAllProjects() {
         return ResponseEntity.ok(cmsService.getAllAdminProjects());
     }
 
     @PostMapping("/projects")
-    public ResponseEntity<ProjectEntity> createProject(@RequestBody ProjectEntity project) {
-        ProjectEntity created = cmsService.saveProject(project);
+    public ResponseEntity<ProjectAdminDto> createProject(@Valid @RequestBody ProjectAdminDto project) {
+        ProjectAdminDto created = cmsService.saveProject(project);
         return ResponseEntity.ok(created);
     }
 
     @PutMapping("/projects/{id}")
-    public ResponseEntity<ProjectEntity> updateProject(
+    public ResponseEntity<ProjectAdminDto> updateProject(
             @PathVariable String id,
-            @RequestBody ProjectEntity project
+            @Valid @RequestBody ProjectAdminDto project
     ) {
         project.setId(id);
-        ProjectEntity updated = cmsService.saveProject(project);
+        ProjectAdminDto updated = cmsService.saveProject(project);
         return ResponseEntity.ok(updated);
     }
 

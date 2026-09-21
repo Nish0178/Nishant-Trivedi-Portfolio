@@ -1,6 +1,7 @@
 package com.nishant.portfolio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nishant.portfolio.dto.ProjectAdminDto;
 import com.nishant.portfolio.dto.ProjectDto;
 import com.nishant.portfolio.entity.AdminUser;
 import com.nishant.portfolio.entity.ProjectEntity;
@@ -20,7 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,7 +94,7 @@ class AdminProjectControllerTest {
     @Test
     @DisplayName("POST /api/admin/projects validates required title")
     void testCreateProjectValidation() throws Exception {
-        ProjectEntity invalidProject = new ProjectEntity();
+        ProjectAdminDto invalidProject = new ProjectAdminDto();
         invalidProject.setTitle("   ");
         invalidProject.setName("");
 
@@ -102,14 +102,13 @@ class AdminProjectControllerTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidProject)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Project title is required"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("POST /api/admin/projects creates and persists project with imageUrl")
-    void testCreateProjectWithImageUrl() throws Exception {
-        ProjectEntity project = new ProjectEntity();
+    @DisplayName("POST /api/admin/projects creates and persists project using DTO")
+    void testCreateProjectWithDto() throws Exception {
+        ProjectAdminDto project = new ProjectAdminDto();
         project.setId("hyperion-engine");
         project.setTitle("Hyperion Engine");
         project.setName("hyperion-engine");
@@ -134,22 +133,96 @@ class AdminProjectControllerTest {
                 .andExpect(jsonPath("$.id").value("hyperion-engine"))
                 .andExpect(jsonPath("$.title").value("Hyperion Engine"))
                 .andExpect(jsonPath("$.imageUrl").value("https://assets.nishanttrivedi.com/images/hyperion.webp"))
-                .andExpect(jsonPath("$.featured").value(true));
+                .andExpect(jsonPath("$.featured").value(true))
+                .andExpect(jsonPath("$.visible").value(true))
+                .andExpect(jsonPath("$.sortOrder").value(5));
 
         ProjectEntity persisted = projectRepository.findById("hyperion-engine").orElseThrow();
         assertEquals("Hyperion Engine", persisted.getTitle());
         assertEquals("https://assets.nishanttrivedi.com/images/hyperion.webp", persisted.getImageUrl());
         assertTrue(persisted.isFeatured());
         assertTrue(persisted.isVisible());
+        assertEquals(5, persisted.getSortOrder());
 
         // Cleanup
         projectRepository.deleteById("hyperion-engine");
     }
 
     @Test
+    @DisplayName("PUT /api/admin/projects/{id} updates existing project")
+    void testUpdateProjectWithDto() throws Exception {
+        ProjectEntity initial = new ProjectEntity();
+        initial.setId("test-update-proj");
+        initial.setTitle("Original Title");
+        initial.setName("test-update-proj");
+        initial.setDescription("Original description");
+        initial.setSortOrder(10);
+        initial.setVisible(true);
+        initial.setFeatured(false);
+        projectRepository.save(initial);
+
+        ProjectAdminDto updateDto = new ProjectAdminDto();
+        updateDto.setId("test-update-proj");
+        updateDto.setTitle("Updated Title");
+        updateDto.setName("test-update-proj");
+        updateDto.setDescription("Updated description text.");
+        updateDto.setSortOrder(3);
+        updateDto.setVisible(false); // Toggle published OFF
+        updateDto.setFeatured(true); // Toggle featured ON
+
+        mockMvc.perform(put("/api/admin/projects/test-update-proj")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Updated Title"))
+                .andExpect(jsonPath("$.sortOrder").value(3))
+                .andExpect(jsonPath("$.visible").value(false))
+                .andExpect(jsonPath("$.featured").value(true));
+
+        ProjectEntity updated = projectRepository.findById("test-update-proj").orElseThrow();
+        assertEquals("Updated Title", updated.getTitle());
+        assertEquals(3, updated.getSortOrder());
+        assertFalse(updated.isVisible());
+        assertTrue(updated.isFeatured());
+
+        // Cleanup
+        projectRepository.deleteById("test-update-proj");
+    }
+
+    @Test
+    @DisplayName("DELETE /api/admin/projects/{id} removes project from database")
+    void testDeleteProject() throws Exception {
+        ProjectEntity toDelete = new ProjectEntity();
+        toDelete.setId("delete-me-proj");
+        toDelete.setTitle("To Delete");
+        toDelete.setName("delete-me-proj");
+        toDelete.setDescription("Temporary project for deletion test.");
+        projectRepository.save(toDelete);
+
+        mockMvc.perform(delete("/api/admin/projects/delete-me-proj")
+                        .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.deletedId").value("delete-me-proj"));
+
+        assertFalse(projectRepository.existsById("delete-me-proj"));
+    }
+
+    @Test
+    @DisplayName("GET /api/admin/projects returns list of ProjectAdminDto")
+    void testGetAllAdminProjects() throws Exception {
+        mockMvc.perform(get("/api/admin/projects")
+                        .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", isA(List.class)))
+                .andExpect(jsonPath("$[0].title").exists())
+                .andExpect(jsonPath("$[0].sortOrder").exists());
+    }
+
+    @Test
     @DisplayName("POST /api/admin/projects/sync-github executes sync and preserves curated data")
     void testGitHubSyncPreservesCuratedFields() throws Exception {
-        // Ensure curated project exists with custom fields
         ProjectEntity curated = projectRepository.findById("launchpilot-ai").orElseGet(() -> {
             ProjectEntity p = new ProjectEntity();
             p.setId("launchpilot-ai");
@@ -185,21 +258,30 @@ class AdminProjectControllerTest {
     }
 
     @Test
-    @DisplayName("ProjectDto guarantees dual field normalization (tech & technologies, title & displayTitle)")
+    @DisplayName("Unpublished (hidden) project is not returned in public getUnifiedProjects")
+    void testUnpublishedProjectNotLeakedInPublic() {
+        ProjectEntity hidden = new ProjectEntity();
+        hidden.setId("hidden-secret-proj");
+        hidden.setTitle("Hidden Secret Project");
+        hidden.setName("hidden-secret-proj");
+        hidden.setDescription("Should not be visible publicly.");
+        hidden.setVisible(false); // Hidden!
+        hidden.setSortOrder(99);
+        projectRepository.save(hidden);
+
+        List<ProjectDto> publicProjects = cmsService.getUnifiedProjects();
+        boolean found = publicProjects.stream()
+                .anyMatch(p -> "hidden-secret-proj".equalsIgnoreCase(p.getId()) || "Hidden Secret Project".equalsIgnoreCase(p.getTitle()));
+
+        assertFalse(found, "Unpublished projects must NOT appear in public getUnifiedProjects");
+
+        // Cleanup
+        projectRepository.deleteById("hidden-secret-proj");
+    }
+
+    @Test
+    @DisplayName("ProjectDto guarantees dual field normalization and CMS properties")
     void testDtoNormalizationContract() {
-        ProjectEntity entity = new ProjectEntity();
-        entity.setId("norm-test");
-        entity.setTitle("Normalization Test");
-        entity.setName("norm-test");
-        entity.setDescription("Testing DTO dual-property serialization.");
-        entity.setLanguage("Rust");
-        entity.setTechnologies("Rust, Tokio, Actix");
-        entity.setStargazersCount(15);
-        entity.setForksCount(4);
-
-        List<ProjectDto> unified = cmsService.getUnifiedProjects();
-        assertNotNull(unified);
-
         ProjectDto dto = new ProjectDto();
         dto.setName("norm-test");
         dto.setTitle("Normalization Test");
@@ -207,6 +289,10 @@ class AdminProjectControllerTest {
         dto.setTech(List.of("Rust", "Tokio"));
         dto.setStargazersCount(15);
         dto.setForksCount(4);
+        dto.setFeatured(true);
+        dto.setVisible(true);
+        dto.setSortOrder(2);
+        dto.setTagline("Rust High Perf");
 
         // Verification of contract
         assertEquals("Normalization Test", dto.getDisplayTitle());
@@ -217,5 +303,9 @@ class AdminProjectControllerTest {
         assertEquals(15, dto.getStargazersCount());
         assertEquals(4, dto.getForks());
         assertEquals(4, dto.getForksCount());
+        assertTrue(dto.isFeatured());
+        assertTrue(dto.isVisible());
+        assertEquals(2, dto.getSortOrder());
+        assertEquals("Rust High Perf", dto.getTagline());
     }
 }

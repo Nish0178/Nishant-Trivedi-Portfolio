@@ -276,9 +276,18 @@ export async function fetchAdminProjects(): Promise<ProjectRecord[]> {
   }
 }
 
-export async function saveAdminProject(project: Partial<ProjectRecord>): Promise<ProjectRecord | null> {
+export interface ProjectMutationResponse {
+  success: boolean;
+  project?: ProjectRecord;
+  error?: string;
+}
+
+export async function saveAdminProjectDetailed(
+  project: Partial<ProjectRecord>,
+  isCreateMode: boolean = false
+): Promise<ProjectMutationResponse> {
   try {
-    const isUpdate = Boolean(project.id);
+    const isUpdate = !isCreateMode && Boolean(project.id);
     const url = isUpdate
       ? `${BACKEND_URL}/api/admin/projects/${project.id}`
       : `${BACKEND_URL}/api/admin/projects`;
@@ -290,11 +299,31 @@ export async function saveAdminProject(project: Partial<ProjectRecord>): Promise
       body: JSON.stringify(project),
     });
 
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      return { success: true, project: data };
+    }
+
+    const errorMsg =
+      data.message ||
+      data.error ||
+      (data.errors && typeof data.errors === "object"
+        ? Object.values(data.errors).join(", ")
+        : `Request failed with HTTP status ${res.status}`);
+
+    return { success: false, error: errorMsg };
+  } catch (err: unknown) {
+    const error = err as Error;
+    return {
+      success: false,
+      error: `Network error communicating with backend: ${error.message}`,
+    };
   }
+}
+
+export async function saveAdminProject(project: Partial<ProjectRecord>): Promise<ProjectRecord | null> {
+  const res = await saveAdminProjectDetailed(project);
+  return res.success && res.project ? res.project : null;
 }
 
 export async function deleteAdminProject(id: string): Promise<boolean> {
@@ -315,8 +344,8 @@ export async function updateAdminProject(
   id: string,
   project: Partial<ProjectRecord>
 ): Promise<boolean> {
-  const res = await saveAdminProject({ ...project, id });
-  return res !== null;
+  const res = await saveAdminProjectDetailed({ ...project, id }, false);
+  return res.success;
 }
 
 export async function syncGitHubProjects(): Promise<{

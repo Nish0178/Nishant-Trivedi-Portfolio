@@ -2,6 +2,7 @@ package com.nishant.portfolio.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nishant.portfolio.dto.ProjectAdminDto;
 import com.nishant.portfolio.dto.ProjectDto;
 import com.nishant.portfolio.entity.*;
 import com.nishant.portfolio.repository.*;
@@ -106,49 +107,99 @@ public class CmsService {
     // ==========================================
     // PROJECTS CRUD & UNIFIED COEXISTENCE
     // ==========================================
-    public List<ProjectEntity> getAllAdminProjects() {
-        return projectRepository.findAllByOrderBySortOrderAsc();
+    public List<ProjectAdminDto> getAllAdminProjects() {
+        return projectRepository.findAllByOrderBySortOrderAsc()
+                .stream()
+                .map(this::mapEntityToAdminDto)
+                .toList();
     }
 
     public List<ProjectEntity> getVisibleProjects() {
         return projectRepository.findAllByVisibleTrueOrderBySortOrderAsc();
     }
 
-    public Optional<ProjectEntity> getProjectById(String id) {
-        return projectRepository.findById(id);
+    public Optional<ProjectAdminDto> getProjectById(String id) {
+        return projectRepository.findById(id).map(this::mapEntityToAdminDto);
     }
 
     @Transactional
-    public ProjectEntity saveProject(ProjectEntity project) {
-        if ((project.getTitle() == null || project.getTitle().isBlank()) &&
-            (project.getName() == null || project.getName().isBlank())) {
+    public ProjectAdminDto saveProject(ProjectAdminDto dto) {
+        if ((dto.getTitle() == null || dto.getTitle().isBlank()) &&
+            (dto.getName() == null || dto.getName().isBlank())) {
             throw new IllegalArgumentException("Project title is required");
         }
-        if (project.getTitle() == null || project.getTitle().isBlank()) {
-            project.setTitle(project.getName().trim());
-        }
-        if (project.getName() == null || project.getName().isBlank()) {
-            project.setName(project.getTitle().trim());
-        }
-        if (project.getId() == null || project.getId().isBlank()) {
-            project.setId(project.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", ""));
-            if (project.getId().isBlank()) {
-                project.setId(UUID.randomUUID().toString().substring(0, 8));
+        String title = (dto.getTitle() != null && !dto.getTitle().isBlank())
+                ? dto.getTitle().trim()
+                : dto.getName().trim();
+        String name = (dto.getName() != null && !dto.getName().isBlank())
+                ? dto.getName().trim()
+                : title;
+        String id = dto.getId();
+        if (id == null || id.isBlank()) {
+            id = title.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
+            if (id.isBlank()) {
+                id = UUID.randomUUID().toString().substring(0, 8);
             }
         }
-        project.setUpdatedAt(LocalDateTime.now());
-        if (project.getCreatedAt() == null) {
-            projectRepository.findById(project.getId()).ifPresentOrElse(
-                    existing -> project.setCreatedAt(existing.getCreatedAt()),
-                    () -> project.setCreatedAt(LocalDateTime.now())
-            );
+
+        ProjectEntity entity = projectRepository.findById(id).orElse(new ProjectEntity());
+        entity.setId(id);
+        entity.setTitle(title);
+        entity.setName(name);
+        entity.setDescription(dto.getDescription() != null ? dto.getDescription().trim() : "");
+        entity.setCategory(dto.getCategory() != null && !dto.getCategory().isBlank() ? dto.getCategory().trim() : "ENGINEERING PROJECT");
+        entity.setTagline(dto.getTagline() != null ? dto.getTagline().trim() : null);
+        entity.setGithubUrl(dto.getGithubUrl() != null && !dto.getGithubUrl().isBlank() ? dto.getGithubUrl().trim() : null);
+        entity.setLiveUrl(dto.getLiveUrl() != null && !dto.getLiveUrl().isBlank() ? dto.getLiveUrl().trim() : null);
+        entity.setImageUrl(dto.getImageUrl() != null && !dto.getImageUrl().isBlank() ? dto.getImageUrl().trim() : null);
+        entity.setLanguage(dto.getLanguage() != null && !dto.getLanguage().isBlank() ? dto.getLanguage().trim() : "TypeScript");
+        entity.setTechnologies(dto.getTechnologies() != null ? dto.getTechnologies().trim() : null);
+        entity.setFeatures(dto.getFeatures() != null ? dto.getFeatures().trim() : null);
+        entity.setStargazersCount(dto.getStargazersCount());
+        entity.setForksCount(dto.getForksCount());
+        entity.setFeatured(dto.isFeatured());
+        entity.setVisible(dto.isVisible());
+        entity.setSortOrder(dto.getSortOrder());
+        entity.setCurated(dto.isCurated());
+
+        LocalDateTime now = LocalDateTime.now();
+        if (entity.getCreatedAt() == null) {
+            entity.setCreatedAt(now);
         }
-        return projectRepository.save(project);
+        entity.setUpdatedAt(now);
+
+        ProjectEntity saved = projectRepository.save(entity);
+        return mapEntityToAdminDto(saved);
     }
 
     @Transactional
     public void deleteProject(String id) {
         projectRepository.deleteById(id);
+    }
+
+    public ProjectAdminDto mapEntityToAdminDto(ProjectEntity entity) {
+        ProjectAdminDto dto = new ProjectAdminDto();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
+        dto.setCategory(entity.getCategory());
+        dto.setTagline(entity.getTagline());
+        dto.setGithubUrl(entity.getGithubUrl());
+        dto.setLiveUrl(entity.getLiveUrl());
+        dto.setImageUrl(entity.getImageUrl());
+        dto.setLanguage(entity.getLanguage());
+        dto.setTechnologies(entity.getTechnologies());
+        dto.setFeatures(entity.getFeatures());
+        dto.setStargazersCount(entity.getStargazersCount());
+        dto.setForksCount(entity.getForksCount());
+        dto.setFeatured(entity.isFeatured());
+        dto.setVisible(entity.isVisible());
+        dto.setSortOrder(entity.getSortOrder());
+        dto.setCurated(entity.isCurated());
+        dto.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null);
+        dto.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null);
+        return dto;
     }
 
     /**
@@ -196,7 +247,7 @@ public class CmsService {
                 ProjectEntity existing = projectsByRepoIdentifier.get(repoNameKey);
 
                 if (existing != null) {
-                    // Update ONLY GitHub-derived metrics; PRESERVE custom description, features, etc.
+                    // Update ONLY GitHub-derived metrics; strictly PRESERVE custom description, features, image, sort order, featured, visible, etc.
                     existing.setStargazersCount(gp.getStargazersCount());
                     existing.setForksCount(gp.getForksCount());
                     if (existing.getLanguage() == null || existing.getLanguage().isBlank()) {
@@ -261,22 +312,39 @@ public class CmsService {
     /**
      * Unified Projects: Coexistence between DB-managed curated projects and GitHub-synced projects.
      * Prevents duplication of LaunchPilot AI / Launch-pilot.
+     * Respects published state (visible=false) by tracking all known repository names in DB.
      */
     public List<ProjectDto> getUnifiedProjects() {
-        List<ProjectEntity> dbProjects = getVisibleProjects();
+        List<ProjectEntity> allDbProjects = projectRepository.findAll();
+        List<ProjectEntity> dbVisibleProjects = getVisibleProjects();
         List<ProjectDto> result = new ArrayList<>();
         Set<String> trackedNames = new HashSet<>();
 
-        // 1. Convert DB projects to DTOs
-        for (ProjectEntity entity : dbProjects) {
+        // Populate tracked names with ALL projects in DB (both visible and hidden)
+        // so that unpublished (hidden) projects are not resurrected by dynamic GitHub fetching
+        for (ProjectEntity pe : allDbProjects) {
+            if (pe.getName() != null) {
+                trackedNames.add(pe.getName().trim().toLowerCase());
+            }
+            if (pe.getTitle() != null) {
+                trackedNames.add(pe.getTitle().trim().toLowerCase());
+            }
+            if (pe.getId() != null) {
+                trackedNames.add(pe.getId().trim().toLowerCase());
+            }
+            if (pe.getGithubUrl() != null && !pe.getGithubUrl().isBlank()) {
+                String normalizedUrl = pe.getGithubUrl().trim().toLowerCase().replaceAll("/+$", "");
+                int lastSlash = normalizedUrl.lastIndexOf('/');
+                if (lastSlash >= 0) {
+                    trackedNames.add(normalizedUrl.substring(lastSlash + 1));
+                }
+            }
+        }
+
+        // 1. Convert visible DB projects to DTOs
+        for (ProjectEntity entity : dbVisibleProjects) {
             ProjectDto dto = mapEntityToDto(entity);
             result.add(dto);
-            if (entity.getName() != null) {
-                trackedNames.add(entity.getName().toLowerCase());
-            }
-            if (entity.getTitle() != null) {
-                trackedNames.add(entity.getTitle().toLowerCase());
-            }
         }
 
         // 2. Fetch GitHub projects and append non-duplicated discovered repos
@@ -286,8 +354,8 @@ public class CmsService {
                 if (gp.isCurated()) {
                     continue; // Curated already handled from DB
                 }
-                String name = gp.getName() != null ? gp.getName().toLowerCase() : "";
-                String title = gp.getTitle() != null ? gp.getTitle().toLowerCase() : "";
+                String name = gp.getName() != null ? gp.getName().trim().toLowerCase() : "";
+                String title = gp.getTitle() != null ? gp.getTitle().trim().toLowerCase() : "";
 
                 if (!trackedNames.contains(name) && !trackedNames.contains(title)) {
                     result.add(gp);
@@ -314,8 +382,14 @@ public class CmsService {
         dto.setStargazersCount(entity.getStargazersCount());
         dto.setForksCount(entity.getForksCount());
         dto.setCategory(entity.getCategory() != null ? entity.getCategory() : "ENGINEERING PROJECT");
+        dto.setTagline(entity.getTagline());
         dto.setStatus(entity.isCurated() ? "PRODUCTION READY" : "VERIFIED REPO");
         dto.setCurated(entity.isCurated());
+        dto.setFeatured(entity.isFeatured());
+        dto.setVisible(entity.isVisible());
+        dto.setSortOrder(entity.getSortOrder());
+        dto.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null);
+        dto.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null);
 
         // Parse technologies string
         if (entity.getTechnologies() != null) {

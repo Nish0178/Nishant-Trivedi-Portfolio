@@ -14,11 +14,17 @@ public class ProjectDto {
     private int stargazersCount;
     private int forksCount;
     private String category;
+    private String tagline;
     private String status;
     private List<String> tech;
     private List<String> features;
     private boolean curated;
+    private boolean featured = false;
+    private boolean visible = true;
+    private int sortOrder = 0;
     private String imageUrl;
+    private String createdAt;
+    private String updatedAt;
 
     public ProjectDto() {
     }
@@ -103,6 +109,14 @@ public class ProjectDto {
         this.category = category;
     }
 
+    public String getTagline() {
+        return tagline;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -133,6 +147,30 @@ public class ProjectDto {
 
     public void setCurated(boolean curated) {
         this.curated = curated;
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public List<String> getTechnologies() {
@@ -173,5 +211,21 @@ public class ProjectDto {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
