@@ -26,6 +26,9 @@ public class AchievementEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(length = 500)
+    private String url;
+
     @Column(name = "sort_order", nullable = false)
     private int sortOrder = 0;
 
@@ -134,5 +137,13 @@ public class AchievementEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

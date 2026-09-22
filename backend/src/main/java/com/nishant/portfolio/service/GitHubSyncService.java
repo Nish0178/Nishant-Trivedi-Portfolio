@@ -3,6 +3,11 @@ package com.nishant.portfolio.service;
 import com.nishant.portfolio.dto.ProjectDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,22 +37,42 @@ public class GitHubSyncService {
     }
 
     public synchronized List<ProjectDto> getProjects() {
+        return getProjects(false);
+    }
+
+    public synchronized List<ProjectDto> getProjects(boolean forceRefresh) {
         Instant now = Instant.now();
-        if (cachedProjects != null && now.isBefore(cacheExpiry)) {
+        if (!forceRefresh && cachedProjects != null && now.isBefore(cacheExpiry)) {
             return cachedProjects;
         }
 
         List<ProjectDto> projects = new ArrayList<>(getCuratedProjects());
 
         try {
-            List<Map<String, Object>> repos = restTemplate.getForObject(GITHUB_API, List.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", "Nishant-Trivedi-Portfolio");
+            headers.set("Accept", "application/vnd.github.v3+json");
+
+            String token = System.getenv("GITHUB_TOKEN");
+            if (token != null && !token.isBlank()) {
+                headers.set("Authorization", "Bearer " + token.trim());
+            }
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                    GITHUB_API,
+                    HttpMethod.GET,
+                    requestEntity,
+                    new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+
+            List<Map<String, Object>> repos = response.getBody();
             if (repos != null) {
                 Set<String> curatedNames = new HashSet<>();
                 for (ProjectDto cp : projects) {
                     curatedNames.add(cp.getName().toLowerCase());
                 }
 
-                int discoveredIndex = projects.size() + 1;
                 for (Map<String, Object> repo : repos) {
                     Boolean fork = (Boolean) repo.get("fork");
                     if (Boolean.TRUE.equals(fork)) continue;
@@ -57,7 +82,27 @@ public class GitHubSyncService {
 
                     String lowerName = name.toLowerCase();
                     if (EXCLUDED_REPOS.contains(lowerName)) continue;
-                    if (curatedNames.contains(lowerName)) continue;
+                    if (curatedNames.contains(lowerName)) {
+                        // Enrich existing curated project entry with live GitHub metrics
+                        for (ProjectDto cp : projects) {
+                            if (cp.getName().equalsIgnoreCase(name)) {
+                                if (repo.get("stargazers_count") instanceof Number) {
+                                    cp.setStargazersCount(((Number) repo.get("stargazers_count")).intValue());
+                                }
+                                if (repo.get("forks_count") instanceof Number) {
+                                    cp.setForksCount(((Number) repo.get("forks_count")).intValue());
+                                }
+                                if (repo.get("html_url") instanceof String) {
+                                    cp.setHtmlUrl((String) repo.get("html_url"));
+                                }
+                                if (repo.get("homepage") instanceof String && !((String) repo.get("homepage")).isBlank()) {
+                                    cp.setHomepage((String) repo.get("homepage"));
+                                }
+                                break;
+                            }
+                        }
+                        continue;
+                    }
 
                     ProjectDto dto = new ProjectDto();
                     dto.setId(String.valueOf(repo.get("id")));

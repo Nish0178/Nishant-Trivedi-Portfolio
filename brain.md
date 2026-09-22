@@ -229,6 +229,19 @@ Grounded in `lib/portfolio-data.ts`:
   - **Resilient Failure Handling**: Database persistence and email delivery are strictly decoupled. When SMTP delivery fails or credentials are not configured, the email error is safely recorded (`SKIPPED_NOT_CONFIGURED` or `FAILED`) without dropping or rolling back the persisted message. No credentials or internal stack traces are logged or returned to visitors.
   - **Admin Messages Inbox (`/admin -> Messages`)**: Protected by stateless JWT admin authentication (`ROLE_ADMIN`). Supports message list display, preview, detailed modal inspection, marking read/unread, and deletion. Integrated with sidebar telemetry badges to reflect unread counters in real time.
 
+- **ADR-018**: Admin CMS Phase 3 — Projects Management & Idempotent GitHub Synchronization:
+  - **Relational Project Persistence (`projects`)**: Complete CRUD capabilities for portfolio projects managed via PostgreSQL, including fields: `id`, `name`, `title`, `description`, `category`, `tagline`, `github_url`, `live_url`, `language`, `technologies`, `features`, `image_url`, `stargazers_count`, `forks_count`, `is_featured`, `is_visible`, `sort_order`, `is_curated`, and timestamps.
+  - **Dual Publication & Featured Model**:
+    - `is_visible` (Published): Toggles project eligibility for public display. Unpublished/hidden projects are filtered out of public queries (`GET /api/projects`) and shielded from resurrection by dynamic GitHub fetching.
+    - `is_featured` (Featured): Controls featured treatment in the public project showcase without affecting public stacking animation mechanics.
+    - `sort_order`: Deterministic numeric ordering priority for stacking sequence.
+  - **Data Ownership & Field Preservation Boundary**:
+    - **Manually Managed CMS Fields (Protected)**: Custom descriptions, features, thumbnails/images, sort order, featured flag, visible flag, and curated status are NEVER overwritten by GitHub synchronization.
+    - **GitHub-Derived Metrics (Refreshed)**: Live stars (`stargazersCount`), forks (`forksCount`), language, and repository URLs are updated during sync.
+  - **Multi-Key Deduplication Engine**: Prevents duplicate projects through stable cross-matching against repository name, display title, slug ID, and GitHub URL repository slugs (`projectsByRepoIdentifier`). Curated projects (`LaunchPilot AI`, `TodoPro Engine`, `Astrospacious`) are enriched in-place without generating synthetic duplicates.
+  - **Project Normalization Boundary**: Strict adherence to frontend contract `UnifiedProject` (`technologies`, `displayTitle`, `stars`, `forks`, `htmlUrl`, `homepage`, `features`) via `normalizeProjectData` on the client and dual getter serializations on backend `ProjectDto`, eliminating runtime crashes.
+  - **Security & Authorization**: All mutation endpoints (`POST /api/admin/projects`, `PUT /api/admin/projects/**`, `DELETE /api/admin/projects/**`, `POST /api/admin/projects/sync-github`) enforced by stateless JWT authentication (`ROLE_ADMIN`). Public read remains available at `GET /api/projects`.
+
 ---
 
 # 10. BACKEND RUNTIME & INTEGRATION VERIFICATION
@@ -245,17 +258,20 @@ Grounded in `lib/portfolio-data.ts`:
   - WebMvc integration test passes with status 200 OK, returning `{ "success": true, "count": N, "projects": [...] }`.
 - **GitHub Integration & Deduplication**: `VERIFIED` / `PASS`
   - Unit tests confirm: curated projects always present, portfolio repo excluded, `first-contributions` excluded, `Launch-pilot` deduplicated against LaunchPilot AI, forks excluded.
+  - Sync execution is idempotent with 0 duplicate entries created on repeated sync.
 - **Contact API & PostgreSQL Persistence (`POST /api/contact`)**: `VERIFIED` / `PASS`
   - Server-side validation, duplicate submission protection, and live PostgreSQL persistence verified via browser automation.
 - **Email System & Safe Failure Handling**: `VERIFIED` / `PASS`
   - Handled safely when SMTP unconfigured; message retained in PostgreSQL; zero credential exposure.
 - **Admin Messages Management**: `VERIFIED` / `PASS`
   - List, modal view, mark read/unread, and delete operations verified live in browser with real-time badge updates.
+- **Admin Projects Management & GitHub Sync**: `VERIFIED` / `PASS`
+  - Creation, editing, publication toggle, featured toggle, deletion with confirmation modal, and on-demand GitHub sync verified live via browser subagent.
 - **Admin API Security**: `VERIFIED` / `PASS`
-  - Unauthenticated requests to `/api/admin/messages/**` rejected with HTTP 401.
+  - Unauthenticated requests to `/api/admin/**` rejected with HTTP 401.
 - **CORS Configuration**: `VERIFIED` / `PASS`
   - Restricted to configured origins (`localhost:3000`, `app.frontend-url`).
-- **Automated Tests**: `PASS` (30/30 JUnit tests passing in backend).
+- **Automated Tests**: `PASS` (41/41 JUnit tests passing in backend).
 - **Frontend Production Build**: `PASS` (Next.js `npm run build` exits with code 0).
 - **Visual & Responsive Regression**: `PASS` (Verified via browser subagent across 375px, 768px, 1280px).
 

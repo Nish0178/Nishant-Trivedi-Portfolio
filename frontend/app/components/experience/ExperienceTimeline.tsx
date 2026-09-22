@@ -1,13 +1,54 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { EXPERIENCES } from "@/lib/portfolio-data";
 import { EASING, DURATION, STAGGER } from "@/app/lib/motion";
+import { fetchPublicCmsContent } from "@/lib/api/content";
+
+interface TimelineExperienceItem {
+  period: string;
+  company: string;
+  role: string;
+  location?: string;
+  type?: string;
+  contributions: string[];
+  technologies: string[];
+}
 
 export default function ExperienceTimeline() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const timelineRef = useRef<HTMLDivElement | null>(null);
+  const [experiences, setExperiences] = useState<TimelineExperienceItem[]>(EXPERIENCES);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicCmsContent().then((content) => {
+      if (mounted && Array.isArray(content?.experiences) && content.experiences.length > 0) {
+        const normalized: TimelineExperienceItem[] = content.experiences.map((exp: any) => ({
+          company: String(exp.company || ""),
+          role: String(exp.role || ""),
+          period: String(exp.period || ""),
+          location: exp.location ? String(exp.location) : undefined,
+          type: exp.type ? String(exp.type) : undefined,
+          contributions: Array.isArray(exp.contributions)
+            ? exp.contributions.map(String)
+            : typeof exp.contributions === "string"
+            ? exp.contributions.split("\n").map((s: string) => s.trim()).filter(Boolean)
+            : [],
+          technologies: Array.isArray(exp.technologies)
+            ? exp.technologies.map(String)
+            : typeof exp.technologies === "string"
+            ? exp.technologies.split(",").map((s: string) => s.trim()).filter(Boolean)
+            : [],
+        }));
+        setExperiences(normalized);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Section headline scroll coupling
   const { scrollYProgress: sectionScroll } = useScroll({
@@ -89,7 +130,7 @@ export default function ExperienceTimeline() {
             className="absolute left-0 top-3 w-[2px] -translate-x-[0.5px] bg-gradient-to-b from-amber-400 via-amber-300 to-amber-500 shadow-[0_0_12px_#f59e0b]"
           />
           
-          {EXPERIENCES.map((exp, idx) => (
+          {experiences.map((exp, idx) => (
             <motion.div
               key={`${exp.company}-${exp.period}`}
               initial={{ opacity: 0, x: -25 }}

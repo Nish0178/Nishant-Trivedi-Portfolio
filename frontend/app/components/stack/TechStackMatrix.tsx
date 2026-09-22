@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { EASING, DURATION, STAGGER } from "@/app/lib/motion";
+import { fetchPublicCmsContent } from "@/lib/api/content";
 
-const QUADRANTS = [
+const DEFAULT_QUADRANTS = [
   {
     number: "01",
     title: "FRONTEND ARCHITECTURE",
@@ -45,6 +46,54 @@ const QUADRANTS = [
 
 export default function TechStackMatrix() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [quadrants, setQuadrants] = useState(DEFAULT_QUADRANTS);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicCmsContent().then((content) => {
+      if (mounted && Array.isArray(content?.skills) && content.skills.length > 0) {
+        const q1Skills: string[] = [];
+        const q2Skills: string[] = [];
+        const q3Skills: string[] = [];
+        const q4Skills: string[] = [];
+
+        content.skills.forEach((s) => {
+          const cat = (s.category || "").toLowerCase();
+          if (cat.includes("front") || cat.includes("ui") || cat.includes("web")) {
+            q1Skills.push(s.name);
+          } else if (cat.includes("back") || cat.includes("server") || cat.includes("api") || cat.includes("distributed")) {
+            q2Skills.push(s.name);
+          } else if (cat.includes("data") || cat.includes("db") || cat.includes("sql") || cat.includes("storage")) {
+            q3Skills.push(s.name);
+          } else {
+            q4Skills.push(s.name);
+          }
+        });
+
+        setQuadrants([
+          {
+            ...DEFAULT_QUADRANTS[0],
+            skills: q1Skills.length > 0 ? q1Skills : DEFAULT_QUADRANTS[0].skills,
+          },
+          {
+            ...DEFAULT_QUADRANTS[1],
+            skills: q2Skills.length > 0 ? q2Skills : DEFAULT_QUADRANTS[1].skills,
+          },
+          {
+            ...DEFAULT_QUADRANTS[2],
+            skills: q3Skills.length > 0 ? q3Skills : DEFAULT_QUADRANTS[2].skills,
+          },
+          {
+            ...DEFAULT_QUADRANTS[3],
+            skills: q4Skills.length > 0 ? q4Skills : DEFAULT_QUADRANTS[3].skills,
+          },
+        ]);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Large typography scroll coupling
   const { scrollYProgress } = useScroll({
@@ -106,7 +155,7 @@ export default function TechStackMatrix() {
 
         {/* 4 Large Quadrant Cards Grid: Staggered Entrance */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-12">
-          {QUADRANTS.map((quad, idx) => (
+          {quadrants.map((quad, idx) => (
             <motion.div
               key={quad.title}
               initial={{ opacity: 0, y: 28 }}

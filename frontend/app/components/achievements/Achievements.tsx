@@ -1,12 +1,41 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ACHIEVEMENTS, CERTIFICATIONS } from "@/lib/portfolio-data";
 import { EASING, DURATION, STAGGER } from "@/app/lib/motion";
+import { fetchPublicCmsContent } from "@/lib/api/content";
+
+interface AchievementItem {
+  title: string;
+  badge: string;
+  issuerOrVenue?: string;
+  year?: string;
+  description?: string;
+}
 
 export default function Achievements() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [achievements, setAchievements] = useState<AchievementItem[]>(ACHIEVEMENTS);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicCmsContent().then((content) => {
+      if (mounted && Array.isArray(content?.achievements) && content.achievements.length > 0) {
+        const normalized: AchievementItem[] = content.achievements.map((item: any) => ({
+          title: String(item.title || ""),
+          badge: String(item.badge || "HONOR"),
+          issuerOrVenue: item.issuerOrVenue ? String(item.issuerOrVenue) : undefined,
+          year: item.year ? String(item.year) : undefined,
+          description: item.description ? String(item.description) : undefined,
+        }));
+        setAchievements(normalized);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Large typography scroll coupling
   const { scrollYProgress } = useScroll({
@@ -68,7 +97,7 @@ export default function Achievements() {
 
         {/* Hackathon & Honors Grid: Staggered Editorial Reveal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 font-sans">
-          {ACHIEVEMENTS.map((item, idx) => (
+          {achievements.map((item, idx) => (
             <motion.div
               key={item.title}
               initial={{ opacity: 0, y: 24 }}

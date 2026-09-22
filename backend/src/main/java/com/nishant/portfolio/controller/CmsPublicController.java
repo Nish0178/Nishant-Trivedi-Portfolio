@@ -21,6 +21,11 @@ public class CmsPublicController {
         return ResponseEntity.ok(cmsService.getAllPublicContent());
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<com.nishant.portfolio.dto.ProfileDto> getProfile() {
+        return ResponseEntity.ok(cmsService.getProfileData());
+    }
+
     @GetMapping("/{section}")
     public ResponseEntity<Map<String, Object>> getSection(@PathVariable String section) {
         return ResponseEntity.ok(cmsService.getSectionData(section.toUpperCase()));

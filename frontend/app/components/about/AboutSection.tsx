@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { EASING, DURATION, STAGGER } from "@/app/lib/motion";
+import { fetchPublicCmsContent, FALLBACK_PUBLIC_CONTENT } from "@/lib/api/content";
 
-const STATS = [
+const DEFAULT_STATS = [
   {
     number: "400+",
     label: "DSA SOLVED",
@@ -34,6 +35,21 @@ const STATS = [
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [cmsAbout, setCmsAbout] = useState(FALLBACK_PUBLIC_CONTENT.about);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPublicCmsContent().then((content) => {
+      if (mounted && content?.about) {
+        setCmsAbout((prev) => ({ ...prev, ...content.about }));
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const statsList = cmsAbout.stats && cmsAbout.stats.length > 0 ? cmsAbout.stats : DEFAULT_STATS;
 
   // Large typography scroll-linked effect (scale 0.96 -> 1, subtle y movement)
   const { scrollYProgress } = useScroll({
@@ -103,7 +119,13 @@ export default function AboutSection() {
               transition={{ duration: DURATION.normal, delay: 0.08, ease: EASING.cinematic }}
               className="text-lg sm:text-xl text-[var(--text-primary)] leading-relaxed font-normal"
             >
-              I&apos;m <strong className="text-amber-500 dark:text-amber-400 font-semibold serif-italic">Nishant Trivedi</strong>, a Full Stack Developer and Computer Science undergraduate specializing in building scalable web architectures, AI-integrated platforms, and refined digital experiences.
+              {cmsAbout.bioParagraph1 ? (
+                cmsAbout.bioParagraph1
+              ) : (
+                <>
+                  I&apos;m <strong className="text-amber-500 dark:text-amber-400 font-semibold serif-italic">Nishant Trivedi</strong>, a Full Stack Developer and Computer Science undergraduate specializing in building scalable web architectures, AI-integrated platforms, and refined digital experiences.
+                </>
+              )}
             </motion.p>
 
             <motion.p
@@ -113,7 +135,13 @@ export default function AboutSection() {
               transition={{ duration: DURATION.normal, delay: 0.18, ease: EASING.cinematic }}
               className="text-base text-[var(--text-secondary)] leading-relaxed"
             >
-              With a strong algorithmic foundation (<span className="text-[var(--text-primary)] font-semibold">400+ problems solved in Java</span>) and a focus on clean engineering, I transform complex requirements into high-performance, resilient products.
+              {cmsAbout.bioParagraph2 ? (
+                cmsAbout.bioParagraph2
+              ) : (
+                <>
+                  With a strong algorithmic foundation (<span className="text-[var(--text-primary)] font-semibold">400+ problems solved in Java</span>) and a focus on clean engineering, I transform complex requirements into high-performance, resilient products.
+                </>
+              )}
             </motion.p>
 
             <motion.p
@@ -205,7 +233,7 @@ export default function AboutSection() {
 
         {/* 4 Bottom Stat Metric Cards Staggered */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {STATS.map((stat, idx) => (
+          {statsList.map((stat, idx) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 22 }}

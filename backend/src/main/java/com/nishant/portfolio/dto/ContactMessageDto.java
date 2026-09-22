@@ -11,6 +11,7 @@ public class ContactMessageDto {
     private String subject;
     private String message;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String status; // "UNREAD" or "READ"
     private boolean read;   // For frontend compatibility (m.read)
     private String emailStatus;
@@ -20,7 +21,7 @@ public class ContactMessageDto {
     }
 
     public ContactMessageDto(Long id, String name, String email, String subject, String message,
-                             LocalDateTime createdAt, String status, boolean read,
+                             LocalDateTime createdAt, LocalDateTime updatedAt, String status, boolean read,
                              String emailStatus, String emailError) {
         this.id = id;
         this.name = name;
@@ -28,6 +29,7 @@ public class ContactMessageDto {
         this.subject = subject;
         this.message = message;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.status = status;
         this.read = read;
         this.emailStatus = emailStatus;
@@ -43,6 +45,7 @@ public class ContactMessageDto {
                 entity.getSubject(),
                 entity.getMessage(),
                 entity.getCreatedAt(),
+                entity.getUpdatedAt() != null ? entity.getUpdatedAt() : entity.getCreatedAt(),
                 entity.getStatus(),
                 entity.isRead(),
                 entity.getEmailStatus(),
@@ -96,6 +99,14 @@ public class ContactMessageDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getStatus() {

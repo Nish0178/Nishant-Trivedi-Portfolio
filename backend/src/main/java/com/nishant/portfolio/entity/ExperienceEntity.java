@@ -32,6 +32,15 @@ public class ExperienceEntity {
     @Column(columnDefinition = "TEXT")
     private String technologies; // JSON array or comma-separated
 
+    @Column(name = "start_date", length = 50)
+    private String startDate;
+
+    @Column(name = "end_date", length = 50)
+    private String endDate;
+
+    @Column(name = "is_current")
+    private Boolean current = false;
+
     @Column(name = "sort_order", nullable = false)
     private int sortOrder = 0;
 
@@ -49,6 +58,7 @@ public class ExperienceEntity {
 
     @PrePersist
     public void prePersist() {
+        syncPeriod();
         if (this.createdAt == null) {
             this.createdAt = LocalDateTime.now();
         }
@@ -59,7 +69,20 @@ public class ExperienceEntity {
 
     @PreUpdate
     public void preUpdate() {
+        syncPeriod();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void syncPeriod() {
+        if ((this.period == null || this.period.isBlank()) && this.startDate != null && !this.startDate.isBlank()) {
+            if (Boolean.TRUE.equals(this.current)) {
+                this.period = this.startDate.trim() + " – Present";
+            } else if (this.endDate != null && !this.endDate.isBlank()) {
+                this.period = this.startDate.trim() + " – " + this.endDate.trim();
+            } else {
+                this.period = this.startDate.trim();
+            }
+        }
     }
 
     public Long getId() {
@@ -156,5 +179,29 @@ public class ExperienceEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public Boolean getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Boolean current) {
+        this.current = current;
     }
 }

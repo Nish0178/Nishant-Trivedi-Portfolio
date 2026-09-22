@@ -1,5 +1,6 @@
 package com.nishant.portfolio.controller;
 
+import com.nishant.portfolio.dto.ProfileDto;
 import com.nishant.portfolio.dto.ProjectAdminDto;
 import com.nishant.portfolio.entity.*;
 import com.nishant.portfolio.service.CmsService;
@@ -26,6 +27,19 @@ public class AdminCmsController {
     @GetMapping("/dashboard/stats")
     public ResponseEntity<Map<String, Object>> getDashboardStats() {
         return ResponseEntity.ok(cmsService.getDashboardStats());
+    }
+
+    // ==========================================
+    // PROFILE MANAGEMENT
+    // ==========================================
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileDto> getProfile() {
+        return ResponseEntity.ok(cmsService.getProfileData());
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<ProfileDto> updateProfile(@Valid @RequestBody ProfileDto dto) {
+        return ResponseEntity.ok(cmsService.updateProfileData(dto));
     }
 
     // ==========================================
