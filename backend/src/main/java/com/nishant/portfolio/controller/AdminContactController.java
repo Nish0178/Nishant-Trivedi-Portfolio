@@ -47,7 +47,7 @@ public class AdminContactController {
         return ResponseEntity.ok(ContactMessageDto.fromEntity(messageOpt.get()));
     }
 
-    @PatchMapping(value = {"/{id}/read", "/{id}/status"})
+    @PatchMapping(value = {"/{id}/read", "/{id}/unread", "/{id}/status"})
     public ResponseEntity<?> updateMessageStatus(
             @PathVariable Long id,
             @RequestBody(required = false) Map<String, Object> body,
@@ -64,7 +64,10 @@ public class AdminContactController {
         }
 
         ContactMessage msg = messageOpt.get();
-        if (body != null) {
+        String uri = request != null ? request.getRequestURI() : "";
+        if (uri.endsWith("/unread")) {
+            msg.setRead(false);
+        } else if (body != null) {
             if (body.containsKey("status")) {
                 String statusStr = String.valueOf(body.get("status"));
                 msg.setRead("READ".equalsIgnoreCase(statusStr));
@@ -73,10 +76,10 @@ public class AdminContactController {
             } else if (body.containsKey("read")) {
                 msg.setRead(Boolean.parseBoolean(String.valueOf(body.get("read"))));
             } else {
-                msg.setRead(!msg.isRead());
+                msg.setRead(uri.endsWith("/read") || !msg.isRead());
             }
         } else {
-            msg.setRead(!msg.isRead());
+            msg.setRead(uri.endsWith("/read") || !msg.isRead());
         }
 
         ContactMessage updated = repository.save(msg);

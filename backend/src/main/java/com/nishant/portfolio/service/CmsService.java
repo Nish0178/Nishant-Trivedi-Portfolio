@@ -630,9 +630,12 @@ public class CmsService {
         ProfileDto dto = new ProfileDto();
 
         // 1. Name & Headline
-        String name = (String) hero.getOrDefault("badgeName", "Nishant Trivedi");
-        if ("NISHANT".equalsIgnoreCase(name)) {
-            name = "Nishant Trivedi";
+        String name = (String) settings.getOrDefault("authorName", null);
+        if (name == null || name.isBlank()) {
+            name = (String) hero.getOrDefault("badgeName", "Nishant Trivedi");
+            if ("NISHANT".equalsIgnoreCase(name)) {
+                name = "Nishant Trivedi";
+            }
         }
         dto.setName(name);
 
@@ -687,6 +690,7 @@ public class CmsService {
 
         // 1. Update SITE_SETTINGS
         Map<String, Object> settings = new HashMap<>(getSectionData("SITE_SETTINGS"));
+        settings.put("authorName", dto.getName().trim());
         settings.put("email", dto.getEmail().trim());
         if (dto.getLocation() != null) settings.put("location", dto.getLocation().trim());
         if (dto.getPhone() != null) settings.put("phone", dto.getPhone().trim());
@@ -695,7 +699,7 @@ public class CmsService {
 
         // 2. Update HERO
         Map<String, Object> hero = new HashMap<>(getSectionData("HERO"));
-        hero.put("badgeName", dto.getName().trim().toUpperCase());
+        hero.put("badgeName", dto.getName().trim());
         if (dto.getBio() != null) hero.put("bio", dto.getBio().trim());
         if (dto.getHeadline() != null && !dto.getHeadline().isBlank()) {
             String[] roles = dto.getHeadline().split("[·,|]+");

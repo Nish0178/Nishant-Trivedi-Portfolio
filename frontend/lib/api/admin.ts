@@ -56,6 +56,22 @@ export interface ProjectRecord {
   updatedAt?: string;
 }
 
+export interface ProfileRecord {
+  name: string;
+  headline: string;
+  bio: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  github?: string;
+  linkedin?: string;
+  instagram?: string;
+  leetcode?: string;
+  hackerrank?: string;
+  resumeUrl?: string;
+  updatedAt?: string;
+}
+
 export interface ExperienceRecord {
   id?: number;
   period: string;
@@ -65,6 +81,9 @@ export interface ExperienceRecord {
   type?: string;
   contributions?: string;
   technologies?: string;
+  startDate?: string;
+  endDate?: string;
+  current?: boolean;
   sortOrder: number;
   visible: boolean;
 }
@@ -85,6 +104,7 @@ export interface AchievementRecord {
   issuerOrVenue?: string;
   year?: string;
   description?: string;
+  url?: string;
   sortOrder: number;
   visible: boolean;
 }
@@ -668,5 +688,35 @@ export async function deleteAdminMessage(id: number): Promise<boolean> {
     return res.ok;
   } catch {
     return false;
+  }
+}
+
+// ============================================================================
+// PROFILE CMS API
+// ============================================================================
+
+export async function fetchAdminProfile(): Promise<ProfileRecord | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/profile`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function updateAdminProfile(profile: ProfileRecord): Promise<ProfileRecord | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/profile`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(profile),
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch {
+    return null;
   }
 }

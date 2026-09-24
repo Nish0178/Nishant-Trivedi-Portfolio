@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import CoreProfileTab from "./CoreProfileTab";
 import AboutTab from "./AboutTab";
 import HeroTab from "./HeroTab";
 import ResumeTab from "./ResumeTab";
@@ -8,6 +9,7 @@ import EducationTab from "./EducationTab";
 import SocialsTab from "./SocialsTab";
 
 const PROFILE_SUBSECTIONS = [
+  { id: "core", label: "Core Profile" },
   { id: "about", label: "About & Bio" },
   { id: "hero", label: "Hero Headline" },
   { id: "resume", label: "Resume CV" },
@@ -16,7 +18,7 @@ const PROFILE_SUBSECTIONS = [
 ];
 
 export default function ProfileTab() {
-  const [subSection, setSubSection] = useState("about");
+  const [subSection, setSubSection] = useState("core");
 
   return (
     <div className="space-y-6">
@@ -42,6 +44,7 @@ export default function ProfileTab() {
 
       {/* Render selected subsection */}
       <div>
+        {subSection === "core" && <CoreProfileTab />}
         {subSection === "about" && <AboutTab />}
         {subSection === "hero" && <HeroTab />}
         {subSection === "resume" && <ResumeTab />}
