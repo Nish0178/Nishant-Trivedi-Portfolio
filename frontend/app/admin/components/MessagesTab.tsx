@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ContactMessageRecord,
   fetchAdminMessages,
@@ -12,11 +12,17 @@ interface MessagesTabProps {
   onMessagesChange?: () => void;
 }
 
+type MessageFilter = "ALL" | "UNREAD" | "READ";
+
 export default function MessagesTab({ onMessagesChange }: MessagesTabProps = {}) {
   const [messages, setMessages] = useState<ContactMessageRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessageRecord | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<MessageFilter>("ALL");
 
   const loadMessages = async () => {
     setLoading(true);
@@ -33,6 +39,25 @@ export default function MessagesTab({ onMessagesChange }: MessagesTabProps = {})
   useEffect(() => {
     loadMessages();
   }, []);
+
+  const filteredMessages = useMemo(() => {
+    return messages.filter((m) => {
+      if (statusFilter === "UNREAD" && m.read) return false;
+      if (statusFilter === "READ" && !m.read) return false;
+
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      const name = (m.name || "").toLowerCase();
+      const email = (m.email || "").toLowerCase();
+      const subject = (m.subject || "").toLowerCase();
+      const msg = (m.message || "").toLowerCase();
+
+      return name.includes(q) || email.includes(q) || subject.includes(q) || msg.includes(q);
+    });
+  }, [messages, searchQuery, statusFilter]);
+
+  const unreadCount = useMemo(() => messages.filter((m) => !m.read).length, [messages]);
+  const readCount = useMemo(() => messages.filter((m) => m.read).length, [messages]);
 
   const handleToggleRead = async (m: ContactMessageRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -125,6 +150,77 @@ export default function MessagesTab({ onMessagesChange }: MessagesTabProps = {})
         </div>
       )}
 
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-[#0e111a] border border-white/10">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500 pointer-events-none">
+            🔍
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by sender, email, subject, text..."
+            className="w-full pl-9 pr-9 py-2 rounded-lg bg-[#141824] border border-white/10 text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-400/60 transition-colors"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-white cursor-pointer"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Status Filter Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+          {(
+            [
+              { key: "ALL", label: `ALL (${messages.length})` },
+              { key: "UNREAD", label: `UNREAD (${unreadCount})` },
+              { key: "READ", label: `READ (${readCount})` },
+            ] as const
+          ).map((item) => {
+            const isActive = statusFilter === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setStatusFilter(item.key)}
+                className={`px-3 py-1.5 rounded-lg border transition-all cursor-pointer text-[11px] font-mono ${
+                  isActive
+                    ? "bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold"
+                    : "bg-[#141824] border-white/10 text-zinc-400 hover:text-zinc-200 hover:bg-[#1a2030]"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Telemetry Count */}
+      <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 px-1">
+        <span>
+          Showing <strong className="text-zinc-200">{filteredMessages.length}</strong> of{" "}
+          <strong className="text-zinc-200">{messages.length}</strong> transmissions
+        </span>
+        {(searchQuery || statusFilter !== "ALL") && (
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setStatusFilter("ALL");
+            }}
+            className="text-amber-400 hover:text-amber-300 underline cursor-pointer"
+          >
+            Reset filters
+          </button>
+        )}
+      </div>
+
       {/* Messages Feed */}
       {loading ? (
         <div className="p-12 text-center text-xs font-mono text-amber-500 animate-pulse">
@@ -134,9 +230,22 @@ export default function MessagesTab({ onMessagesChange }: MessagesTabProps = {})
         <div className="p-12 text-center rounded-xl bg-[#0e111a] border border-white/10 text-zinc-400 text-xs font-mono">
           No transmissions received yet. The contact inbox is clear.
         </div>
+      ) : filteredMessages.length === 0 ? (
+        <div className="p-12 text-center rounded-xl bg-[#0e111a] border border-white/10 text-zinc-400 text-xs font-mono space-y-2">
+          <p>No transmissions match &quot;{searchQuery}&quot; under the &quot;{statusFilter}&quot; filter.</p>
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setStatusFilter("ALL");
+            }}
+            className="text-amber-400 hover:text-amber-300 underline cursor-pointer text-xs font-mono"
+          >
+            Clear search and reset filters
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-3">
-          {messages.map((m) => (
+          {filteredMessages.map((m) => (
             <div
               key={m.id}
               onClick={() => handleOpenDetails(m)}

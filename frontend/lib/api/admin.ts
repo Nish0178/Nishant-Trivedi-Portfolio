@@ -56,58 +56,12 @@ export interface ProjectRecord {
   updatedAt?: string;
 }
 
-export interface ProfileRecord {
-  name: string;
-  headline: string;
-  bio: string;
-  email: string;
-  phone?: string;
-  location?: string;
-  github?: string;
-  linkedin?: string;
-  instagram?: string;
-  leetcode?: string;
-  hackerrank?: string;
-  resumeUrl?: string;
-  updatedAt?: string;
-}
+// Re-export modular types
+export type { ProfileRecord } from "./profile";
+export type { ExperienceRecord } from "./experience";
+export type { SkillRecord } from "./skills";
+export type { AchievementRecord } from "./achievements";
 
-export interface ExperienceRecord {
-  id?: number;
-  period: string;
-  company: string;
-  role: string;
-  location?: string;
-  type?: string;
-  contributions?: string;
-  technologies?: string;
-  startDate?: string;
-  endDate?: string;
-  current?: boolean;
-  sortOrder: number;
-  visible: boolean;
-}
-
-export interface SkillRecord {
-  id?: number;
-  category: string;
-  name: string;
-  roleDesc?: string;
-  sortOrder: number;
-  visible: boolean;
-}
-
-export interface AchievementRecord {
-  id?: number;
-  title: string;
-  badge: string;
-  issuerOrVenue?: string;
-  year?: string;
-  description?: string;
-  url?: string;
-  sortOrder: number;
-  visible: boolean;
-}
 
 export interface EducationRecord {
   id?: number;
@@ -402,151 +356,12 @@ export async function syncGitHubProjects(): Promise<{
 }
 
 // ============================================================================
-// EXPERIENCES CRUD
+// EXPERIENCES, SKILLS, ACHIEVEMENTS RE-EXPORTS (Modular API)
 // ============================================================================
+export * from "./experience";
+export * from "./skills";
+export * from "./achievements";
 
-export async function fetchAdminExperiences(): Promise<ExperienceRecord[]> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/experiences`, {
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-export async function saveAdminExperience(exp: Partial<ExperienceRecord>): Promise<ExperienceRecord | null> {
-  try {
-    const isUpdate = Boolean(exp.id);
-    const url = isUpdate
-      ? `${BACKEND_URL}/api/admin/experiences/${exp.id}`
-      : `${BACKEND_URL}/api/admin/experiences`;
-    const method = isUpdate ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: getAuthHeaders(),
-      body: JSON.stringify(exp),
-    });
-
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export async function deleteAdminExperience(id: number): Promise<boolean> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/experiences/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-// ============================================================================
-// SKILLS CRUD
-// ============================================================================
-
-export async function fetchAdminSkills(): Promise<SkillRecord[]> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/skills`, {
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-export async function saveAdminSkill(skill: Partial<SkillRecord>): Promise<SkillRecord | null> {
-  try {
-    const isUpdate = Boolean(skill.id);
-    const url = isUpdate
-      ? `${BACKEND_URL}/api/admin/skills/${skill.id}`
-      : `${BACKEND_URL}/api/admin/skills`;
-    const method = isUpdate ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: getAuthHeaders(),
-      body: JSON.stringify(skill),
-    });
-
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export async function deleteAdminSkill(id: number): Promise<boolean> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/skills/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-// ============================================================================
-// ACHIEVEMENTS CRUD
-// ============================================================================
-
-export async function fetchAdminAchievements(): Promise<AchievementRecord[]> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/achievements`, {
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-export async function saveAdminAchievement(ach: Partial<AchievementRecord>): Promise<AchievementRecord | null> {
-  try {
-    const isUpdate = Boolean(ach.id);
-    const url = isUpdate
-      ? `${BACKEND_URL}/api/admin/achievements/${ach.id}`
-      : `${BACKEND_URL}/api/admin/achievements`;
-    const method = isUpdate ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: getAuthHeaders(),
-      body: JSON.stringify(ach),
-    });
-
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export async function deleteAdminAchievement(id: number): Promise<boolean> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/achievements/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
 
 // ============================================================================
 // EDUCATION CRUD
@@ -692,31 +507,7 @@ export async function deleteAdminMessage(id: number): Promise<boolean> {
 }
 
 // ============================================================================
-// PROFILE CMS API
+// PROFILE CMS API RE-EXPORTS (Modular API)
 // ============================================================================
+export * from "./profile";
 
-export async function fetchAdminProfile(): Promise<ProfileRecord | null> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/profile`, {
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export async function updateAdminProfile(profile: ProfileRecord): Promise<ProfileRecord | null> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/profile`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(profile),
-    });
-    if (res.ok) return await res.json();
-    return null;
-  } catch {
-    return null;
-  }
-}

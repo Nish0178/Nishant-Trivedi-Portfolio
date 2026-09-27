@@ -361,4 +361,79 @@ class AdminCmsControllerTest {
                 .andExpect(jsonPath("$.education").isArray())
                 .andExpect(jsonPath("$.socials").isArray());
     }
+
+    @Test
+    @DisplayName("POST /api/admin/experiences fails with 400 when start date is after end date")
+    void testExperienceDateValidationFailure() throws Exception {
+        ExperienceEntity invalidExp = new ExperienceEntity();
+        invalidExp.setCompany("Future Systems Corp");
+        invalidExp.setRole("Lead Architect");
+        invalidExp.setStartDate("2026-06");
+        invalidExp.setEndDate("2025-01");
+        invalidExp.setCurrent(false);
+
+        mockMvc.perform(post("/api/admin/experiences")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidExp)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Start date cannot be after end date")));
+    }
+
+    @Test
+    @DisplayName("POST /api/admin/experiences fails with 400 when company or role is blank")
+    void testExperienceRequiredFieldsValidationFailure() throws Exception {
+        ExperienceEntity blankCompanyExp = new ExperienceEntity();
+        blankCompanyExp.setCompany("  ");
+        blankCompanyExp.setRole("Developer");
+
+        mockMvc.perform(post("/api/admin/experiences")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blankCompanyExp)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Company name is required")));
+
+        ExperienceEntity blankRoleExp = new ExperienceEntity();
+        blankRoleExp.setCompany("Acme Inc");
+        blankRoleExp.setRole("  ");
+
+        mockMvc.perform(post("/api/admin/experiences")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blankRoleExp)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Role is required")));
+    }
+
+    @Test
+    @DisplayName("POST /api/admin/skills fails with 400 when skill name is blank")
+    void testSkillRequiredNameValidationFailure() throws Exception {
+        SkillEntity blankSkill = new SkillEntity();
+        blankSkill.setCategory("Core Languages");
+        blankSkill.setName("   ");
+
+        mockMvc.perform(post("/api/admin/skills")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blankSkill)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Skill name is required")));
+    }
+
+    @Test
+    @DisplayName("POST /api/admin/achievements fails with 400 when achievement title is blank")
+    void testAchievementRequiredTitleValidationFailure() throws Exception {
+        AchievementEntity blankAch = new AchievementEntity();
+        blankAch.setTitle("   ");
+        blankAch.setBadge("HONOR");
+
+        mockMvc.perform(post("/api/admin/achievements")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blankAch)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Achievement title is required")));
+    }
 }
+

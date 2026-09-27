@@ -519,6 +519,17 @@ public class CmsService {
 
     @Transactional
     public SkillEntity saveSkill(SkillEntity skill) {
+        if (skill.getName() == null || skill.getName().isBlank()) {
+            throw new IllegalArgumentException("Skill name is required");
+        }
+        skill.setName(skill.getName().trim());
+        if (skill.getCategory() != null) {
+            skill.setCategory(skill.getCategory().trim());
+        }
+        if (skill.getRoleDesc() != null) {
+            skill.setRoleDesc(skill.getRoleDesc().trim());
+        }
+
         if (skill.getCreatedAt() == null && skill.getId() != null) {
             skillRepository.findById(skill.getId()).ifPresentOrElse(
                     existing -> skill.setCreatedAt(existing.getCreatedAt()),
@@ -527,6 +538,7 @@ public class CmsService {
         } else if (skill.getCreatedAt() == null) {
             skill.setCreatedAt(LocalDateTime.now());
         }
+        skill.setUpdatedAt(LocalDateTime.now());
         return skillRepository.save(skill);
     }
 
@@ -546,6 +558,26 @@ public class CmsService {
 
     @Transactional
     public AchievementEntity saveAchievement(AchievementEntity achievement) {
+        if (achievement.getTitle() == null || achievement.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Achievement title is required");
+        }
+        achievement.setTitle(achievement.getTitle().trim());
+        if (achievement.getBadge() != null) {
+            achievement.setBadge(achievement.getBadge().trim());
+        }
+        if (achievement.getIssuerOrVenue() != null) {
+            achievement.setIssuerOrVenue(achievement.getIssuerOrVenue().trim());
+        }
+        if (achievement.getYear() != null) {
+            achievement.setYear(achievement.getYear().trim());
+        }
+        if (achievement.getDescription() != null) {
+            achievement.setDescription(achievement.getDescription().trim());
+        }
+        if (achievement.getUrl() != null) {
+            achievement.setUrl(achievement.getUrl().trim());
+        }
+
         if (achievement.getCreatedAt() == null && achievement.getId() != null) {
             achievementRepository.findById(achievement.getId()).ifPresentOrElse(
                     existing -> achievement.setCreatedAt(existing.getCreatedAt()),
@@ -554,6 +586,7 @@ public class CmsService {
         } else if (achievement.getCreatedAt() == null) {
             achievement.setCreatedAt(LocalDateTime.now());
         }
+        achievement.setUpdatedAt(LocalDateTime.now());
         return achievementRepository.save(achievement);
     }
 

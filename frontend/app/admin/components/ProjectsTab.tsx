@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ProjectRecord,
   fetchAdminProjects,
@@ -37,6 +37,8 @@ function formatDate(iso?: string): string {
   }
 }
 
+type ProjectStatusFilter = "ALL" | "PUBLISHED" | "HIDDEN" | "FEATURED" | "CURATED";
+
 export default function ProjectsTab() {
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,10 @@ export default function ProjectsTab() {
   const [deleting, setDeleting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>("ALL");
+
   // Modal / Editing state
   const [editingProject, setEditingProject] = useState<Partial<ProjectRecord> | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -52,6 +58,45 @@ export default function ProjectsTab() {
 
   // Delete confirmation modal state
   const [deleteTarget, setDeleteTarget] = useState<ProjectRecord | null>(null);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter((p) => {
+      // 1. Status Filter
+      if (statusFilter === "PUBLISHED" && !p.visible) return false;
+      if (statusFilter === "HIDDEN" && p.visible) return false;
+      if (statusFilter === "FEATURED" && !p.featured) return false;
+      if (statusFilter === "CURATED" && !p.curated) return false;
+
+      // 2. Search Query Filter
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      const title = (p.title || "").toLowerCase();
+      const name = (p.name || "").toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+      const cat = (p.category || "").toLowerCase();
+      const tech = (p.technologies || "").toLowerCase();
+      const lang = (p.language || "").toLowerCase();
+      const id = (p.id || "").toLowerCase();
+
+      return (
+        title.includes(q) ||
+        name.includes(q) ||
+        desc.includes(q) ||
+        cat.includes(q) ||
+        tech.includes(q) ||
+        lang.includes(q) ||
+        id.includes(q)
+      );
+    });
+  }, [projects, searchQuery, statusFilter]);
+
+  const stats = useMemo(() => {
+    const published = projects.filter((p) => p.visible).length;
+    const hidden = projects.filter((p) => !p.visible).length;
+    const featured = projects.filter((p) => p.featured).length;
+    const curated = projects.filter((p) => p.curated).length;
+    return { published, hidden, featured, curated };
+  }, [projects]);
 
   const loadProjects = async () => {
     setLoading(true);
@@ -331,6 +376,79 @@ export default function ProjectsTab() {
         </div>
       )}
 
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-[#0e111a] border border-white/10">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500 pointer-events-none">
+            🔍
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by title, description, category, tech..."
+            className="w-full pl-9 pr-9 py-2 rounded-lg bg-[#141824] border border-white/10 text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-400/60 transition-colors"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-white cursor-pointer"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+          {(
+            [
+              { key: "ALL", label: `ALL (${projects.length})` },
+              { key: "PUBLISHED", label: `LIVE (${stats.published})` },
+              { key: "HIDDEN", label: `HIDDEN (${stats.hidden})` },
+              { key: "FEATURED", label: `★ FEATURED (${stats.featured})` },
+              { key: "CURATED", label: `CURATED (${stats.curated})` },
+            ] as const
+          ).map((item) => {
+            const isActive = statusFilter === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setStatusFilter(item.key)}
+                className={`px-3 py-1.5 rounded-lg border transition-all cursor-pointer text-[11px] font-mono ${
+                  isActive
+                    ? "bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold"
+                    : "bg-[#141824] border-white/10 text-zinc-400 hover:text-zinc-200 hover:bg-[#1a2030]"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Telemetry Count */}
+      <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 px-1">
+        <span>
+          Showing <strong className="text-zinc-200">{filteredProjects.length}</strong> of{" "}
+          <strong className="text-zinc-200">{projects.length}</strong> total projects
+        </span>
+        {(searchQuery || statusFilter !== "ALL") && (
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setStatusFilter("ALL");
+            }}
+            className="text-amber-400 hover:text-amber-300 underline cursor-pointer"
+          >
+            Reset filters
+          </button>
+        )}
+      </div>
+
       {/* Projects List */}
       {loading ? (
         <div className="p-12 text-center text-xs font-mono text-amber-500 animate-pulse">
@@ -340,9 +458,22 @@ export default function ProjectsTab() {
         <div className="p-12 text-center rounded-xl bg-[#0e111a] border border-white/10 text-zinc-400 text-xs font-mono">
           No projects registered in database. Click &quot;ADD PROJECT&quot; to create one, or &quot;SYNC GITHUB&quot; to import repositories.
         </div>
+      ) : filteredProjects.length === 0 ? (
+        <div className="p-12 text-center rounded-xl bg-[#0e111a] border border-white/10 text-zinc-400 text-xs font-mono space-y-2">
+          <p>No projects match &quot;{searchQuery}&quot; under the &quot;{statusFilter}&quot; filter.</p>
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setStatusFilter("ALL");
+            }}
+            className="text-amber-400 hover:text-amber-300 underline cursor-pointer text-xs font-mono"
+          >
+            Clear search and reset filters
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {projects.map((p) => (
+          {filteredProjects.map((p) => (
             <div
               key={p.id}
               className="p-5 rounded-xl bg-[#0e111a] border border-white/10 hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-5"
