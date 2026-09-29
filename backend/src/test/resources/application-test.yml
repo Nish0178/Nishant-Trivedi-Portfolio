@@ -19,6 +19,9 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
     show-sql: false
 
+  flyway:
+    enabled: false
+
 app:
   frontend-url: http://localhost:3000
   admin:

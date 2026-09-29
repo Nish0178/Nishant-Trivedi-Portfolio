@@ -20,6 +20,12 @@ spring:
         format_sql: true
     show-sql: false
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    baseline-description: "Hibernate Schema Baseline"
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   admin:
