@@ -31,5 +31,10 @@ app:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     to: ${MAIL_TO:trivedinishant880@gmail.com}
     from: ${MAIL_FROM:noreply@nishanttrivedi.com}
+  github:
+    username: ${GITHUB_USERNAME:Nish0178}
+

@@ -27,6 +27,7 @@ class HealthControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("UP"))
-                .andExpect(jsonPath("$.service").value("portfolio-api"));
+                .andExpect(jsonPath("$.service").value("portfolio-api"))
+                .andExpect(jsonPath("$.database").value("UP"));
     }
 }

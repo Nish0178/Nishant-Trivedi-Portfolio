@@ -109,4 +109,50 @@ class ContactServiceTest {
         assertEquals("FAILED", savedEntity.getEmailStatus());
         assertTrue(savedEntity.getEmailError().contains("SMTP Connection timed out"));
     }
+
+    @Test
+    @DisplayName("Contact abuse protection prevents rapid duplicate submissions")
+    void testDuplicateDetection() {
+        contactService.resetAbuseProtection();
+        ContactRequest request = new ContactRequest("Spam Tester", "spam@example.com", "Hello", "Identical message");
+        ContactMessage saved = new ContactMessage("Spam Tester", "spam@example.com", "Hello", "Identical message", "10.0.0.1");
+        saved.setId(101L);
+
+        Mockito.when(repository.saveAndFlush(any())).thenReturn(saved);
+        Mockito.when(repository.save(any())).thenReturn(saved);
+
+        // First attempt succeeds
+        ContactResponse r1 = contactService.saveContactMessage(request, "10.0.0.1");
+        assertTrue(r1.isSuccess());
+
+        // Immediate identical second attempt triggers duplicate exception
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            contactService.saveContactMessage(request, "10.0.0.1");
+        });
+        assertTrue(ex.getMessage().contains("Duplicate message detected"));
+    }
+
+    @Test
+    @DisplayName("Contact abuse protection enforces 5 submissions per window limit")
+    void testRateLimiting() {
+        contactService.resetAbuseProtection();
+        ContactMessage saved = new ContactMessage("Rate Tester", "rate@example.com", "Subject", "Body", "10.0.0.2");
+        saved.setId(201L);
+
+        Mockito.when(repository.saveAndFlush(any())).thenReturn(saved);
+        Mockito.when(repository.save(any())).thenReturn(saved);
+
+        for (int i = 1; i <= 5; i++) {
+            ContactRequest req = new ContactRequest("Rate Tester", "rate@example.com", "Subject " + i, "Different body " + i);
+            ContactResponse resp = contactService.saveContactMessage(req, "10.0.0.2");
+            assertTrue(resp.isSuccess());
+        }
+
+        // 6th attempt should be blocked by rate limiter
+        ContactRequest sixthReq = new ContactRequest("Rate Tester", "rate@example.com", "Subject 6", "Different body 6");
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            contactService.saveContactMessage(sixthReq, "10.0.0.2");
+        });
+        assertTrue(ex.getMessage().contains("Too many messages submitted"));
+    }
 }

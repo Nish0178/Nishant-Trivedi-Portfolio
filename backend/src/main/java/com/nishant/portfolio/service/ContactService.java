@@ -17,15 +17,52 @@ public class ContactService {
     private final ContactMessageRepository repository;
     private final EmailService emailService;
 
+    // Abuse protection rate-limit tracking: IP -> list of submission epochs
+    private final java.util.concurrent.ConcurrentHashMap<String, java.util.List<Long>> ipSubmissions = new java.util.concurrent.ConcurrentHashMap<>();
+    // Duplicate submission cache: hash of (ip + email + message) -> submission epoch
+    private final java.util.concurrent.ConcurrentHashMap<String, Long> recentMessageHashes = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static final int MAX_SUBMISSIONS_PER_WINDOW = 5;
+    private static final long WINDOW_MS = 10 * 60 * 1000L; // 10 minutes
+    private static final long DUPLICATE_COOLDOWN_MS = 60 * 1000L; // 60 seconds
+
     public ContactService(ContactMessageRepository repository, EmailService emailService) {
         this.repository = repository;
         this.emailService = emailService;
+    }
+
+    public void resetAbuseProtection() {
+        ipSubmissions.clear();
+        recentMessageHashes.clear();
     }
 
     @Transactional
     public ContactResponse saveContactMessage(ContactRequest request, String ipAddress) {
         log.info("Processing contact submission from name='{}', email='{}', subject='{}'",
                 request.getName(), request.getEmail(), request.getSubject());
+
+        // Abuse & Spam Protection: Rate limiting
+        if (ipAddress != null && !ipAddress.isBlank()) {
+            long now = System.currentTimeMillis();
+            java.util.List<Long> timestamps = ipSubmissions.computeIfAbsent(ipAddress, k -> java.util.Collections.synchronizedList(new java.util.ArrayList<>()));
+            synchronized (timestamps) {
+                timestamps.removeIf(t -> now - t > WINDOW_MS);
+                if (timestamps.size() >= MAX_SUBMISSIONS_PER_WINDOW) {
+                    log.warn("Contact submission rate limit exceeded for IP: {}", ipAddress);
+                    throw new IllegalArgumentException("Too many messages submitted from this network. Please wait a few minutes before trying again.");
+                }
+                timestamps.add(now);
+            }
+
+            // Duplicate message prevention
+            String msgHash = ipAddress + ":" + request.getEmail().trim().toLowerCase() + ":" + request.getMessage().trim().hashCode();
+            Long lastSent = recentMessageHashes.get(msgHash);
+            if (lastSent != null && (now - lastSent) < DUPLICATE_COOLDOWN_MS) {
+                log.warn("Duplicate contact submission prevented from IP: {}", ipAddress);
+                throw new IllegalArgumentException("Duplicate message detected. Please wait a moment before sending another message.");
+            }
+            recentMessageHashes.put(msgHash, now);
+        }
 
         ContactMessage entity = new ContactMessage(
                 request.getName().trim(),

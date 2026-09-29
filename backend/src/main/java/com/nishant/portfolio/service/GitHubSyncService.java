@@ -18,7 +18,9 @@ import java.util.*;
 public class GitHubSyncService {
 
     private static final Logger log = LoggerFactory.getLogger(GitHubSyncService.class);
-    private static final String GITHUB_API = "https://api.github.com/users/Nish0178/repos?sort=updated&per_page=30";
+
+    @org.springframework.beans.factory.annotation.Value("${app.github.username:Nish0178}")
+    private String gitHubUsername = "Nish0178";
 
     // Excluded repositories matching SSOT rules
     private static final Set<String> EXCLUDED_REPOS = Set.of(
@@ -33,7 +35,21 @@ public class GitHubSyncService {
     private static final long CACHE_DURATION_SECONDS = 300; // 5 minutes
 
     public GitHubSyncService() {
-        this.restTemplate = new RestTemplate();
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory =
+                new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(10000);
+        this.restTemplate = new RestTemplate(factory);
+    }
+
+    public GitHubSyncService(String gitHubUsername) {
+        this();
+        this.gitHubUsername = gitHubUsername;
+    }
+
+    private String getGitHubApiUrl() {
+        String user = (gitHubUsername != null && !gitHubUsername.isBlank()) ? gitHubUsername.trim() : "Nish0178";
+        return "https://api.github.com/users/" + user + "/repos?sort=updated&per_page=30";
     }
 
     public synchronized List<ProjectDto> getProjects() {
@@ -60,7 +76,7 @@ public class GitHubSyncService {
 
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
             ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                    GITHUB_API,
+                    getGitHubApiUrl(),
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<List<Map<String, Object>>>() {}

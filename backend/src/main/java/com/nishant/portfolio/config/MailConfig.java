@@ -17,14 +17,20 @@ public class MailConfig {
     @Value("${app.mail.port:587}")
     private int port;
 
+    @Value("${app.mail.username:}")
+    private String configUsername;
+
+    @Value("${app.mail.password:}")
+    private String configPassword;
+
     @Bean
     public JavaMailSender javaMailSender() {
-        String username = System.getenv("MAIL_USERNAME");
+        String username = (configUsername != null && !configUsername.isBlank()) ? configUsername : System.getenv("MAIL_USERNAME");
         if (username == null || username.isBlank()) {
             username = System.getProperty("MAIL_USERNAME");
         }
 
-        String password = System.getenv("MAIL_PASSWORD");
+        String password = (configPassword != null && !configPassword.isBlank()) ? configPassword : System.getenv("MAIL_PASSWORD");
         if (password == null || password.isBlank()) {
             password = System.getProperty("MAIL_PASSWORD");
         }

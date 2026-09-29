@@ -18,11 +18,14 @@ node_modules/
 # Environments, Secrets & Local Credentials
 .env
 .env.*
+.env.local
+.env.production
 *.env
 backend/.env
 backend/.env.*
 frontend/.env
 frontend/.env.*
+frontend/.env.local
 application-local.yml
 *.key
 *.pem

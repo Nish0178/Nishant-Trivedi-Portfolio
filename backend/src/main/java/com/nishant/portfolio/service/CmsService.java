@@ -79,8 +79,18 @@ public class CmsService {
     // ==========================================
     // CMS SECTIONS (HERO, ABOUT, RESUME, SETTINGS)
     // ==========================================
+    public String normalizeSectionKey(String sectionKey) {
+        if (sectionKey == null) return "";
+        String trimmed = sectionKey.trim().toUpperCase();
+        if ("SETTINGS".equals(trimmed)) {
+            return "SITE_SETTINGS";
+        }
+        return trimmed;
+    }
+
     public Map<String, Object> getSectionData(String sectionKey) {
-        return cmsSectionRepository.findBySectionKeyIgnoreCase(sectionKey)
+        String key = normalizeSectionKey(sectionKey);
+        return cmsSectionRepository.findBySectionKeyIgnoreCase(key)
                 .map(sec -> {
                     try {
                         return objectMapper.readValue(sec.getContentJson(), new TypeReference<Map<String, Object>>() {});
@@ -94,9 +104,10 @@ public class CmsService {
     @Transactional
     public CmsSection updateSectionData(String sectionKey, Map<String, Object> data) {
         try {
+            String key = normalizeSectionKey(sectionKey);
             String json = objectMapper.writeValueAsString(data);
-            CmsSection section = cmsSectionRepository.findBySectionKeyIgnoreCase(sectionKey)
-                    .orElse(new CmsSection(sectionKey.toUpperCase(), json));
+            CmsSection section = cmsSectionRepository.findBySectionKeyIgnoreCase(key)
+                    .orElse(new CmsSection(key, json));
             section.setContentJson(json);
             section.setUpdatedAt(LocalDateTime.now());
             return cmsSectionRepository.save(section);
