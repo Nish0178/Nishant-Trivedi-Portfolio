@@ -23,6 +23,8 @@ class ContactServiceTest {
     void setUp() {
         repository = Mockito.mock(ContactMessageRepository.class);
         emailService = Mockito.mock(EmailService.class);
+        Mockito.when(emailService.sendContactNotifications(any(ContactMessage.class)))
+                .thenReturn(new EmailService.EmailDeliveryResult(true, "SENT", null));
         contactService = new ContactService(repository, emailService);
     }
 
@@ -154,5 +156,35 @@ class ContactServiceTest {
             contactService.saveContactMessage(sixthReq, "10.0.0.2");
         });
         assertTrue(ex.getMessage().contains("Too many messages submitted"));
+    }
+
+    @Test
+    @DisplayName("Null email delivery result is handled safely without throwing")
+    void testNullEmailResultHandledDefensively() {
+        ContactRequest request = new ContactRequest(
+                "Charlie",
+                "charlie@example.com",
+                "Null Test",
+                "Testing null email result safety."
+        );
+        ContactMessage savedEntity = new ContactMessage(
+                "Charlie",
+                "charlie@example.com",
+                "Null Test",
+                "Testing null email result safety.",
+                "127.0.0.1"
+        );
+        savedEntity.setId(102L);
+
+        Mockito.when(repository.saveAndFlush(any(ContactMessage.class))).thenReturn(savedEntity);
+        Mockito.when(repository.save(any(ContactMessage.class))).thenReturn(savedEntity);
+        Mockito.when(emailService.sendContactNotifications(any(ContactMessage.class))).thenReturn(null);
+
+        ContactResponse response = contactService.saveContactMessage(request, "127.0.0.1");
+
+        assertNotNull(response);
+        assertTrue(response.isSuccess());
+        assertEquals("SKIPPED_NOT_CONFIGURED", savedEntity.getEmailStatus());
+        assertNotNull(savedEntity.getEmailError());
     }
 }

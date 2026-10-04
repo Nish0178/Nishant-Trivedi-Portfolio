@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/projects").permitAll()
                         .requestMatchers("/api/contact").permitAll()
                         .requestMatchers("/api/content/**").permitAll()
-                        .requestMatchers("/api/admin/auth/login").permitAll()
+                        .requestMatchers("/api/admin/auth/login", "/api/admin/login").permitAll()
                         // Protected admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // Default any other request

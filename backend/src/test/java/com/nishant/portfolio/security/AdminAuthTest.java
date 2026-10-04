@@ -66,6 +66,21 @@ class AdminAuthTest {
     }
 
     @Test
+    @DisplayName("Admin Login with direct endpoint /api/admin/login returns 200 OK and JWT token")
+    void testAdminLoginDirectEndpointSuccess() throws Exception {
+        LoginRequest request = new LoginRequest("test-admin@example.com", "TestPassword123!");
+
+        mockMvc.perform(post("/api/admin/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.user.email").value("test-admin@example.com"))
+                .andExpect(jsonPath("$.user.role").value("ADMIN"));
+    }
+
+    @Test
     @DisplayName("Admin Login with invalid credentials tracks 3 attempts and blocks 4th with lockout")
     void testAdminLoginThreeAttemptsAndLockout() throws Exception {
         LoginRequest badRequest = new LoginRequest("test-admin@example.com", "WrongPassword!");

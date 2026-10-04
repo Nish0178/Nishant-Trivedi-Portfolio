@@ -4,67 +4,43 @@ import React from "react";
 import Header from "./components/navigation/Header";
 import Hero from "./components/hero/Hero";
 import AboutSection from "./components/about/AboutSection";
-import SelectedWork from "./components/work/SelectedWork";
 import TechStackMatrix from "./components/stack/TechStackMatrix";
+import SelectedWork from "./components/work/SelectedWork";
+import CertificationsSection from "./components/achievements/CertificationsSection";
 import ExperienceTimeline from "./components/experience/ExperienceTimeline";
-import ProblemSolving from "./components/dsa/ProblemSolving";
 import Achievements from "./components/achievements/Achievements";
 import ContactSection from "./components/contact/ContactSection";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] aura-grid-bg selection:bg-amber-400 selection:text-black overflow-x-clip max-w-full transition-colors duration-300">
-      {/* Top Floating Glow Backdrop */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[400px] bg-gradient-to-b from-amber-500/10 via-amber-500/2 to-transparent blur-[140px] pointer-events-none -z-10" />
-
-      {/* Fixed Cinematic Navigation */}
+    <div id="top" className="relative min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] overflow-x-clip max-w-full transition-colors duration-300">
+      {/* Floating Header Navigation matching Reference */}
       <Header />
 
-      {/* Main Content Sections */}
+      {/* Main Flow following the Reference Video's exact section sequence */}
       <main className="relative z-10 overflow-x-clip max-w-full">
-        {/* HERO SECTION */}
+        {/* HERO */}
         <Hero />
 
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* 01: ABOUT ME */}
+        {/* 01: ABOUT */}
         <AboutSection />
 
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* 02: SELECTED WORK */}
-        <SelectedWork />
-
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* 03: TECH MATRIX / SKILLS */}
+        {/* 02: SKILLS (Periodic Table of Stack) */}
         <TechStackMatrix />
 
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
+        {/* 03: WORK (Interactive Accordion Deck) */}
+        <SelectedWork />
 
-        {/* 04: EXPERIENCE & MILESTONES */}
+        {/* 04: CERTIFICATIONS (Always Learning) */}
+        <CertificationsSection />
+
+        {/* 05: EXPERIENCE & EDUCATION (Milestone Timeline) */}
         <ExperienceTimeline />
 
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* ALGORITHMIC RIGOR / PROBLEM SOLVING */}
-        <ProblemSolving />
-
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* ACHIEVEMENTS & CERTIFICATIONS */}
+        {/* 06: ACHIEVEMENTS (Proud Moments) */}
         <Achievements />
 
-        {/* Cinematic Divider */}
-        <div className="aura-divider" />
-
-        {/* 05: CONTACT / INITIALIZE TRANSMISSION */}
+        {/* 07: CONTACT & FOOTER */}
         <ContactSection />
       </main>
     </div>

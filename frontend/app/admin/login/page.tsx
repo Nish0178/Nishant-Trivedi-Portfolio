@@ -12,6 +12,8 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(true);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutCountdown, setLockoutCountdown] = useState<number | null>(null);
 
   // If already authenticated, redirect to /admin directly
   useEffect(() => {
@@ -37,8 +39,33 @@ export default function AdminLoginPage() {
     };
   }, [router]);
 
+  // Handle 5-second countdown on lockout
+  useEffect(() => {
+    if (isLocked && lockoutCountdown !== null) {
+      if (lockoutCountdown <= 0) {
+        router.push("/");
+        return;
+      }
+
+      const timer = setInterval(() => {
+        setLockoutCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timer);
+            router.push("/");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isLocked, lockoutCountdown, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || isLocked) return;
+
     setError(null);
 
     if (!email.trim() || !password) {
@@ -52,7 +79,15 @@ export default function AdminLoginPage() {
       if (res.success) {
         router.push("/admin");
       } else {
-        setError(res.error || "Authentication failed. Please verify credentials.");
+        if (res.locked || res.remainingAttempts === 0) {
+          setIsLocked(true);
+          setError(
+            "Sorry, you have failed 3 login attempts. I think you are not the admin of this profile. Please contact the admin."
+          );
+          setLockoutCountdown(5);
+        } else {
+          setError(res.error || "Authentication failed. Please verify credentials.");
+        }
       }
     } catch {
       setError("An unexpected network error occurred while connecting to the backend.");
@@ -97,9 +132,23 @@ export default function AdminLoginPage() {
         <div className="bg-[#0e111a]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono flex items-start space-x-2">
-                <span className="font-bold">ERR:</span>
-                <span>{error}</span>
+              <div
+                className={`p-3.5 rounded-lg text-xs font-mono flex flex-col space-y-1.5 ${
+                  isLocked
+                    ? "bg-red-500/15 border border-red-500/40 text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+                    : "bg-red-500/10 border border-red-500/30 text-red-400"
+                }`}
+              >
+                <div className="flex items-start space-x-2">
+                  <span className="font-bold text-red-400">{isLocked ? "LOCKOUT:" : "ERR:"}</span>
+                  <span className="leading-relaxed">{error}</span>
+                </div>
+                {isLocked && lockoutCountdown !== null && (
+                  <div className="text-amber-400 text-[11px] pt-1 border-t border-red-500/20 flex items-center justify-between">
+                    <span>Access blocked.</span>
+                    <span>Returning to profile in {lockoutCountdown}s...</span>
+                  </div>
+                )}
               </div>
             )}
 

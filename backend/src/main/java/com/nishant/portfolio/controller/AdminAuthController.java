@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping({"/api/admin/auth", "/api/admin"})
 public class AdminAuthController {
 
     private final AdminUserRepository adminUserRepository;

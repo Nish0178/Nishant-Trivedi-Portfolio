@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
@@ -75,14 +76,40 @@ public class DatabaseInitializer implements CommandLineRunner {
     }
 
     private void seedAdminUser() {
-        if (adminUserRepository.count() == 0) {
-            log.info("Provisioning initial admin user: {}", adminEmail);
-            AdminUser admin = new AdminUser(
-                    adminEmail.trim().toLowerCase(),
-                    passwordEncoder.encode(adminPassword),
-                    "ADMIN"
-            );
-            adminUserRepository.save(admin);
+        if (adminEmail == null || adminEmail.isBlank() || adminPassword == null || adminPassword.isBlank()) {
+            log.warn("Admin credentials not fully provided; skipping admin synchronization");
+            return;
+        }
+
+        String targetEmail = adminEmail.trim().toLowerCase();
+        Optional<AdminUser> existingOpt = adminUserRepository.findByEmailIgnoreCase(targetEmail);
+
+        if (existingOpt.isPresent()) {
+            AdminUser admin = existingOpt.get();
+            if (!passwordEncoder.matches(adminPassword, admin.getPasswordHash())) {
+                log.info("Synchronizing admin password hash with configured ADMIN_PASSWORD for: {}", targetEmail);
+                admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+                admin.setRole("ADMIN");
+                adminUserRepository.save(admin);
+            }
+        } else {
+            List<AdminUser> allAdmins = adminUserRepository.findAll();
+            if (!allAdmins.isEmpty()) {
+                AdminUser admin = allAdmins.get(0);
+                log.info("Updating existing admin user identity to configured ADMIN_EMAIL: {}", targetEmail);
+                admin.setEmail(targetEmail);
+                admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+                admin.setRole("ADMIN");
+                adminUserRepository.save(admin);
+            } else {
+                log.info("Provisioning initial admin user: {}", targetEmail);
+                AdminUser admin = new AdminUser(
+                        targetEmail,
+                        passwordEncoder.encode(adminPassword),
+                        "ADMIN"
+                );
+                adminUserRepository.save(admin);
+            }
         }
     }
 

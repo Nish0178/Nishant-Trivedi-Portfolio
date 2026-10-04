@@ -78,9 +78,14 @@ public class ContactService {
 
         // 2. Defensively attempt email notifications
         try {
-            EmailService.EmailDeliveryResult emailResult = emailService.sendContactNotifications(saved);
-            saved.setEmailStatus(emailResult.getStatus());
-            saved.setEmailError(emailResult.getError());
+            EmailService.EmailDeliveryResult emailResult = emailService != null ? emailService.sendContactNotifications(saved) : null;
+            if (emailResult != null) {
+                saved.setEmailStatus(emailResult.getStatus());
+                saved.setEmailError(emailResult.getError());
+            } else {
+                saved.setEmailStatus("SKIPPED_NOT_CONFIGURED");
+                saved.setEmailError("Email dispatch result was null or unconfigured");
+            }
             repository.save(saved);
         } catch (Exception e) {
             log.warn("Non-fatal email notification error for message id={}: {}", saved.getId(), e.getMessage());
