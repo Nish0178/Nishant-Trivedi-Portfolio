@@ -271,8 +271,34 @@ Grounded in `lib/portfolio-data.ts`:
   - Unauthenticated requests to `/api/admin/**` rejected with HTTP 401.
 - **CORS Configuration**: `VERIFIED` / `PASS`
   - Restricted to configured origins (`localhost:3000`, `app.frontend-url`).
-- **Automated Tests**: `PASS` (41/41 JUnit tests passing in backend).
+- **Automated Tests**: `PASS` (60/60 JUnit tests passing in backend).
 - **Frontend Production Build**: `PASS` (Next.js `npm run build` exits with code 0).
 - **Visual & Responsive Regression**: `PASS` (Verified via browser subagent across 375px, 768px, 1280px).
+
+---
+
+# 11. PRODUCTION HARDENING & DEPLOYMENT ARCHITECTURE (ADR-019)
+
+- **Next.js 15 SSR Webpack Resolution**:
+  - Configured `transpilePackages: ['motion']` in `frontend/next.config.mjs`, eliminating runtime `MODULE_NOT_FOUND: ./vendor-chunks/motion-dom.js`.
+  - Verified production Node server (`next start`) starts and serves HTTP 200 on `/`, `/api/github/repos`, `/api/health`, and `/admin/login`.
+- **Tailwind CSS v4 Dark Mode Harmonization**:
+  - Added `@variant dark (&:where(.dark, .dark *));` in `frontend/app/globals.css`.
+  - Verified light and dark mode contrast: light heading oklch near-black, dark heading pure white `rgb(255, 255, 255)` on dark canvas `rgb(18, 19, 22)`.
+- **Dynamic API Proxy Rewrites**:
+  - Parameterized proxy destinations in `frontend/next.config.mjs` via `process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'`.
+- **Mobile Responsive Polish**:
+  - Mobile bottom-left monogram badge given `hidden sm:flex` in `Header.tsx` to eliminate mobile screen obstruction on 375px viewports.
+  - Adjusted center hero video container height in `Hero.tsx` to `min-h-[260px] sm:min-h-[380px] lg:min-h-[500px]` for balanced vertical proportion.
+- **ESLint & CI Non-Interactive Execution**:
+  - Added `frontend/.eslintrc.json` extending `next/core-web-vitals` with `eslint` and `eslint-config-next` devDependencies.
+  - Verified `npm run lint` executes completely non-interactively and exits with code 0.
+- **Production Backend & Database Security**:
+  - Created `backend/src/main/resources/application-prod.yml` enforcing strict environment variables (`${DB_URL}`, `${DB_USERNAME}`, `${DB_PASSWORD}`, `${ADMIN_EMAIL}`, `${ADMIN_PASSWORD}`, `${JWT_SECRET}`) with zero insecure fallbacks.
+  - Sanitized test scripts to consume `process.env.ADMIN_PASSWORD`, ensuring 0 plaintext secrets in tracked files.
+  - Added multi-stage Java 21 `backend/Dockerfile` and `render.yaml` blueprint.
+- **End-to-End Production Verification**:
+  - Live Playwright QA run passed 100%: 0 horizontal overflow across 4 viewports, dark mode text verified, valid admin login and JWT verified, 3-attempt lockout verified, contact message #10 persisted to PostgreSQL, and 9 GitHub projects verified.
+
 
 

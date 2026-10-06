@@ -109,8 +109,10 @@ async function verifyAll() {
   console.log(`Unauthorized Access Protection (/admin -> /admin/login): ${results.adminAuth.unauthorizedProtection}`);
 
   // 2.2 Valid Login
-  await page.fill("#admin-email", "admin@nishanttrivedi.com");
-  await page.fill("#admin-password", "Admin@Nishant2026!");
+  const testAdminEmail = process.env.ADMIN_EMAIL || "admin@nishanttrivedi.com";
+  const testAdminPassword = process.env.ADMIN_PASSWORD || "";
+  await page.fill("#admin-email", testAdminEmail);
+  await page.fill("#admin-password", testAdminPassword);
   await page.click("button[type='submit']");
   await page.waitForURL("**/admin", { timeout: 10000 });
   await page.waitForTimeout(1500);
@@ -272,8 +274,8 @@ async function verifyAll() {
   console.log(`Logout Flow & Storage Cleared: ${results.adminAuth.logout}`);
 
   // Re-login test
-  await page.fill("#admin-email", "admin@nishanttrivedi.com");
-  await page.fill("#admin-password", "Admin@Nishant2026!");
+  await page.fill("#admin-email", testAdminEmail);
+  await page.fill("#admin-password", testAdminPassword);
   await page.click("button[type='submit']");
   await page.waitForURL("**/admin", { timeout: 10000 });
   const reloginPassed = page.url().endsWith("/admin");

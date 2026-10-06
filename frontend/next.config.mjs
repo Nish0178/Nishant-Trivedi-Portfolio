@@ -3,9 +3,16 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const backendBaseUrl = (
+  process.env.BACKEND_INTERNAL_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8080"
+).replace(/\/$/, "");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
+  transpilePackages: ["motion"],
   images: {
     unoptimized: true,
   },
@@ -13,23 +20,23 @@ const nextConfig = {
     return [
       {
         source: "/api/admin/:path*",
-        destination: "http://localhost:8080/api/admin/:path*",
+        destination: `${backendBaseUrl}/api/admin/:path*`,
       },
       {
         source: "/api/contact",
-        destination: "http://localhost:8080/api/contact",
+        destination: `${backendBaseUrl}/api/contact`,
       },
       {
         source: "/api/projects",
-        destination: "http://localhost:8080/api/projects",
+        destination: `${backendBaseUrl}/api/projects`,
       },
       {
         source: "/api/content/:path*",
-        destination: "http://localhost:8080/api/content/:path*",
+        destination: `${backendBaseUrl}/api/content/:path*`,
       },
       {
         source: "/api/health",
-        destination: "http://localhost:8080/api/health",
+        destination: `${backendBaseUrl}/api/health`,
       },
     ];
   },

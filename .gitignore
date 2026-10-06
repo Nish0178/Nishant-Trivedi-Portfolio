@@ -39,4 +39,6 @@ application-local.yml
 *.log
 .DS_Store
 Thumbs.db
+scratch/
+
 

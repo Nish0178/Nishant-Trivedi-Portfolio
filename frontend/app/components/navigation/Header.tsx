@@ -195,7 +195,7 @@ export default function Header() {
       </header>
 
       {/* Floating Bottom-Left Monogram Badge as seen in reference frame */}
-      <div className="fixed bottom-6 left-6 z-40">
+      <div className="fixed bottom-6 left-6 z-40 hidden sm:flex">
         <Link
           href="#top"
           className="w-9 h-9 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 flex items-center justify-center font-bold text-xs shadow-md border border-neutral-300 dark:border-neutral-700 hover:scale-110 active:scale-95 transition-all"

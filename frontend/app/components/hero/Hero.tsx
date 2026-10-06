@@ -53,9 +53,9 @@ export default function Hero() {
       {/* 2. Center Silhouette Cutout / Video of Nishant (Alive & Dynamic) */}
       <motion.div
         style={{ y: videoY, opacity }}
-        className="relative z-10 w-full flex-1 flex flex-col items-center justify-center my-auto min-h-[380px] sm:min-h-[460px] lg:min-h-[520px]"
+        className="relative z-10 w-full flex-1 flex flex-col items-center justify-center my-auto min-h-[260px] sm:min-h-[380px] lg:min-h-[500px]"
       >
-        <div className="relative w-[280px] sm:w-[340px] lg:w-[400px] h-[380px] sm:h-[460px] lg:h-[520px] flex items-center justify-center">
+        <div className="relative w-[240px] sm:w-[340px] lg:w-[400px] h-[260px] sm:h-[380px] lg:h-[500px] flex items-center justify-center">
           {/* Walking video with graceful fallback to high-res portrait */}
           <video
             ref={videoRef}

@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 export default function HeroV2() {
   const containerRef = useRef<HTMLElement>(null);
@@ -51,9 +52,9 @@ export default function HeroV2() {
       <div className="hero-v2__noise" />
 
       <header className="hero-nav">
-        <a href="/" className="hero-logo" aria-label="Nishant Trivedi home">
+        <Link href="/" className="hero-logo" aria-label="Nishant Trivedi home">
           NT<span>/</span>
-        </a>
+        </Link>
 
         <nav className="hero-nav__links">
           <a href="#work">
