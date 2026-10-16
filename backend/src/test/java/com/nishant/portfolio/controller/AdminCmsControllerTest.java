@@ -2,7 +2,7 @@ package com.nishant.portfolio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nishant.portfolio.entity.*;
-import com.nishant.portfolio.repository.*;
+import com.nishant.portfolio.repository.AdminUserRepository;
 import com.nishant.portfolio.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,27 +38,6 @@ class AdminCmsControllerTest {
 
     @Autowired
     private AdminUserRepository adminUserRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    private ExperienceRepository experienceRepository;
-
-    @Autowired
-    private SkillRepository skillRepository;
-
-    @Autowired
-    private AchievementRepository achievementRepository;
-
-    @Autowired
-    private EducationRepository educationRepository;
-
-    @Autowired
-    private SocialLinkRepository socialLinkRepository;
-
-    @Autowired
-    private CmsSectionRepository cmsSectionRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -436,4 +415,3 @@ class AdminCmsControllerTest {
                 .andExpect(jsonPath("$.message", containsString("Achievement title is required")));
     }
 }
-

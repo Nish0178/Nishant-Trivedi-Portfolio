@@ -300,5 +300,72 @@ Grounded in `lib/portfolio-data.ts`:
 - **End-to-End Production Verification**:
   - Live Playwright QA run passed 100%: 0 horizontal overflow across 4 viewports, dark mode text verified, valid admin login and JWT verified, 3-attempt lockout verified, contact message #10 persisted to PostgreSQL, and 9 GitHub projects verified.
 
+---
+
+# 12. CMS SYNCHRONIZATION & TWO-SIDED EMAIL PIPELINE (ADR-020)
+
+### 1. Admin CMS → Public Portfolio Synchronization Architecture
+- **Complete End-to-End Flow**:
+  $$\text{Admin UI} \longrightarrow \text{Admin API (/api/admin/**)} \longrightarrow \text{PostgreSQL (HikariCP / JPA)} \longrightarrow \text{Public API (/api/content/**, /api/projects)} \longrightarrow \text{CmsContentContext} \longrightarrow \text{Public UI}$$
+- **Data Layer & Dynamic Hooks**:
+  - `frontend/app/context/CmsContentContext.tsx`: Provides centralized `useCmsContent()` React context wrapping the public application in `page.tsx`. Fetches `/api/content/all` on initial mount with `cache: "no-store"` to prevent stale caching.
+  - `Hero.tsx`: Binds `kickerName`, `watermarkName`, `headline1/2/3`, `subtitle`, CTAs, and `resumeHref` directly to `useCmsContent()`.
+  - `AboutSection.tsx`: Binds `firstName`, `fullName`, `monogram`, `roleSubtitle`, `locationDisplay`, and `bio` directly to `useCmsContent()`.
+  - `SelectedWork.tsx`: Binds dynamic projects list from `useCmsContent()` and `fetchProjects()` with `normalizeProjectData` for live CRUD synchronization.
+  - `TechStackMatrix.tsx`: Merges dynamic skills from `content.skills` with the periodic table matrix.
+  - `ExperienceTimeline.tsx`: Maps `content.experiences` and `content.education` to chronological milestones.
+  - `CertificationsSection.tsx`: Maps `content.achievements` to verified institutional credentials.
+  - `Achievements.tsx`: Dynamically transforms `content.achievements` into proud moments grid cards.
+  - `ContactSection.tsx`: Binds dynamic location, email, and social vector links.
+- **Cache Invalidation & Freshness**:
+  - Public fetch clients (`fetchPublicCmsContent()`, `fetchProjects()`) explicitly enforce `cache: "no-store"`.
+  - Next.js rewrite proxies in `next.config.mjs` route `/api/content/:path*`, `/api/projects`, `/api/contact`, and `/api/health` directly to Spring Boot backend without stale static cache layers.
+  - Database persistence guarantees changes survive page refresh, admin logout/login, and service restarts without resetting or dropping database tables.
+
+### 2. Contact Form Two-Sided Email Workflow
+- **Two-Sided Email Delivery Architecture (`EmailService.java`)**:
+  - **A. Owner Notification (`sendContactNotification`)**:
+    - Recipient: Configured `MAIL_TO` (or `MAIL_USERNAME` / fallback).
+    - Reply-To: Set directly to visitor's email address (`msg.getEmail()`) so Nishant can hit "Reply" in any email client to answer instantly.
+    - Template: Professional dark-slate HTML card identifying the transmission as originating from the Nishant Trivedi portfolio contact form with visitor name, email, subject, message, and timestamp.
+  - **B. Visitor Confirmation Email (`sendVisitorConfirmation`)**:
+    - Recipient: Visitor's submitted email address (`msg.getEmail()`).
+    - Subject: `"Message Received — Nishant Trivedi Portfolio"`
+    - Template: Warm, polished HTML receipt confirming delivery and setting clear turnaround expectations without exposing database IDs, JWTs, or internal configurations.
+- **Persistence-First Resilience**:
+  - Submissions are committed to PostgreSQL *before* attempting any email transmission.
+  - If SMTP is unconfigured or encounters a network error, the contact message is safely marked with `emailStatus = SKIPPED_NOT_CONFIGURED` or `FAILED` and retained in PostgreSQL.
+  - Email failures log safely without credential leakage and never rollback or lose visitor submissions.
+  - Frontend displays polished confirmation message:
+    `"Message received successfully! Thank you for reaching out, {name}. Nishant will get back to you as soon as possible."`
+
+### 3. Environment Variables
+- **Backend (`application.yml` / `application-prod.yml`)**:
+  - `MAIL_HOST`: SMTP server host (e.g. `smtp.gmail.com`)
+  - `MAIL_PORT`: SMTP port (e.g. `587`)
+  - `MAIL_USERNAME`: SMTP username / sender account
+  - `MAIL_PASSWORD`: SMTP app password / token
+  - `MAIL_TO`: Destination email for owner alerts (defaults to `trivedinishant880@gmail.com`)
+  - `MAIL_FROM`: Display sender address (defaults to `noreply@nishanttrivedi.com`)
+- **Frontend (`next.config.mjs`)**:
+  - `BACKEND_INTERNAL_URL` / `NEXT_PUBLIC_API_URL`: Backend base URL for API proxying (defaults to `http://localhost:8080`).
+
+### 4. Verification & Automated Test Results
+- **Frontend ESLint**: `npm run lint` $\longrightarrow$ **0 errors**.
+- **Frontend Production Build**: `npm run build` $\longrightarrow$ **7/7 pages generated**, exit code 0.
+- **Backend Unit & Integration Suite**: `mvnw.cmd test` $\longrightarrow$ **60/60 tests passing**, `BUILD SUCCESS`.
+- **Backend Packaging**: `mvnw.cmd package -DskipTests` $\longrightarrow$ Packaged executable JAR `portfolio-backend-1.0.0.jar`.
+- **Live Playwright End-to-End Regression Suite (`run_services_and_qa.mjs`)**:
+  - `step1_public_health`: `true` (GET / returned 200 OK).
+  - `step2_admin_login`: `true` (Admin authenticated, JWT length 176).
+  - `step3_profile_cms_sync`: `true` (Real profile headline & bio changed $\longrightarrow$ verified on public homepage).
+  - `step4_profile_restore_sync`: `true` (Clean restoration of original profile $\longrightarrow$ verified on public homepage).
+  - `step5_projects_crud_sync`: `true` (Project Apollo QA created $\longrightarrow$ rendered in public `#work` $\longrightarrow$ deleted $\longrightarrow$ verified clean DB removal).
+  - `step6_contact_submission`: `true` (Polished UX confirmation banner $\longrightarrow$ persisted to PostgreSQL with ID 13 $\longrightarrow$ cleaned up).
+  - `step7_mobile_responsive`: `true` (375px viewport $\longrightarrow$ 0px horizontal overflow).
+  - `step8_dark_mode`: `true` (Theme class toggle verified).
+  - `consoleErrors`: `[]` (Zero runtime or console errors).
+
+
 
 

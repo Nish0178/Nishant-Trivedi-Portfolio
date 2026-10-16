@@ -13,9 +13,25 @@ import {
   LEETCODE_METRICS,
 } from "@/lib/portfolio-data";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+export interface ProfileContent {
+  name?: string;
+  headline?: string;
+  bio?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  github?: string;
+  linkedin?: string;
+  instagram?: string;
+  leetcode?: string;
+  hackerrank?: string;
+  resumeUrl?: string;
+  updatedAt?: string;
+}
 
 export interface PublicContentPayload {
+  profile?: ProfileContent;
+  projects?: Array<Record<string, any>>;
   hero: {
     badgeName?: string;
     headlineLine1?: string;
@@ -97,12 +113,26 @@ export interface PublicContentPayload {
 }
 
 export const FALLBACK_PUBLIC_CONTENT: PublicContentPayload = {
+  profile: {
+    name: "Nishant Trivedi",
+    headline: "Software Engineer · Full-Stack · Systems · AI Workflows",
+    bio: "Software engineer building products, systems, and AI-powered experiences across the full stack.",
+    email: PERSONAL_INFO.email,
+    location: PERSONAL_INFO.location,
+    github: PERSONAL_INFO.socials.github,
+    linkedin: PERSONAL_INFO.socials.linkedin,
+    leetcode: PERSONAL_INFO.socials.leetcode,
+    instagram: PERSONAL_INFO.socials.instagram,
+    hackerrank: PERSONAL_INFO.socials.hackerrank,
+    resumeUrl: "/resume/Nishant_Trivedi_Resume.pdf",
+  },
+  projects: [],
   hero: {
     badgeName: "NISHANT",
-    headlineLine1: "I BUILD",
-    headlineLine2: "DIGITAL",
-    headlineLine3: "EXPERIENCES",
-    subRoles: ["FULL STACK DEVELOPER", "UI/UX DESIGNER", "DATA SCIENCE"],
+    headlineLine1: "Full Stack",
+    headlineLine2: "Developer.",
+    headlineLine3: "",
+    subRoles: ["Creative developer", "AI & web technology"],
     bio: "Building products, systems, and AI-powered experiences across the full stack.",
     ctaPrimaryText: "EXPLORE WORK",
     ctaPrimaryHref: "#work",
@@ -175,14 +205,27 @@ export const FALLBACK_PUBLIC_CONTENT: PublicContentPayload = {
   ],
 };
 
+function getApiUrl(endpoint: string): string {
+  if (typeof window !== "undefined") {
+    return endpoint; // In browser, use Next.js rewrite proxy to avoid CORS and stale host issues
+  }
+  const base = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080"
+  ).replace(/\/$/, "");
+  return `${base}${endpoint}`;
+}
+
 export async function fetchPublicCmsContent(): Promise<PublicContentPayload> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-    const res = await fetch(`${BACKEND_URL}/api/content/all`, {
+    const res = await fetch(getApiUrl("/api/content/all"), {
       method: "GET",
       headers: { Accept: "application/json" },
+      cache: "no-store",
       signal: controller.signal,
     });
 
@@ -191,6 +234,8 @@ export async function fetchPublicCmsContent(): Promise<PublicContentPayload> {
     if (res.ok) {
       const data = await res.json();
       return {
+        profile: data.profile || FALLBACK_PUBLIC_CONTENT.profile,
+        projects: Array.isArray(data.projects) && data.projects.length > 0 ? data.projects : FALLBACK_PUBLIC_CONTENT.projects,
         hero: { ...FALLBACK_PUBLIC_CONTENT.hero, ...(data.hero || {}) },
         about: { ...FALLBACK_PUBLIC_CONTENT.about, ...(data.about || {}) },
         resume: { ...FALLBACK_PUBLIC_CONTENT.resume, ...(data.resume || {}) },

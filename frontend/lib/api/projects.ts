@@ -59,15 +59,28 @@ export function normalizeProjectData(raw: Record<string, any>): UnifiedProject {
   };
 }
 
+function getApiUrl(endpoint: string): string {
+  if (typeof window !== "undefined") {
+    return endpoint;
+  }
+  const base = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080"
+  ).replace(/\/$/, "");
+  return `${base}${endpoint}`;
+}
+
 export async function fetchProjects(): Promise<UnifiedProject[]> {
   // 1. Attempt Spring Boot backend first
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-    const response = await fetch(`${BACKEND_URL}/api/projects`, {
+    const response = await fetch(getApiUrl("/api/projects"), {
       method: "GET",
       headers: { Accept: "application/json" },
+      cache: "no-store",
       signal: controller.signal,
     });
 

@@ -18,14 +18,24 @@ export interface ContactApiResponse {
   isOffline?: boolean;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+function getApiUrl(endpoint: string): string {
+  if (typeof window !== "undefined") {
+    return endpoint;
+  }
+  const base = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080"
+  ).replace(/\/$/, "");
+  return `${base}${endpoint}`;
+}
 
 export async function sendContactMessage(payload: ContactPayload): Promise<ContactApiResponse> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
 
-    const response = await fetch(`${BACKEND_URL}/api/contact`, {
+    const response = await fetch(getApiUrl("/api/contact"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

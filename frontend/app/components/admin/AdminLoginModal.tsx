@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { loginAdmin } from "@/lib/api/admin";
@@ -19,6 +19,15 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutCountdown, setLockoutCountdown] = useState<number | null>(null);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleDismiss = useCallback(() => {
+    if (loading) return;
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = null;
+    }
+    onClose();
+  }, [loading, onClose]);
 
   // Clear states when modal opens or closes
   useEffect(() => {
@@ -51,7 +60,7 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, loading]);
+  }, [isOpen, loading, handleDismiss]);
 
   // Handle 5-second countdown on lockout
   useEffect(() => {
@@ -82,16 +91,7 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
         }
       };
     }
-  }, [isLocked, lockoutCountdown]);
-
-  const handleDismiss = () => {
-    if (loading) return;
-    if (countdownTimerRef.current) {
-      clearInterval(countdownTimerRef.current);
-      countdownTimerRef.current = null;
-    }
-    onClose();
-  };
+  }, [isLocked, lockoutCountdown, handleDismiss]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

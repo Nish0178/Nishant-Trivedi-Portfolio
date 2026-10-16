@@ -1,12 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "motion/react";
+import React, { useState, useMemo } from "react";
 import { CERTIFICATIONS } from "@/lib/portfolio-data";
-import { ArrowUpRight, Award, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { useCmsContent } from "@/app/context/CmsContentContext";
+
+interface CertItem {
+  name: string;
+  issuer: string;
+  domain: string;
+  year?: string;
+}
 
 export default function CertificationsSection() {
-  const [hoveredIndex, setHoveredIndex] = useState<number>(2); // Default to item 3 as seen in reference frame 24
+  const [hoveredIndex, setHoveredIndex] = useState<number>(2);
+  const { content } = useCmsContent();
+
+  const certifications = useMemo<CertItem[]>(() => {
+    if (Array.isArray(content?.achievements) && content.achievements.length > 0) {
+      return content.achievements.map((a) => ({
+        name: a.title,
+        issuer: a.issuerOrVenue || "Verified Issuer",
+        domain: a.badge || "Engineering Credential",
+        year: a.year || "2026",
+      }));
+    }
+    return CERTIFICATIONS.map((c) => ({
+      name: c.name,
+      issuer: c.issuer,
+      domain: c.domain,
+      year: "Verified",
+    }));
+  }, [content?.achievements]);
 
   return (
     <section
@@ -34,7 +59,7 @@ export default function CertificationsSection() {
             </h2>
 
             <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed max-w-md">
-              {CERTIFICATIONS.length} verified certifications across cloud infrastructure, Java systems, full-stack engineering, and AI pipelines.
+              {certifications.length} verified credentials and certifications across cloud infrastructure, Java systems, full-stack engineering, and AI pipelines.
             </p>
 
             {/* Verification Guarantee Pill */}
@@ -46,13 +71,13 @@ export default function CertificationsSection() {
 
           {/* Right Column: Interactive Certifications List (Exact Frame 24 Presentation) */}
           <div className="lg:col-span-7 flex flex-col gap-1.5 w-full">
-            {CERTIFICATIONS.map((cert, idx) => {
+            {certifications.map((cert, idx) => {
               const isHovered = hoveredIndex === idx;
-              const indexStr = `0${idx + 1}`;
+              const indexStr = String(idx + 1).padStart(2, "0");
 
               return (
                 <div
-                  key={cert.name}
+                  key={`${cert.name}-${idx}`}
                   onMouseEnter={() => setHoveredIndex(idx)}
                   className={`relative px-5 py-4 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-between ${
                     isHovered
@@ -73,7 +98,7 @@ export default function CertificationsSection() {
                     <div className="min-w-0">
                       <h4
                         className={`text-sm sm:text-base font-semibold tracking-tight truncate ${
-                          isHovered ? "text-white dark:text-neutral-950" : "text-neutral-900 dark:text-white"
+                          isHovered ? "text-white dark:text-neutral-950" : "text-neutral-950 dark:text-white"
                         }`}
                       >
                         {cert.name}

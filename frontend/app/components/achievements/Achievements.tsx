@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 import { 
   Trophy, 
   Code, 
@@ -88,6 +89,23 @@ const PROUD_MOMENTS: ProudMoment[] = [
 ];
 
 export default function Achievements() {
+  const { content } = useCmsContent();
+
+  const moments = useMemo<ProudMoment[]>(() => {
+    if (Array.isArray(content?.achievements) && content.achievements.length > 0) {
+      return content.achievements.map((a, idx) => ({
+        id: `ach-${a.id || idx}`,
+        index: `0${idx + 1} / 0${content.achievements.length}`,
+        platform: a.title,
+        kicker: (a.issuerOrVenue || a.badge || "ACHIEVEMENT").toUpperCase(),
+        metric: a.year || "Verified",
+        description: a.description || "Verified competitive and engineering milestone.",
+        iconBg: idx % 2 === 0 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        icon: ({ className }: { className?: string }) => <Trophy className={className} />,
+      }));
+    }
+    return PROUD_MOMENTS;
+  }, [content?.achievements]);
   return (
     <section
       id="achievements"
@@ -119,7 +137,7 @@ export default function Achievements() {
 
         {/* Responsive Grid matching Reference Frames 29-31 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {PROUD_MOMENTS.map((item) => (
+          {moments.map((item) => (
             <motion.div
               key={item.id}
               whileHover={{ y: -4 }}

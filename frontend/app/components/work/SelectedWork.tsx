@@ -6,7 +6,8 @@ import {
   FALLBACK_PROJECTS, 
   UnifiedProject 
 } from "@/lib/github";
-import { fetchProjects } from "@/lib/api/projects";
+import { fetchProjects, normalizeProjectData } from "@/lib/api/projects";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 import { 
   Plus, 
   ArrowUpRight, 
@@ -18,23 +19,32 @@ import {
 } from "lucide-react";
 
 export default function SelectedWork() {
+  const { content } = useCmsContent();
   const [projects, setProjects] = useState<UnifiedProject[]>(FALLBACK_PROJECTS);
   const [activeId, setActiveId] = useState<string>(FALLBACK_PROJECTS[0]?.id || "launchpilot-ai");
 
   useEffect(() => {
-    let mounted = true;
-    fetchProjects().then((data) => {
-      if (mounted && Array.isArray(data) && data.length > 0) {
-        setProjects(data);
-        if (!data.some((p) => p.id === activeId)) {
-          setActiveId(data[0].id);
-        }
+    if (content?.projects && Array.isArray(content.projects) && content.projects.length > 0) {
+      const normalized = content.projects.map(normalizeProjectData);
+      setProjects(normalized);
+      if (!normalized.some((p) => p.id === activeId)) {
+        setActiveId(normalized[0].id);
       }
-    });
-    return () => {
-      mounted = false;
-    };
-  }, [activeId]);
+    } else {
+      let mounted = true;
+      fetchProjects().then((data) => {
+        if (mounted && Array.isArray(data) && data.length > 0) {
+          setProjects(data);
+          if (!data.some((p) => p.id === activeId)) {
+            setActiveId(data[0].id);
+          }
+        }
+      });
+      return () => {
+        mounted = false;
+      };
+    }
+  }, [content?.projects, activeId]);
 
   const activeProject = projects.find((p) => p.id === activeId) || projects[0];
 
@@ -69,7 +79,7 @@ export default function SelectedWork() {
 
         {/* Interactive Expandable Horizontal Accordion Deck matching Frame 21 */}
         <div className="hidden lg:flex gap-4 h-[580px] w-full items-stretch">
-          {projects.slice(0, 4).map((p, idx) => {
+          {projects.slice(0, 6).map((p, idx) => {
             const isExpanded = p.id === activeId;
             const indexStr = `0${idx + 1}`;
 

@@ -1,25 +1,16 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
-import { fetchPublicCmsContent, FALLBACK_PUBLIC_CONTENT } from "@/lib/api/content";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [cmsAbout, setCmsAbout] = useState(FALLBACK_PUBLIC_CONTENT.about);
+  const { content } = useCmsContent();
 
-  useEffect(() => {
-    let mounted = true;
-    fetchPublicCmsContent().then((content) => {
-      if (mounted && content?.about) {
-        setCmsAbout((prev) => ({ ...prev, ...content.about }));
-      }
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const cmsAbout = content.about;
+  const cmsProfile = content.profile;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -27,6 +18,21 @@ export default function AboutSection() {
   });
 
   const badgeRotate = useTransform(scrollYProgress, [0, 1], [-4, 0]);
+
+  const firstName = (cmsProfile?.name || "Nishant").split(" ")[0];
+  const fullName = cmsProfile?.name ? cmsProfile.name.toUpperCase() : "NISHANT TRIVEDI";
+  const monogram = cmsProfile?.name
+    ? cmsProfile.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "NT";
+  const roleSubtitle = cmsAbout.title || cmsProfile?.headline || "Software & AI Engineer";
+  const locationDisplay = cmsProfile?.location
+    ? cmsProfile.location.split("(")[0].trim()
+    : "Lucknow, India";
 
   return (
     <section
@@ -50,13 +56,14 @@ export default function AboutSection() {
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-950 dark:text-white leading-[1.08] mb-6">
               Hi, I&apos;m{" "}
               <span className="font-serif italic font-normal text-neutral-800 dark:text-neutral-200">
-                Nishant.
+                {firstName}.
               </span>
             </h2>
 
             <div className="space-y-4 text-sm sm:text-base text-neutral-600 dark:text-neutral-300 leading-relaxed font-normal">
               <p>
-                {cmsAbout.bioParagraph1 ||
+                {cmsProfile?.bio ||
+                  cmsAbout.bioParagraph1 ||
                   "Motivated Full Stack Developer and Software Engineer skilled in building scalable applications with React, Next.js, Node.js, Spring Boot, and modern cloud technologies. Strong in API development, distributed systems, and algorithmic problem solving."}
               </p>
               <p>
@@ -100,7 +107,7 @@ export default function AboutSection() {
               <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-white text-neutral-900 text-[10px] font-bold font-mono flex items-center justify-center">
-                    NT
+                    {monogram}
                   </div>
                   <span className="text-[11px] font-bold tracking-wider font-mono text-neutral-200 uppercase">
                     DEVELOPER ID
@@ -125,10 +132,10 @@ export default function AboutSection() {
               {/* Identity Details */}
               <div className="mt-4 text-center">
                 <p className="text-sm font-bold tracking-wider uppercase text-white">
-                  NISHANT TRIVEDI
+                  {fullName}
                 </p>
-                <p className="text-xs text-neutral-400 font-mono mt-0.5">
-                  Software & AI Engineer
+                <p className="text-xs text-neutral-400 font-mono mt-0.5 line-clamp-1">
+                  {roleSubtitle}
                 </p>
               </div>
             </motion.div>
@@ -145,7 +152,7 @@ export default function AboutSection() {
                 <div className="flex items-start justify-between border-b border-black/[0.06] dark:border-white/[0.06] pb-3">
                   <span className="text-neutral-400 dark:text-neutral-500 font-mono">Based in</span>
                   <span className="font-medium text-neutral-800 dark:text-neutral-200 text-right">
-                    Lucknow, India
+                    {locationDisplay}
                   </span>
                 </div>
 

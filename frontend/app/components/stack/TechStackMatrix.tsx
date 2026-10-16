@@ -12,6 +12,7 @@ import {
   Sparkles,
   ArrowUpRight 
 } from "lucide-react";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 
 interface ElementData {
   number: string;
@@ -23,7 +24,7 @@ interface ElementData {
   iconType: string;
 }
 
-const ELEMENTS: ElementData[] = [
+const DEFAULT_ELEMENTS: ElementData[] = [
   // Row 1
   { number: "01", symbol: "C++", name: "C++", family: "Languages", categoryLabel: "PROGRAMMING LANGUAGE", description: "Systems programming foundations and high-performance algorithms.", iconType: "code" },
   { number: "02", symbol: "Jv", name: "Java", family: "Languages", categoryLabel: "PRIMARY LANGUAGE", description: "Enterprise OOP, Spring Boot services, and 400+ DSA algorithmic solutions.", iconType: "code" },
@@ -74,13 +75,66 @@ const FAMILIES = [
   { name: "Core", color: "bg-[#EDE8DE] text-neutral-900 border-neutral-300", dot: "bg-neutral-200" },
 ] as const;
 
+function resolveFamily(cat?: string): ElementData["family"] {
+  if (!cat) return "Core";
+  const c = cat.toLowerCase();
+  if (c.includes("lang")) return "Languages";
+  if (c.includes("front") || c.includes("ui") || c.includes("web")) return "Frontend";
+  if (c.includes("back") || c.includes("server") || c.includes("api")) return "Backend";
+  if (c.includes("data") || c.includes("db") || c.includes("sql") || c.includes("nosql")) return "Databases";
+  if (c.includes("tool") || c.includes("devops") || c.includes("cloud") || c.includes("git")) return "Tools";
+  return "Core";
+}
+
+function resolveIconType(family: ElementData["family"]): string {
+  switch (family) {
+    case "Languages": return "code";
+    case "Frontend": return "layers";
+    case "Backend": return "server";
+    case "Databases": return "database";
+    case "Tools": return "tool";
+    case "Core": return "brain";
+  }
+}
+
 export default function TechStackMatrix() {
+  const { content } = useCmsContent();
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
-  const [activeElement, setActiveElement] = useState<ElementData>(ELEMENTS[14]); // Default to MongoDB as seen in reference frame 15!
+
+  const elements = useMemo<ElementData[]>(() => {
+    if (Array.isArray(content?.skills) && content.skills.length > 0) {
+      const defaultMap = new Map<string, ElementData>();
+      DEFAULT_ELEMENTS.forEach((el) => defaultMap.set(el.name.toLowerCase(), el));
+
+      return content.skills.map((skill, idx) => {
+        const lowerName = (skill.name || "").trim().toLowerCase();
+        const known = defaultMap.get(lowerName);
+        const family = resolveFamily(skill.category);
+        const symbol = known
+          ? known.symbol
+          : (skill.name || "Sk").trim().slice(0, 2).replace(/^./, (c) => c.toUpperCase());
+        const description = skill.roleDesc || (known ? known.description : `${skill.name} core engineering competency.`);
+        const iconType = known ? known.iconType : resolveIconType(family);
+
+        return {
+          number: String(idx + 1).padStart(2, "0"),
+          symbol,
+          name: skill.name || "Skill",
+          family,
+          categoryLabel: (skill.category || "TECHNOLOGY").toUpperCase(),
+          description,
+          iconType,
+        };
+      });
+    }
+    return DEFAULT_ELEMENTS;
+  }, [content?.skills]);
+
+  const [activeElement, setActiveElement] = useState<ElementData>(() => elements[14] || elements[0] || DEFAULT_ELEMENTS[14]);
 
   const filteredElements = useMemo(() => {
-    return ELEMENTS;
-  }, []);
+    return elements;
+  }, [elements]);
 
   const getFamilyColor = (family: string) => {
     switch (family) {
@@ -115,169 +169,164 @@ export default function TechStackMatrix() {
           <div className="h-[1px] flex-1 max-w-[80px] bg-neutral-300 dark:bg-neutral-800" />
         </div>
 
-        {/* Section Headline & Subtitle matching Reference Frame 12 */}
-        <div className="mb-10">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-950 dark:text-white leading-[1.08]">
-            The periodic table{" "}
-            <span className="font-serif italic font-normal text-neutral-700 dark:text-neutral-300">
-              of my stack.
-            </span>
-          </h2>
-          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-2.5 font-normal tracking-wide">
-            32 elements in six families. Hover a tile to see its details, or pick a family to light it up.
-          </p>
+        {/* Section Heading & Category Filter Legend */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-950 dark:text-white leading-[1.08]">
+              Periodic Table{" "}
+              <span className="font-serif italic font-normal text-neutral-700 dark:text-neutral-300">
+                of stack.
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-2.5 font-normal tracking-wide">
+              Hover over an element to inspect telemetry, runtime role, and architectural scope.
+            </p>
+          </div>
+
+          {/* Interactive Family Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 self-start md:self-end">
+            <button
+              onClick={() => setSelectedFamily(null)}
+              className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                selectedFamily === null
+                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-sm"
+                  : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
+              }`}
+            >
+              All ({elements.length})
+            </button>
+            {FAMILIES.map((f) => {
+              const count = elements.filter((e) => e.family === f.name).length;
+              if (count === 0) return null;
+              const isSelected = selectedFamily === f.name;
+
+              return (
+                <button
+                  key={f.name}
+                  onClick={() => setSelectedFamily(isSelected ? null : f.name)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                      ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-sm"
+                      : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${f.dot}`} />
+                  <span>{f.name}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Family Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-8">
-          <button
-            type="button"
-            onClick={() => setSelectedFamily(null)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
-              selectedFamily === null
-                ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-sm"
-                : "bg-[#EDE9DF]/60 dark:bg-[#1E2026]/60 text-neutral-600 dark:text-neutral-300 hover:bg-[#E2DDD3] dark:hover:bg-[#282B34]"
-            }`}
-          >
-            All Elements
-          </button>
-
-          {FAMILIES.map((f) => {
-            const isSelected = selectedFamily === f.name;
-            return (
-              <button
-                key={f.name}
-                type="button"
-                onClick={() => setSelectedFamily(isSelected ? null : f.name)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
-                  isSelected
-                    ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-sm scale-105"
-                    : "bg-[#EDE9DF]/60 dark:bg-[#1E2026]/60 text-neutral-700 dark:text-neutral-300 hover:bg-[#E2DDD3] dark:hover:bg-[#282B34]"
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full ${f.dot}`} />
-                <span>{f.name}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Main Grid + Inspector Layout */}
+        {/* 2-Column Layout: Periodic Grid on Left (8 Cols), Interactive Inspection Drawer on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Periodic Table Grid (8 Columns on desktop) */}
-          <div className="lg:col-span-9 overflow-x-auto pb-4">
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 sm:gap-2.5 min-w-[560px] sm:min-w-0">
+          {/* Left Column: Responsive Periodic Table Grid (8 Columns on desktop matching Reference) */}
+          <div className="lg:col-span-8 overflow-x-auto pb-4 pt-1">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 min-w-[320px]">
               {filteredElements.map((el) => {
-                const isFamilyMatch = selectedFamily === null || el.family === selectedFamily;
-                const isActive = activeElement.symbol === el.symbol;
+                const isSelected = activeElement.name === el.name;
+                const isDimmed = selectedFamily !== null && el.family !== selectedFamily;
 
                 return (
                   <motion.div
-                    key={el.number}
-                    onMouseEnter={() => setActiveElement(el)}
+                    key={`${el.number}-${el.name}`}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => setActiveElement(el)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`relative aspect-square rounded-xl p-2 sm:p-2.5 flex flex-col justify-between border cursor-pointer select-none transition-all duration-300 ${getFamilyColor(
+                    onMouseEnter={() => setActiveElement(el)}
+                    className={`relative aspect-square rounded-xl p-2 sm:p-2.5 flex flex-col justify-between cursor-pointer border transition-all duration-200 select-none ${getFamilyColor(
                       el.family
                     )} ${
-                      !isFamilyMatch ? "opacity-20 scale-95" : "opacity-100 shadow-sm"
-                    } ${
-                      isActive ? "ring-2 ring-neutral-900 dark:ring-white scale-105 shadow-md z-10" : ""
-                    }`}
+                      isSelected
+                        ? "ring-2 ring-neutral-950 dark:ring-white ring-offset-2 dark:ring-offset-neutral-900 shadow-lg scale-105 z-10"
+                        : "hover:shadow-md"
+                    } ${isDimmed ? "opacity-25 grayscale" : "opacity-100"}`}
                   >
-                    {/* Element Number */}
-                    <span className="text-[9px] sm:text-[10px] font-mono opacity-60 leading-none">
-                      {el.number}
-                    </span>
+                    {/* Top Row: Atomic Number */}
+                    <div className="flex items-center justify-between text-[9px] font-mono opacity-80">
+                      <span>{el.number}</span>
+                      <span className="text-[8px] uppercase tracking-wider hidden sm:inline">
+                        {el.family.slice(0, 3)}
+                      </span>
+                    </div>
 
-                    {/* Chemical Symbol */}
-                    <span className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight text-center my-auto leading-none">
-                      {el.symbol}
-                    </span>
+                    {/* Center: Big Atomic Symbol */}
+                    <div className="text-center my-auto">
+                      <span className="text-lg sm:text-xl font-bold tracking-tight block font-mono">
+                        {el.symbol}
+                      </span>
+                    </div>
 
-                    {/* Full Name */}
-                    <span className="text-[9px] sm:text-[10px] truncate text-center opacity-80 leading-none">
-                      {el.name}
-                    </span>
+                    {/* Bottom: Full Element Name */}
+                    <div className="text-center">
+                      <span className="text-[10px] sm:text-[11px] font-medium leading-tight line-clamp-1 block opacity-90">
+                        {el.name}
+                      </span>
+                    </div>
                   </motion.div>
                 );
               })}
             </div>
           </div>
 
-          {/* Inspection Card on the Right matching Reference Frame 15 */}
-          <div className="lg:col-span-3">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeElement.symbol}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="w-full bg-[#EAE6DC]/90 dark:bg-[#1A1C22]/90 backdrop-blur-md rounded-2xl p-6 sm:p-7 border border-black/[0.06] dark:border-white/[0.08] shadow-sm flex flex-col items-center text-center relative overflow-hidden"
-              >
-                {/* Family Accent Bar */}
-                <div className="w-12 h-1 rounded-full bg-neutral-900 dark:bg-white mb-6 opacity-80" />
+          {/* Right Column: Detailed Element Inspection Card matching Reference Frame 16 */}
+          <div className="lg:col-span-4 sticky top-24">
+            <div className="bg-white/80 dark:bg-[#14151B]/80 backdrop-blur-md rounded-2xl p-6 sm:p-7 border border-black/[0.06] dark:border-white/[0.08] shadow-lg relative overflow-hidden">
+              {/* Subtle accent glow matching element family */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 dark:bg-amber-400/5 rounded-full blur-2xl pointer-events-none" />
 
-                {/* Big Visual Logo / Icon Presentation */}
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-neutral-800 shadow-md border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center mb-5">
-                  {activeElement.symbol === "Mg" ? (
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                      <span className="text-2xl">🍃</span>
-                    </div>
-                  ) : activeElement.symbol === "Jv" ? (
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <span className="text-2xl">☕</span>
-                    </div>
-                  ) : activeElement.symbol === "Py" ? (
-                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                      <span className="text-2xl">🐍</span>
-                    </div>
-                  ) : activeElement.symbol === "Re" ? (
-                    <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                      <span className="text-2xl">⚛️</span>
-                    </div>
-                  ) : activeElement.symbol === "Dk" ? (
-                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                      <span className="text-2xl">🐳</span>
-                    </div>
-                  ) : activeElement.symbol === "Gt" ? (
-                    <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                      <span className="text-2xl">🐙</span>
-                    </div>
-                  ) : (
-                    <span className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
-                      {activeElement.symbol}
-                    </span>
-                  )}
-                </div>
-
-                {/* Element Name */}
-                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-950 dark:text-white">
-                  {activeElement.name}
-                </h3>
-
-                {/* Category Subtitle */}
-                <p className="text-[10px] font-mono tracking-widest uppercase text-neutral-400 dark:text-neutral-500 mt-1 mb-4">
-                  {activeElement.categoryLabel}
-                </p>
-
-                {/* Detailed Description */}
-                <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed font-normal">
-                  {activeElement.description}
-                </p>
-
-                {/* Family Pill Tag */}
-                <div className="mt-6 pt-4 border-t border-black/[0.06] dark:border-white/[0.06] w-full flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
-                  <span>Family</span>
-                  <span className="font-semibold text-neutral-900 dark:text-white">
-                    {activeElement.family}
+              {/* Element Header */}
+              <div className="flex items-start justify-between border-b border-black/[0.06] dark:border-white/[0.06] pb-4 mb-5">
+                <div>
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-neutral-400 dark:text-neutral-500 block">
+                    ATOMIC NO. {activeElement.number} · {activeElement.categoryLabel}
                   </span>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white mt-1">
+                    {activeElement.name}
+                  </h3>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-lg shadow-sm border ${getFamilyColor(
+                    activeElement.family
+                  )}`}
+                >
+                  {activeElement.symbol}
+                </div>
+              </div>
+
+              {/* Classification Badges */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                  Family: {activeElement.family}
+                </span>
+                <span className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                  Status: Production Verified
+                </span>
+              </div>
+
+              {/* Description & Engineering Role */}
+              <div className="space-y-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                <p>{activeElement.description}</p>
+              </div>
+
+              {/* Architectural Telemetry Box */}
+              <div className="mt-6 pt-5 border-t border-black/[0.06] dark:border-white/[0.06]">
+                <div className="text-[11px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
+                  RUNTIME PROFILE
+                </div>
+                <div className="bg-[#FAF9F5] dark:bg-[#1A1C23] p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.04] space-y-1 text-xs font-mono text-neutral-700 dark:text-neutral-300">
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Layer:</span>
+                    <span>{activeElement.family}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Specialization:</span>
+                    <span>Full-Stack & Systems</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

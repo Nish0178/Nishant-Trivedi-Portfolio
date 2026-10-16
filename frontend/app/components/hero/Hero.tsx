@@ -1,28 +1,19 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
-import { fetchPublicCmsContent, FALLBACK_PUBLIC_CONTENT } from "@/lib/api/content";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [cmsHero, setCmsHero] = useState(FALLBACK_PUBLIC_CONTENT.hero);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const { content } = useCmsContent();
 
-  useEffect(() => {
-    let mounted = true;
-    fetchPublicCmsContent().then((content) => {
-      if (mounted && content?.hero) {
-        setCmsHero((prev) => ({ ...prev, ...content.hero }));
-      }
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const cmsHero = content.hero;
+  const cmsProfile = content.profile;
 
   // Subtle parallax effect on scroll
   const { scrollYProgress } = useScroll({
@@ -34,6 +25,29 @@ export default function Hero() {
   const videoY = useTransform(scrollYProgress, [0, 1], [0, 20]);
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.2]);
 
+  // Derived dynamic strings
+  const watermarkName = cmsHero.badgeName || cmsProfile?.name?.split(" ")[0]?.toUpperCase() || "NISHANT";
+  const kickerName = cmsProfile?.name
+    ? cmsProfile.name.toUpperCase()
+    : cmsHero.badgeName
+    ? (cmsHero.badgeName.toUpperCase().includes("TRIVEDI")
+      ? cmsHero.badgeName.toUpperCase()
+      : `${cmsHero.badgeName.toUpperCase()} TRIVEDI`)
+    : "NISHANT TRIVEDI";
+
+  const headline1 = cmsHero.headlineLine1 || "Full Stack";
+  const headline2 = cmsHero.headlineLine2 || "Developer.";
+  const headline3 = cmsHero.headlineLine3;
+
+  const subtitle =
+    cmsProfile?.headline ||
+    (Array.isArray(cmsHero.subRoles) && cmsHero.subRoles.length > 0
+      ? cmsHero.subRoles.join(" · ")
+      : cmsHero.bio) ||
+    "Creative developer · AI & web technology";
+
+  const resumeHref = content.resume?.fileUrl || cmsProfile?.resumeUrl || "/resume/Nishant_Trivedi_Resume.pdf";
+
   return (
     <section
       id="hero"
@@ -43,7 +57,7 @@ export default function Hero() {
       {/* 1. Giant Watermark Background Typography (Exact Reference Feature) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
         <span className="text-[17vw] font-black tracking-tighter text-neutral-900/[0.04] dark:text-white/[0.035] uppercase select-none leading-none scale-y-110">
-          {cmsHero.badgeName || "NISHANT"}
+          {watermarkName}
         </span>
       </div>
 
@@ -97,17 +111,27 @@ export default function Hero() {
         {/* Left Side: Kicker, Big Headline, Subtitle */}
         <div className="max-w-xl">
           <p className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-neutral-500 dark:text-neutral-400 mb-2">
-            {cmsHero.badgeName ? `${cmsHero.badgeName} TRIVEDI` : "NISHANT TRIVEDI"}
+            {kickerName}
           </p>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.02]">
-            Full Stack
-            <br />
-            Developer.
+            {headline1}
+            {headline2 && (
+              <>
+                <br />
+                {headline2}
+              </>
+            )}
+            {headline3 && (
+              <>
+                <br />
+                {headline3}
+              </>
+            )}
           </h1>
 
           <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-3 font-normal tracking-wide">
-            Creative developer · AI & web technology
+            {subtitle}
           </p>
         </div>
 
@@ -115,23 +139,23 @@ export default function Hero() {
         <div className="flex flex-wrap items-center gap-3 self-start md:self-end">
           {/* Explore work primary solid pill button */}
           <Link
-            href="#work"
+            href={cmsHero.ctaPrimaryHref || "#work"}
             className="px-6 py-3 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 text-xs font-semibold tracking-wide hover:opacity-90 active:scale-95 transition-all shadow-md inline-flex items-center gap-2"
           >
-            <span>Explore work</span>
+            <span>{cmsHero.ctaPrimaryText || "Explore work"}</span>
             <span className="text-sm">→</span>
           </Link>
 
           {/* Secondary outline pill buttons */}
           <Link
-            href="#contact"
+            href={cmsHero.ctaSecondaryHref || "#contact"}
             className="px-5 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 text-xs font-medium active:scale-95 transition-all"
           >
             Let&apos;s talk
           </Link>
 
           <a
-            href="/resume/Nishant_Trivedi_Resume.pdf"
+            href={resumeHref}
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 text-xs font-medium active:scale-95 transition-all inline-flex items-center gap-1.5"

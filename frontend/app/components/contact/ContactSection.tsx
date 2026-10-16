@@ -5,9 +5,9 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { PERSONAL_INFO } from "@/lib/portfolio-data";
 import { sendContactMessage } from "@/lib/api/contact";
+import { useCmsContent } from "@/app/context/CmsContentContext";
 import { 
   Mail, 
-  Phone, 
   MapPin, 
   Github, 
   Linkedin, 
@@ -21,14 +21,19 @@ import {
 } from "lucide-react";
 
 export default function ContactSection() {
+  const { content } = useCmsContent();
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState<string>("");
+  const [submittedName, setSubmittedName] = useState<string>("");
   const [copied, setCopied] = useState(false);
+
+  const contactEmail = content.settings?.email || content.profile?.email || PERSONAL_INFO.email;
+  const contactLocation = content.settings?.location || content.profile?.location || PERSONAL_INFO.location;
 
   const handleCopyEmail = async () => {
     try {
-      await navigator.clipboard.writeText(PERSONAL_INFO.email);
+      await navigator.clipboard.writeText(contactEmail);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {}
@@ -42,12 +47,13 @@ export default function ContactSection() {
       return;
     }
 
+    const visitorName = formData.name.trim();
     setStatus("submitting");
     setStatusMessage("");
 
     try {
       const res = await sendContactMessage({
-        name: formData.name.trim(),
+        name: visitorName,
         email: formData.email.trim(),
         subject: formData.subject.trim() || "General Inquiry via Portfolio",
         message: formData.message.trim(),
@@ -55,7 +61,8 @@ export default function ContactSection() {
 
       if (res.success) {
         setStatus("success");
-        setStatusMessage(res.message || "Message sent successfully! I will respond promptly.");
+        setSubmittedName(visitorName);
+        setStatusMessage(res.message || "Message received successfully!");
         setFormData({ name: "", email: "", subject: "", message: "" });
       } else {
         setStatus("error");
@@ -105,10 +112,10 @@ export default function ContactSection() {
               {/* Clickable Big Email */}
               <div className="mb-6">
                 <a
-                  href={`mailto:${PERSONAL_INFO.email}`}
+                  href={`mailto:${contactEmail}`}
                   className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-950 dark:text-white hover:opacity-80 transition-opacity break-all"
                 >
-                  {PERSONAL_INFO.email}
+                  {contactEmail}
                 </a>
                 <button
                   type="button"
@@ -119,82 +126,91 @@ export default function ContactSection() {
                 </button>
               </div>
 
-              {/* Direct Details */}
-              <div className="space-y-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mb-8 font-normal">
-                <div className="flex items-center gap-2.5">
+              {/* LOCATION & AVAILABILITY */}
+              <div className="space-y-4 pt-6 border-t border-black/[0.06] dark:border-white/[0.06] mb-8">
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
                   <MapPin className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <span>{PERSONAL_INFO.location}</span>
+                  <span>{contactLocation}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <Phone className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <span>+91 93051 45470</span>
+
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400">
+                    Open for Software Engineering Roles & Collaboration
+                  </span>
                 </div>
               </div>
 
-              {/* Availability Status Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ECE8DF] dark:bg-[#18191E] border border-black/[0.06] dark:border-white/[0.08] text-xs font-medium text-neutral-800 dark:text-neutral-200 mb-8">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Open for Software Engineer roles & selected collaborations</span>
-              </div>
-            </div>
+              {/* SOCIAL CHANNELS */}
+              <div>
+                <p className="text-xs font-mono tracking-widest uppercase text-neutral-400 dark:text-neutral-500 mb-3 font-semibold">
+                  CHANNELS
+                </p>
 
-            {/* Social Network Links */}
-            <div>
-              <p className="text-xs font-mono tracking-widest uppercase text-neutral-400 dark:text-neutral-500 mb-3">
-                CONNECT
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <a
-                  href={PERSONAL_INFO.socials.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[#ECE8DF] dark:bg-[#18191E] text-neutral-800 dark:text-neutral-200 text-xs font-medium hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-neutral-950 transition-all flex items-center gap-1.5"
-                >
-                  <Github className="w-3.5 h-3.5" />
-                  <span>GitHub</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href="https://github.com/Nish0178"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-black/[0.06] dark:border-white/[0.06] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Github className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
+                      <span className="text-xs font-medium text-neutral-900 dark:text-white">GitHub</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors" />
+                  </a>
 
-                <a
-                  href={PERSONAL_INFO.socials.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[#ECE8DF] dark:bg-[#18191E] text-neutral-800 dark:text-neutral-200 text-xs font-medium hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-neutral-950 transition-all flex items-center gap-1.5"
-                >
-                  <Linkedin className="w-3.5 h-3.5" />
-                  <span>LinkedIn</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
+                  <a
+                    href="https://www.linkedin.com/in/nishant-trivedi-363ba3249"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-black/[0.06] dark:border-white/[0.06] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Linkedin className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
+                      <span className="text-xs font-medium text-neutral-900 dark:text-white">LinkedIn</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors" />
+                  </a>
 
-                <a
-                  href={PERSONAL_INFO.socials.leetcode}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[#ECE8DF] dark:bg-[#18191E] text-neutral-800 dark:text-neutral-200 text-xs font-medium hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-neutral-950 transition-all flex items-center gap-1.5"
-                >
-                  <Code className="w-3.5 h-3.5" />
-                  <span>LeetCode</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
+                  <a
+                    href="https://leetcode.com/u/Nishant_trivedi01111/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-black/[0.06] dark:border-white/[0.06] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Code className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
+                      <span className="text-xs font-medium text-neutral-900 dark:text-white">LeetCode</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors" />
+                  </a>
 
-                <a
-                  href={PERSONAL_INFO.socials.hackerrank}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[#ECE8DF] dark:bg-[#18191E] text-neutral-800 dark:text-neutral-200 text-xs font-medium hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-neutral-950 transition-all flex items-center gap-1.5"
-                >
-                  <Terminal className="w-3.5 h-3.5" />
-                  <span>HackerRank</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
+                  <a
+                    href="https://www.hackerrank.com/profile/trivedinishant81"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-black/[0.06] dark:border-white/[0.06] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Terminal className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
+                      <span className="text-xs font-medium text-neutral-900 dark:text-white">HackerRank</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Interactive Contact Form */}
-          <div className="lg:col-span-7 bg-[#ECE8DF] dark:bg-[#18191E] rounded-3xl p-8 sm:p-10 border border-black/[0.08] dark:border-white/[0.08] shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Right Column: Direct Message Form matching Reference Frames 31-33 */}
+          <div className="lg:col-span-7">
+            <form
+              onSubmit={handleSubmit}
+              className="p-8 sm:p-10 rounded-2xl bg-white/80 dark:bg-[#14151B]/80 backdrop-blur-md border border-black/[0.06] dark:border-white/[0.08] shadow-sm space-y-5"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-[11px] font-mono tracking-wider uppercase text-neutral-500 dark:text-neutral-400 mb-1.5">
                     Your Name *
@@ -204,14 +220,14 @@ export default function ContactSection() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Alex Smith"
+                    placeholder="Alex Morgan"
                     className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-neutral-800/80 border border-black/[0.06] dark:border-white/[0.08] text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-mono tracking-wider uppercase text-neutral-500 dark:text-neutral-400 mb-1.5">
-                    Email Address *
+                    Your Email *
                   </label>
                   <input
                     type="email"
@@ -232,7 +248,7 @@ export default function ContactSection() {
                   type="text"
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  placeholder="Software Engineer Opportunity / Project Inquiry"
+                  placeholder="Engineering Opportunity / Collaboration"
                   className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-neutral-800/80 border border-black/[0.06] dark:border-white/[0.08] text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white transition-all"
                 />
               </div>
@@ -251,20 +267,25 @@ export default function ContactSection() {
                 />
               </div>
 
-              {/* Status Message */}
-              {statusMessage && (
-                <div
-                  className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                    status === "success"
-                      ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
-                      : "bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20"
-                  }`}
-                >
-                  {status === "success" ? (
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                  )}
+              {/* Status Message Display */}
+              {status === "success" && (
+                <div className="p-4 sm:p-5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-900 dark:text-emerald-100 flex items-start gap-3.5 shadow-sm">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold text-xs sm:text-sm text-emerald-950 dark:text-emerald-200">
+                      Message received successfully!
+                    </p>
+                    <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                      Thank you for reaching out, <span className="font-medium text-neutral-900 dark:text-white">{submittedName || "friend"}</span>.<br />
+                      Nishant will get back to you as soon as possible.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {status === "error" && statusMessage && (
+                <div className="p-3.5 rounded-xl bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{statusMessage}</span>
                 </div>
               )}
